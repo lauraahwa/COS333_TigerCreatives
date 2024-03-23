@@ -3,7 +3,9 @@ import {
   createBrowserRouter,
   RouterProvider
 } from "react-router-dom"
+
 import { Home, User } from './pages'
+import { Navbar } from './components'
 
 const router = createBrowserRouter([
   {
@@ -20,6 +22,7 @@ function App() {
 
   return (
     <>
+      <Navbar/>
       <RouterProvider router={router} />
     </>
   )
