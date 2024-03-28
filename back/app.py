@@ -1,10 +1,9 @@
 from flask import Flask
+from .venv.models import User
 
 app = Flask(__name__)
 
-@app.route('/')
-def index():
-    return "Hello, World!"
-
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
