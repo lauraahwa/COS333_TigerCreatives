@@ -11,7 +11,7 @@ const UserService = {
         return apiClient.put(`/users/${id}`, updates).then(response => response.data)
     },
     deleteUser: async (id) => {
-        return apiClient.delete(`/users/${id}`, updates).then(response => response.data)
+        return apiClient.delete(`/users/${id}`).then(response => response.data)
     },
 };
 

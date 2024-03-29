@@ -18,7 +18,9 @@ const Delete = () => {
   
     const handleSubmit = async (e) => {
       e.preventDefault();
-      await UserService.deleteUser(userId);
+      const response = await UserService.deleteUser(userId);
+
+      console.log(response)
       // Reset form or give feedback
       setUserId('');
     };

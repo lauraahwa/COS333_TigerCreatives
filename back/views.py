@@ -1,9 +1,14 @@
-from flask import request, jsonify
+from flask import request, jsonify, Flask
+from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
 
-from . import app, db
-from .models import User
+from models import User
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 CORS(app)
 

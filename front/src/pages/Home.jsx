@@ -26,7 +26,8 @@ const Home = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await UserService.createUser(userData);
+    const response = await UserService.createUser(userData);
+    console.log(response)
   };
 
   return (

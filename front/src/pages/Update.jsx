@@ -27,7 +27,9 @@ const Update = () => {
       const handleSubmit = async (e) => {
         e.preventDefault();
         const { user_id, ...updateData } = userData;
-        await UserService.updateUser(user_id, updateData);
+        const response = await UserService.updateUser(user_id, updateData);
+
+        console.log(response)
         // Reset form or give feedback
       };
     

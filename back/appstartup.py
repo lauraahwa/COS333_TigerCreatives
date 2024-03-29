@@ -1,8 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from models import User
-
-db = SQLAlchemy()
+import os
 
 def create_app():
     app = Flask(__name__)
