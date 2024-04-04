@@ -2,6 +2,7 @@ from flask import request, jsonify, Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
+import auth
 
 from models import User
 from extensions import db
@@ -48,6 +49,40 @@ def handle_user(user_id):
         db.session.delete(user)
         db.session.commit()
         return jsonify({'message': 'User deleted successfully'}), 200
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.form['username']
+    password = request.form['password']
+    
+    # Authenticate user
+    if authenticate(username, password):
+        session['username'] = username
+        return redirect(url_for('protected'))
+    else:
+        return 'Invalid credentials'
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('index'))
+
+# Define a protected route
+@app.route('/protected', methods=['GET'])
+def protected():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    
+    # Fetch user data from the database
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
+        return 'User not found'
+    
+    # Return user data
+    return jsonify({
+        'username': user.username,
+        'email': user.email
+    })
 
 if __name__ == "__main__":
     with app.app_context():
