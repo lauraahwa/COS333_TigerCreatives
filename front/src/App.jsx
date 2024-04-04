@@ -4,7 +4,7 @@ import {
   RouterProvider
 } from "react-router-dom"
 
-import { Home, Read, Update, Delete } from './pages'
+import { Home, Read, Update, Delete, Login} from './pages'
 import { Navbar } from './components'
 
 const router = createBrowserRouter([
@@ -23,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: "/delete",
     element: <Delete />
+  },
+  {
+    path: "/login",
+    element: <Login />
   },
 ])
 
