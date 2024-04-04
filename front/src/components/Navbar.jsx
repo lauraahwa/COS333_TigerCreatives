@@ -50,6 +50,11 @@ const Navbar = () => {
             Delete
           </a>
         </li>
+        <li>
+          <a href='/Login'>
+            Login
+          </a>
+        </li>
       </Links>
     </Nav>
   )
