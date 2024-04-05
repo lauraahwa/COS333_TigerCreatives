@@ -6,8 +6,9 @@ const variables = css`
         --orange-color: #E87722;
 
         --background-color: #FFFFFF;
+        --container-color: #F4F5F7
 
-        --text-color: #000000;
+        --text-color: #3A3A3A;
     }
 `
 

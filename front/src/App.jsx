@@ -5,7 +5,7 @@ import {
 } from "react-router-dom"
 
 import { Home, Read, Update, Delete } from './pages'
-import { Navbar } from './components'
+import { Navbar, Footer } from './components'
 
 const router = createBrowserRouter([
   {
@@ -32,6 +32,7 @@ function App() {
     <>
       <Navbar/>
       <RouterProvider router={router} />
+      <Footer/>
     </>
   )
 }
