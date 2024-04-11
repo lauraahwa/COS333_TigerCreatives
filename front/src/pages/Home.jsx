@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import UserService from '../api/UserService'
-import { Container } from '../components'
+import UserService from '@/api/UserService'
+import { Container } from '@/components'
 
 const Form = styled.form`
   display: flex;
