@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import painting from '@/assets/painting.png'
-import { Button } from '@/components'
+import Button from './Button'
 
 const Container = styled.div`
     width: 100%;
@@ -13,8 +13,18 @@ const Container = styled.div`
         grid-template-columns: repeat(2, 1fr);
     }
 
-
-
+`
+const StyledButton = styled(Button)`
+  visibility: hidden;
+  padding: 6px 17px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  font-size: 0.7rem;
+  transform: translateX(-50%);
+  z-index: 3;
 `
 
 const Item = styled.div`
@@ -29,8 +39,15 @@ const Item = styled.div`
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0, 0, 0, 0.4); // Semi-transparent black overlay
-        pointer-events: none; // Allows clicks to pass through
+        background-color: rgba(0, 0, 0, 0.4);
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    &:hover ${StyledButton} {
+      visibility: visible;
+      opacity: 1;
+      transition: visibility 0s, opacity 0.3s ease;
     }
   
   h1 {
@@ -52,6 +69,9 @@ const Item = styled.div`
     line-height: 1.2rem;
   }
 
+  a {
+    text-decoration: none;
+  }
 
 `
 
@@ -75,38 +95,20 @@ const Grid = () => {
   return (
     <>
       <Container>
-        <Item>
-          <ItemImage src={painting} />
-          <TextContainer>
-            <h1>Painting</h1>
-            <p>Painted using oil and canvas by Jack O'Donnell</p>
-            <h2>$65.00</h2>
-          </TextContainer>
-        </Item>
-        <Item>
-          <ItemImage src={painting} />
-          <TextContainer>
-            <h1>Painting</h1>
-            <p>Painted using oil and canvas by Jack O'Donnell</p>
-            <h2>$65.00</h2>
-          </TextContainer>
-        </Item>
-        <Item>
-          <ItemImage src={painting} />
-          <TextContainer>
-            <h1>Painting</h1>
-            <p>Painted using oil and canvas by Jack O'Donnell</p>
-            <h2>$65.00</h2>
-          </TextContainer>
-        </Item>
-        <Item>
-          <ItemImage src={painting} />
-          <TextContainer>
-            <h1>Painting</h1>
-            <p>Painted using oil and canvas by Jack O'Donnell</p>
-            <h2>$65.00</h2>
-          </TextContainer>
-        </Item>
+        {Array.from({ length: 8 }).map((_, index) => (
+          <Item>
+            <ItemImage src={painting} />
+            <TextContainer>
+              <h1>Painting</h1>
+              <p>Painted using oil and canvas by Jack O'Donnell</p>
+              <h2>$65.00</h2>
+            </TextContainer>
+            <a href="/listing">
+              <StyledButton text="view details" />
+            </a>
+          </Item>
+        ))}
+
       </Container>
 
     </>
