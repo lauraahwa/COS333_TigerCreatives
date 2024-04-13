@@ -1,12 +1,33 @@
 import React, { useState } from 'react';
 import styled from 'styled-components'
+import { Button, ButtonContainer } from '@/components'
 
-function Form() {
+const StyledForm = styled.form`
+  margin-top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  input, textarea {
+    display: flex;
+    border-radius: 10px;
+    padding: 2px 10px;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--text-color);
+  }
+`
+
+const StyledButton = styled(Button)`
+  padding: 6px 17px;
+  font-size: 0.9rem;
+`
+
+const Form = () => {
   const [formData, setFormData] = useState({
     itemName: '',
     itemDescription: '',
     itemPrice: '',
-    proposedPrice: ''
   });
 
   const handleChange = (event) => {
@@ -24,12 +45,12 @@ function Form() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <StyledForm onSubmit={handleSubmit}>
       <div>
-        <label htmlFor="itemName">Item Name:</label>
         <input
           type="text"
           id="itemName"
+          placeholder="Name"
           name="itemName"
           value={formData.itemName}
           onChange={handleChange}
@@ -37,39 +58,31 @@ function Form() {
         />
       </div>
       <div>
-        <label htmlFor="itemDescription">Item Description:</label>
         <textarea
           id="itemDescription"
           name="itemDescription"
+          placeholder="Description"
           value={formData.itemDescription}
           onChange={handleChange}
           required
         />
       </div>
       <div>
-        <label htmlFor="itemPrice">Item Price ($):</label>
         <input
           type="number"
           id="itemPrice"
+          placeholder="Price"
           name="itemPrice"
           value={formData.itemPrice}
           onChange={handleChange}
           required
         />
       </div>
-      <div>
-        <label htmlFor="proposedPrice">Proposed Price ($):</label>
-        <input
-          type="number"
-          id="proposedPrice"
-          name="proposedPrice"
-          value={formData.proposedPrice}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <button type="submit">Submit</button>
-    </form>
+      <ButtonContainer>
+        <StyledButton text="Submit"/>
+      </ButtonContainer>
+      
+    </StyledForm>
   );
 }
 

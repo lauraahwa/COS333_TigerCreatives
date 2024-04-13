@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import UserService from '@/api/UserService'
-import { Grid, Button } from '@/components'
+import { Grid, Button, ButtonContainer } from '@/components'
 
 const Title = styled.div`
 
@@ -37,16 +37,6 @@ const Header = styled.h1`
   font-weight: 700;
   text-align: center;
   margin-bottom: 41px;
-`
-
-const ButtonContainer = styled.div`
-  display: flex;
-  margin-top: 44px;
-  justify-content: center;
-
-  a {
-      text-decoration: none;
-  }
 `
 
 const Banner = styled.div`

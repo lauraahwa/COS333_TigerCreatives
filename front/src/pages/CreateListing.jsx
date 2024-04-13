@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Splash } from '@/components'
+import { Splash, Form } from '@/components'
 
 const Container = styled.div`
     display: flex;
@@ -19,7 +19,7 @@ const CreateListing = () => {
     <Container>
         <Splash header="Create" subtext="Want to sell something you made or a service you can do? This is the place." />
         <Content>
-            
+            <Form />
         </Content>
     </Container>
   )
