@@ -1,10 +1,11 @@
-from flask import request, jsonify, Flask
+from flask import request, jsonify, session, Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
 import auth
 
 from models import User
+from models import Listing
 from extensions import db
 
 app = Flask(__name__)
@@ -76,6 +77,19 @@ def index():
     return response
 
 #-----------------------------------------------------------------------
+
+# HANDLE LISTING FUNCITONALITY
+@app.route('/seller/listing', methods=['POST'])
+def create_listing():
+    data = request.get_json()
+    new_listing = Listing(title=data['title'], seller_id=data['user_id'],
+                          category_id=data['category_id'],
+                          description=data['description'], price=data['price'], 
+                          image_url = data['image_url'])
+    db.session.add(new_listing)
+    db.session.commit()
+    # what does the 201 do?
+    return jsonify(new_listing.to_dict()), 201
 
 # Define a protected route
 @app.route('/protected', methods=['GET'])
