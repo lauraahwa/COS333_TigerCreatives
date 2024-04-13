@@ -29,3 +29,38 @@ class User(db.Model):
             'email_address': self.email_address,
             'age': self.age,
         }
+
+# create a listing model
+class Listing(db.Model):
+    __tablename__ = 'listing'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(50), nullable=False)
+    seller_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # allows you to access the seller (a 'User' object) directly from a 
+    # 'Listing; object through "listing.seller"
+    # relationship() tells SQLAlchemy that this model should be linked to 'User'
+    # backref adds a 'listings' attribute to the 'User' module which will
+    # be a list of all listings associated with that user
+    seller = db.relationship('User', backref=db.backref('listings', lazy=True))
+    category_id = db.Column(db.Integer, nullable=False) # implement foreignkey to category
+    description = db.Column(db.String(250))
+    price = db.Column(db.Float, nullable=False)
+    image_url = db.Column(db.String)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'seller_id': self.seller_id,
+            'category_id': self.category_id,
+            'description': self.description,
+            'price': self.price,
+            'image_url': self.image_url,
+        }
+
+# create a category model
+class Category(db.Model):
+    __tablename__ = 'category'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.String)
