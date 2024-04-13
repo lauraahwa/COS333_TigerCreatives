@@ -4,14 +4,20 @@ import {
   RouterProvider
 } from "react-router-dom"
 
+<<<<<<< HEAD
 import { Home, Read, Update, Delete, Login} from './pages'
 import { Navbar } from './components'
+=======
+import { Home,  } from './pages'
+import { Navbar, Footer } from './components'
+>>>>>>> landing
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
   },
+<<<<<<< HEAD
   {
     path: "/read",
     element: <Read />
@@ -28,6 +34,8 @@ const router = createBrowserRouter([
     path: "/login",
     element: <Login />
   },
+=======
+>>>>>>> landing
 ])
 
 function App() {
@@ -36,6 +44,7 @@ function App() {
     <>
       <Navbar/>
       <RouterProvider router={router} />
+      <Footer/>
     </>
   )
 }

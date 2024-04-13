@@ -1,6 +1,2 @@
 export { default as Home } from './Home'
-export { default as Read } from './Read'
-export { default as Update } from './Update'
-export { default as Delete } from './Delete'
 export { default as User } from './User'
-export { default as Login } from './Login'
