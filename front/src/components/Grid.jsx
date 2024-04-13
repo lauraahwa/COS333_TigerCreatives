@@ -13,12 +13,18 @@ const Container = styled.div`
         grid-template-columns: repeat(2, 1fr);
     }
 
+
+
 `
 
 const ButtonContainer = styled.div`
   display: flex;
   margin-top: 44px;
   justify-content: center;
+
+  a {
+      text-decoration: none;
+  }
 `
 
 const Item = styled.div`
@@ -113,7 +119,9 @@ const Grid = () => {
         </Item>
       </Container>
       <ButtonContainer>
+        <a href="/shop">
         <Button text="show more" />
+        </a>
       </ButtonContainer>
     </>
   )
