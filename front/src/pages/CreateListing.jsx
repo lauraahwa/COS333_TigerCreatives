@@ -19,6 +19,7 @@ const CreateListing = () => {
     <Container>
         <Splash header="Create" subtext="Want to sell something you made or a service you can do? This is the place." />
         <Content>
+            
         </Content>
     </Container>
   )
