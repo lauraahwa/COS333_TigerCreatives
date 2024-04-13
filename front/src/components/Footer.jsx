@@ -2,7 +2,7 @@ import React from 'react'
 import styled, { css } from 'styled-components'
 
 const Container = styled.div`
-    padding: 62px 100px;
+    padding: ${props => props.row ? "62px 100px" : "0 0"};
     width: 100%;
     justify-content: space-between;
     display: flex;

@@ -4,25 +4,13 @@ import {
   RouterProvider
 } from "react-router-dom"
 
-import { Home, Read, Update, Delete } from './pages'
+import { Home,  } from './pages'
 import { Navbar, Footer } from './components'
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
-  },
-  {
-    path: "/read",
-    element: <Read />
-  },
-  {
-    path: "/update",
-    element: <Update />
-  },
-  {
-    path: "/delete",
-    element: <Delete />
   },
 ])
 

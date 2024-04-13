@@ -13,6 +13,7 @@ const GlobalStyle = createGlobalStyle`
         scroll-behavior: smooth;
 
         font-family: var(--font-poppins);
+        color: var(--text-color);
     }
 `
 
