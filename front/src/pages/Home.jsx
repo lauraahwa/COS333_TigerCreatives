@@ -39,6 +39,16 @@ const Header = styled.h1`
   margin-bottom: 41px;
 `
 
+const ButtonContainer = styled.div`
+  display: flex;
+  margin-top: 44px;
+  justify-content: center;
+
+  a {
+      text-decoration: none;
+  }
+`
+
 const Banner = styled.div`
   display: flex;
   width: 100%;
@@ -75,6 +85,11 @@ const Home = () => {
         <Header>Discover</Header>
         <Header>Products</Header>
         <Grid />
+        <ButtonContainer>
+          <a href="/shop">
+            <Button text="show more" />
+          </a>
+        </ButtonContainer>
 
       </Container>
       <Banner>

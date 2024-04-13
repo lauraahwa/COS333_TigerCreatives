@@ -10,6 +10,7 @@ const Container = styled.button`
     font-weight: 400;
     width: auto;
 
+
     display: flex;
     justify-content: center;
     align-items: center;

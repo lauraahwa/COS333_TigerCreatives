@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
 const Nav = styled.nav`
@@ -43,6 +43,8 @@ const Links = styled.ul`
 `
 
 const Navbar = () => {
+  const [isSignedIn, setIsSignedIn] = useState(false)
+
   return (
     <Nav>
       <Links>
@@ -52,17 +54,29 @@ const Navbar = () => {
           </a>
         </li>
         <li>
-          <a href='/signup'>
-            sign up
+          <a href='/'>
+            home
           </a>
-          <a href='/login'>
-            login
+          <a href='/shop'>
+            shop
+          </a>
+          <a href='/sellers'>
+            sellers
+          </a>
+          <a href='/about'>
+            about
           </a>
         </li>
         <li id="last">
+          {isSignedIn ? 
           <a href='/profile'>
             profile
+          </a> :
+          <a href='/login'>
+          login
           </a>
+          }
+          
         </li>
         <li>
           <a href='/Login'>
