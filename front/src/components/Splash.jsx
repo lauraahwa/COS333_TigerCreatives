@@ -12,8 +12,7 @@ const Container = styled.div`
     justify-content: center;
     align-items: center;
 `
-
-const Header = styled.h1`
+const TextContainer = styled.div`
     position: absolute;
     top: 40%;
     bottom: 50%;
@@ -22,8 +21,21 @@ const Header = styled.h1`
     text-align: center;
     color: var(--text-color);
     margin: 0;
-    font-weight: 500;
+
+    display: flex;
+    flex-direction: column;
+
+    h1 {
+      font-weight: 500;
+      font-size: 1.5rem;
+    }
+    
+    h2 {
+      font-weight: 400;
+      font-size: 1rem;
+    }
 `
+
 
 const Image = styled.img`
     position: absolute;
@@ -32,11 +44,14 @@ const Image = styled.img`
     z-index: -1;
 `
 
-const Splash = ({ header }) => {
+const Splash = ({ header, subtext }) => {
   return (
     <Container>
-        <Header>{header}</Header>
-        <Image src={splash} />
+      <TextContainer>
+        <h1>{header}</h1>
+        <h2>{subtext}</h2>
+      </TextContainer>  
+      <Image src={splash} />
     </Container>
   )
 }

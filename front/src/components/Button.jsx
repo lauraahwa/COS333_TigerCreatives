@@ -23,9 +23,9 @@ const Container = styled.button`
 
 `
 
-const Button = ({ text }) => {
+const Button = ({ className, text }) => {
   return (
-    <Container>
+    <Container className={className}>
         {text}
     </Container>
   )

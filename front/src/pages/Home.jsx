@@ -84,7 +84,7 @@ const Home = () => {
       <Container>
         <Header>Discover</Header>
         <Header>Products</Header>
-        <Grid />
+        <Grid isLanding={true} />
         <ButtonContainer>
           <a href="/shop">
             <Button text="show more" />

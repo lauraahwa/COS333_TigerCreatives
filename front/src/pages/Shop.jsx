@@ -17,7 +17,7 @@ const GridContainer = styled.div`
 const Shop = () => {
   return (
     <Container>
-        <Splash header="Shop" />
+        <Splash header="Shop" subtext="Want to browse stuff already made? This is the place."/>
         <GridContainer>
             <Grid />
         </GridContainer>
