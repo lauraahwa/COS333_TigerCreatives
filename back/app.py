@@ -50,22 +50,32 @@ def handle_user(user_id):
         db.session.commit()
         return jsonify({'message': 'User deleted successfully'}), 200
 
-@app.route('/login', methods=['POST'])
-def login():
-    username = request.form['username']
-    password = request.form['password']
-    
-    # Authenticate user
-    if authenticate(username, password):
-        session['username'] = username
-        return redirect(url_for('protected'))
-    else:
-        return 'Invalid credentials'
+#-----------------------------------------------------------------------
 
-@app.route('/logout', methods=['GET'])
-def logout():
-    session.pop('username', None)
-    return redirect(url_for('index'))
+# Routes for authentication from PennyCAS program
+
+@app.route('/logoutapp', methods=['GET'])
+def logoutapp():
+    return auth.logoutapp()
+
+@app.route('/logoutcas', methods=['GET'])
+def logoutcas():
+    return auth.logoutcas()
+
+#-----------------------------------------------------------------------
+
+@app.route('/', methods=['GET'])
+@app.route('/index', methods=['GET'])
+def index():
+
+    username = auth.authenticate()
+
+    html_code = flask.render_template('index.html',
+        username=username)
+    response = flask.make_response(html_code)
+    return response
+
+#-----------------------------------------------------------------------
 
 # Define a protected route
 @app.route('/protected', methods=['GET'])

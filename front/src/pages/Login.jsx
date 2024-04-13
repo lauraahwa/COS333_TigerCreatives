@@ -26,24 +26,7 @@ const Login = () => {
 
     return (
         <Container>
-            <Form onSubmit={handleLogin}>
-                <input 
-                    type="text" 
-                    placeholder="Username" 
-                    value={username} 
-                    onChange={(e) => setUsername(e.target.value)} 
-                />
-                <input 
-                    type="password" 
-                    placeholder="Password" 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
-                />
-                <button type="submit">Login</button>
-            </Form>
-            <a href="https://example.com/cas/login">
-                <button>CAS Login</button>
-            </a>
+            <a href='/index' class="cas-auth-button">Login with CAS</a> 
         </Container>
     );
 };
