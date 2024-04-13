@@ -17,16 +17,6 @@ const Container = styled.div`
 
 `
 
-const ButtonContainer = styled.div`
-  display: flex;
-  margin-top: 44px;
-  justify-content: center;
-
-  a {
-      text-decoration: none;
-  }
-`
-
 const Item = styled.div`
     position: relative;
     transition: background-color 0.3s ease;
@@ -118,11 +108,7 @@ const Grid = () => {
           </TextContainer>
         </Item>
       </Container>
-      <ButtonContainer>
-        <a href="/shop">
-        <Button text="show more" />
-        </a>
-      </ButtonContainer>
+
     </>
   )
   
