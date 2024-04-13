@@ -91,11 +91,13 @@ const ItemImage = styled.img`
   }
 `
 
-const Grid = () => {
+const Grid = ({ isLanding }) => {
+  const length = isLanding ? 8 : 16
+
   return (
     <>
       <Container>
-        {Array.from({ length: 8 }).map((_, index) => (
+        {Array.from({ length: length }).map((_, index) => (
           <Item>
             <ItemImage src={painting} />
             <TextContainer>

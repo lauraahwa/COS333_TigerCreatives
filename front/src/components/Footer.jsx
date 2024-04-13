@@ -26,9 +26,10 @@ const Header = styled.h2`
     font-weight: 600;
 `
 
-const Link = styled.p`
+const Link = styled.a`
     font-style: 16px;
     font-weight: 500;
+    text-decoration: none;
 `
 
 const Footer = () => {
@@ -40,10 +41,10 @@ const Footer = () => {
             </Vertical>
             <Vertical>
                 <Header>Links</Header>
-                <Link>Home</Link>
-                <Link>Profile</Link>
-                <Link>Products</Link>
-                <Link>Sellers</Link>
+                <Link href="/">Home</Link>
+                <Link href="/shop">Shop</Link>
+                <Link href="/sellers">Sellers</Link>
+                <Link href="/about">About</Link>
             </Vertical>
             <Vertical>
                 <Header>Help</Header>
