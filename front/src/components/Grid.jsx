@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import painting from '@/assets/painting.png'
+import { Button } from '@/components'
 
 const Container = styled.div`
     width: 100%;
@@ -12,6 +13,12 @@ const Container = styled.div`
         grid-template-columns: repeat(2, 1fr);
     }
 
+`
+
+const ButtonContainer = styled.div`
+  display: flex;
+  margin-top: 44px;
+  justify-content: center;
 `
 
 const Item = styled.div`
@@ -70,40 +77,45 @@ const ItemImage = styled.img`
 
 const Grid = () => {
   return (
-    <Container>
-      <Item>
-        <ItemImage src={painting} />
-        <TextContainer>
-          <h1>Painting</h1>
-          <p>Painted using oil and canvas by Jack O'Donnell</p>
-          <h2>$65.00</h2>
-        </TextContainer>
-      </Item>
-      <Item>
-        <ItemImage src={painting} />
-        <TextContainer>
-          <h1>Painting</h1>
-          <p>Painted using oil and canvas by Jack O'Donnell</p>
-          <h2>$65.00</h2>
-        </TextContainer>
-      </Item>
-      <Item>
-        <ItemImage src={painting} />
-        <TextContainer>
-          <h1>Painting</h1>
-          <p>Painted using oil and canvas by Jack O'Donnell</p>
-          <h2>$65.00</h2>
-        </TextContainer>
-      </Item>
-      <Item>
-        <ItemImage src={painting} />
-        <TextContainer>
-          <h1>Painting</h1>
-          <p>Painted using oil and canvas by Jack O'Donnell</p>
-          <h2>$65.00</h2>
-        </TextContainer>
-      </Item>
-    </Container>
+    <>
+      <Container>
+        <Item>
+          <ItemImage src={painting} />
+          <TextContainer>
+            <h1>Painting</h1>
+            <p>Painted using oil and canvas by Jack O'Donnell</p>
+            <h2>$65.00</h2>
+          </TextContainer>
+        </Item>
+        <Item>
+          <ItemImage src={painting} />
+          <TextContainer>
+            <h1>Painting</h1>
+            <p>Painted using oil and canvas by Jack O'Donnell</p>
+            <h2>$65.00</h2>
+          </TextContainer>
+        </Item>
+        <Item>
+          <ItemImage src={painting} />
+          <TextContainer>
+            <h1>Painting</h1>
+            <p>Painted using oil and canvas by Jack O'Donnell</p>
+            <h2>$65.00</h2>
+          </TextContainer>
+        </Item>
+        <Item>
+          <ItemImage src={painting} />
+          <TextContainer>
+            <h1>Painting</h1>
+            <p>Painted using oil and canvas by Jack O'Donnell</p>
+            <h2>$65.00</h2>
+          </TextContainer>
+        </Item>
+      </Container>
+      <ButtonContainer>
+        <Button text="show more" />
+      </ButtonContainer>
+    </>
   )
   
 }
