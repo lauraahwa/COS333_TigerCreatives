@@ -136,7 +136,7 @@ def upload_image():
 
 # HANDLE LISTING FUNCITONALITY
 @app.route('/api/listing/create', methods=['POST', 'OPTIONS'])
-@cross_origin(origins='http://localhost:5173')
+@cross_origin()
 @jwt_required()
 def create_listing():
     user_id = get_jwt_identity()
