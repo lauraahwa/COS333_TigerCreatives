@@ -97,6 +97,8 @@ def upload_image():
 
         filename = f"Picture_${tag}"
 
+        cloudinary.config(cloud_name = os.getenv('CLOUD_NAME), api_key=os.getenv('API_KEY'), api_secret=os.getenv('API_SECRET')
+
         cloudinary.uploader.upload(file, public_id=filename, unique_filename=True)
 
         srcURL = cloudinary.CloudinaryImage(filename).build_url()
