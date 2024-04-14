@@ -8,6 +8,7 @@ import uuid
 
 import cloudinary
 import cloudinary.uploader
+import cloudinary.api
 
 from models import User
 from models import Listing
@@ -166,7 +167,46 @@ def get_listing(id):
     
     # If a listing is found, return it as JSON
     return jsonify(listing.to_dict()), 200
+
+#-----------------------------------------------------------------------
+# BIDDING STUFF
+
+# creating a bid item
+# @jwt_required()
+@app.route('/api/biditem/create/<int:id>', methods=['POST'])
+def create_bid_item():
+    user_id = get_jwt_identity()
+    data = request.get_json()
+
+    new_bid_item = BidItem(title=data['title'], 
+        description=data['description'], start_time=data['start_time'], 
+        end_time=data['end_time'])
     
+    db.session.add(new_bid_item)
+    db.session.commit()
+
+    return jsonify(new_bid.to_dict()), 200
+
+# placing a big
+@app.route('/api/bid/place', methods=['POST'])
+# @jwt_required()
+def place_bid():
+    user_id = get_jwt_identity()
+    data = request.get_json()
+
+    new_bid = Bid(amount=data['amount'], user_id=user_id, 
+        biditem_id=data['biditem_id'])
+
+    db.session.add(new_bid)
+    db.session.commit()
+    return jsonify(new_bid.to_dict()), 200
+
+# view bid items
+@app.route('/api/biditem/view', methods=['GET'])
+def get_bids_for_item(biditem_id):
+    bids = Bid.query.filter_by(biditem_id=biditem_id).all()
+    
+    return jsonify([bid.to_dict() for bid in bids])
 
 # # Define a protected route
 # @app.route('/protected', methods=['GET'])
