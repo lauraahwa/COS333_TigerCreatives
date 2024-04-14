@@ -77,6 +77,36 @@ def index():
     return response
 
 #-----------------------------------------------------------------------
+# upload an image and return the cloudinary url
+@app.route('/api/upload_image', methods=['POST'])
+def upload_image():
+    try:
+        file = request.files['image']
+
+        if not file:
+            return jsonify({
+                'error': 'No file provided'
+            }), 400
+        
+        tag = str(uuid.uuid4())
+
+        filename = f"Picture_${tag}"
+
+        cloudinary.uploader.upload(file, public_id=filename, unique_filename=True)
+
+        srcURL = cloudinary.CloudinaryImage(filename).build_url()
+
+        print(srcURL)
+
+        return jsonify({
+            'message': 'Image uploaded',
+            'url': srcURL
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            'message': 'something failed'
+        }), 500
 
 # HANDLE LISTING FUNCITONALITY
 @app.route('/seller/listing', methods=['POST'])
