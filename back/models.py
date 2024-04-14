@@ -66,27 +66,27 @@ class Category(db.Model):
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String)
 
-# create an item to bid on
-class BidItem(db.Model):
-    __tablename__ = 'bid_item'
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
-    description = db.Column(db.String)
-    start_time = db.Column(db.DateTime, default=datetime.utcnow)
-    end_time = db.Column(db.DateTime, nullable=False)
+# # create an item to bid on
+# class BidItem(db.Model):
+#     __tablename__ = 'bid_item'
+#     id = db.Column(db.Integer, primary_key=True)
+#     title = db.Column(db.String, nullable=False)
+#     description = db.Column(db.String)
+#     start_time = db.Column(db.DateTime, default=datetime.datetime.now)
+#     end_time = db.Column(db.DateTime, nullable=False)
 
-    # relationships
-    bids = db.relationship('Bid', back_populates='item')
+#     # relationships
+#     bids = db.relationship('Bid', back_populates='item')
 
-# create a bid
-class Bid(db.Model):
-    __tablename__ = 'bids'
-    id = db.Column(db.Integer, primary_key=True)
-    amount = db.Column(db.Float, nullable=False)
-    bid_time = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    biditem_id = db.Column(db.Integer, db.ForeignKey('biditem.id'))
+# # create a bid
+# class Bid(db.Model):
+#     __tablename__ = 'bids'
+#     id = db.Column(db.Integer, primary_key=True)
+#     amount = db.Column(db.Float, nullable=False)
+#     bid_time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+#     biditem_id = db.Column(db.Integer, db.ForeignKey('biditem.id'))
 
-    # Relationships
-    user = db.relationship('User', back_populates='bids')
-    item = db.relationship('BidItem', back_populates='bids')
+#     # Relationships
+#     user = db.relationship('User', back_populates='bids')
+#     item = db.relationship('BidItem', back_populates='bids')
