@@ -24,7 +24,7 @@ export const viewListings = async (url) => {
 export const viewListing = async (id) => {
     try {
         console.log(id)
-        const endpoint = ``
+        const endpoint = `/api/listing/item/${id}`
 
         // GET request
         const response = await apiClient.get(endpoint);

@@ -105,7 +105,7 @@ const Grid = ({ isLanding, data }) => {
               <p>{item.description}</p>
               <h2>${item.price}</h2>
             </TextContainer>
-            <a href="/listing">
+            <a href={`/listing/${item.id}`}>
               <StyledButton text="view details" />
             </a>
           </Item>
@@ -118,7 +118,7 @@ const Grid = ({ isLanding, data }) => {
               <p>{item.description}</p>
               <h2>${item.price}</h2>
             </TextContainer>
-            <a href="/listing">
+            <a href={`/listing/${item.id}`}>
               <StyledButton text="view details" />
             </a>
           </Item>

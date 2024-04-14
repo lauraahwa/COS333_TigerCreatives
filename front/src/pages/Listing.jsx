@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import painting from '@/assets/painting.png'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar as fasStar, faStarHalfAlt, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
 
+import { viewListing } from '@/api/listingService'
 
 const Container = styled.div`
     display: flex;
@@ -116,22 +118,39 @@ const StarRating = ({ rating }) => {
 }
 
 const Listing = () => {
+    let { id } = useParams();
     const rating = 3.5
+
+    const [listingData, setListingData] = useState({})
+
+    useEffect(() => {
+        const fetchListing = async () => {
+            try {
+                const data = await viewListing(id)
+                console.log(data)
+                setListingData(data)
+            } catch (error) {
+                console.error("fetching listing error", error)
+            }
+        }
+
+        fetchListing()
+    }, [])
 
   return (
     <Container>
         <ImageContainer>
-            <Image src={painting} />
+            <Image src={listingData.image_url} />
         </ImageContainer>
         <TextContainer>
-            <h1>Painting</h1>
-            <h2>$65.00</h2>
+            <h1>{listingData.title}</h1>
+            <h2>${listingData.price}</h2>
             <ReviewsContainer>
                 <StarRating rating={rating} />
                 <Line />
                 <ReviewsText>5 Seller Reviews</ReviewsText>
             </ReviewsContainer>
-            <p>Painted using oil and canvas by Jack O'Donnell. 50 hours spent. $40 spent on materials.</p>
+            <p>{listingData.description}</p>
             <br />
             <p>Contact: Jack O'Donnell, jodonnell@princeton.edu</p>
         </TextContainer>
