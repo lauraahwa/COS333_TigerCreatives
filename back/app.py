@@ -140,6 +140,19 @@ def get_items():
     listings = Listing.query.all()
     return jsonify([listing.to_dict() for listing in listings])
 
+@app.route('/api/listing/item/<int:id>', methods=['GET'])
+def get_listing(id):
+    # Query the database for the listing with the provided ID
+    listing = Listing.query.get(id)
+    
+    # If no listing is found, return an error message with a 404 status code
+    if listing is None:
+        return jsonify({"error": "Listing not found"}), 404
+    
+    # If a listing is found, return it as JSON
+    return jsonify(listing.to_dict()), 200
+    
+
 # Define a protected route
 @app.route('/protected', methods=['GET'])
 def protected():
