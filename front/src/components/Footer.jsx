@@ -35,7 +35,7 @@ const Link = styled.a`
 const Footer = () => {
   return (
     <Container>
-        <Container row>
+        <Container row="true">
             <Vertical>
                 <Title>TigerCreatives</Title>
             </Vertical>

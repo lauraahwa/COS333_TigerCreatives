@@ -43,7 +43,7 @@ const Links = styled.ul`
 `
 
 const Navbar = () => {
-  const [isSignedIn, setIsSignedIn] = useState(true)
+  const [isSignedIn, setIsSignedIn] = useState(false)
 
   return (
     <Nav>
