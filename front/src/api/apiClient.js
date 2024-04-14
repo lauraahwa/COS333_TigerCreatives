@@ -3,7 +3,7 @@ import axios from 'axios'
 axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
 
 const apiClient = axios.create({
-    baseURL: 'http://127.0.0.1:5000', // API base URL
+    baseURL: 'https://cos333-tigercreatives.onrender.com', // API base URL
     headers: {
         'Content-Type': 'application/json',
     }
