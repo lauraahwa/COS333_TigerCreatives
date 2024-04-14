@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { Button, ButtonContainer, Splash, Grid } from '@/components'
 
@@ -19,9 +20,9 @@ const Profile = () => {
         <Splash header="Profile" subtext="View your listings or create a new one!" />
         <Content>
             <ButtonContainer>
-                <a href="/create">
+                <Link to="/create">
                     <Button text="Create Listing"/>
-                </a>
+                </Link>
             </ButtonContainer>
             <h2>Your listings</h2>
             {/* <Grid isLanding={true}/> */}

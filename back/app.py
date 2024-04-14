@@ -1,5 +1,5 @@
 from flask import request, jsonify, session, Flask
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, JWTManager, create_access_token
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 import os
@@ -14,10 +14,12 @@ from models import Listing
 from extensions import db
 
 app = Flask(__name__)
-_DATABASE_URL = os.environ['DATABASE_URL']
+_DATABASE_URL = os.getenv('DATABASE_URL')
 _DATABASE_URL = _DATABASE_URL.replace('postgres://', 'postgresql://')
 app.config['SQLALCHEMY_DATABASE_URI'] = _DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JWT_SECRET_KEY'] = 'meowmeow44556'
+jwt = JWTManager(app)
 db.init_app(app)
 
 CORS(app)
@@ -70,6 +72,20 @@ def logoutcas():
     return auth.logoutcas()
 
 #-----------------------------------------------------------------------
+# LOGIN STUFF
+
+@app.route('/login', methods=['POST'])
+def login():
+    access_token = create_access_token(identity=12)
+    return jsonify(access_token=access_token)
+
+@app.route('/protected', methods=['GET'])
+@jwt_required()
+def protected():
+    current_user = get_jwt_identity()
+    return jsonify(logged_in_as=current_user), 200
+
+#-----------------------------------------------------------------------
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
@@ -120,12 +136,11 @@ def upload_image():
 # HANDLE LISTING FUNCITONALITY
 @app.route('/api/listing/create', methods=['POST', 'OPTIONS'])
 @cross_origin(origins='http://localhost:5173')
-# @jwt_required()
+@jwt_required()
 def create_listing():
-    # user_id = get_jwt_identity()
-    # note: change 12 -> user_id
+    user_id = get_jwt_identity()
     data = request.get_json()
-    new_listing = Listing(title=data['title'], seller_id=12,
+    new_listing = Listing(title=data['title'], seller_id=user_id,
                           category_id=2,
                           description=data['description'], price=data['price'], 
                           image_url = data['image_url'])
@@ -153,22 +168,22 @@ def get_listing(id):
     return jsonify(listing.to_dict()), 200
     
 
-# Define a protected route
-@app.route('/protected', methods=['GET'])
-def protected():
-    if 'username' not in session:
-        return redirect(url_for('login'))
+# # Define a protected route
+# @app.route('/protected', methods=['GET'])
+# def protected():
+#     if 'username' not in session:
+#         return redirect(url_for('login'))
     
-    # Fetch user data from the database
-    user = User.query.filter_by(username=session['username']).first()
-    if not user:
-        return 'User not found'
+#     # Fetch user data from the database
+#     user = User.query.filter_by(username=session['username']).first()
+#     if not user:
+#         return 'User not found'
     
-    # Return user data
-    return jsonify({
-        'username': user.username,
-        'email': user.email
-    })
+#     # Return user data
+#     return jsonify({
+#         'username': user.username,
+#         'email': user.email
+#     })
 
 if __name__ == "__main__":
     with app.app_context():

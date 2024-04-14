@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import { useAuth } from '@/context/AuthContext'
+
 
 const Nav = styled.nav`
   display: flex;
@@ -23,12 +26,6 @@ const Links = styled.ul`
     gap: 4vw;
   }
 
-  a {
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 400;
-  }
-
   #main {
       font-weight: 700;
   }
@@ -42,39 +39,44 @@ const Links = styled.ul`
   }
 `
 
+const StyledLink = styled(Link)`
+  font-weight: 400;
+  text-decoration: none;
+`
+
 const Navbar = () => {
-  const [isSignedIn, setIsSignedIn] = useState(true)
+  const { isSignedIn } = useAuth();
 
   return (
     <Nav>
       <Links>
         <li id="first">
-          <a href='/' id="main">
+          <StyledLink to='/' id="main">
           TigerCreatives
-          </a>
+          </StyledLink>
         </li>
         <li>
-          <a href='/'>
+          <StyledLink to='/'>
             home
-          </a>
-          <a href='/shop'>
+          </StyledLink>
+          <StyledLink to='/shop'>
             shop
-          </a>
-          <a href='/sellers'>
+          </StyledLink>
+          <StyledLink to='/sellers'>
             sellers
-          </a>
-          <a href='/about'>
+          </StyledLink>
+          <StyledLink to='/about'>
             about
-          </a>
+          </StyledLink>
         </li>
         <li id="last">
           {isSignedIn ? 
-          <a href='/profile'>
+          <StyledLink to='/profile'>
             profile
-          </a> :
-          <a href='/login'>
+          </StyledLink> :
+          <StyledLink to='/login'>
           login
-          </a>
+          </StyledLink>
           }
           
         </li>

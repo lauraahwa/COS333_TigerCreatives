@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import painting from '@/assets/painting.png'
 import Button from './Button'
@@ -105,9 +106,9 @@ const Grid = ({ isLanding, data }) => {
               <p>{item.description}</p>
               <h2>${item.price}</h2>
             </TextContainer>
-            <a href={`/listing/${item.id}`}>
+            <Link to={`/listing/${item.id}`}>
               <StyledButton text="view details" />
-            </a>
+            </Link>
           </Item>
         ))}
         {data.map((item, index) => (
@@ -118,9 +119,9 @@ const Grid = ({ isLanding, data }) => {
               <p>{item.description}</p>
               <h2>${item.price}</h2>
             </TextContainer>
-            <a href={`/listing/${item.id}`}>
+            <Link to={`/listing/${item.id}`}>
               <StyledButton text="view details" />
-            </a>
+            </Link>
           </Item>
         ))}
 

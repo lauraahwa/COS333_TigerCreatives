@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { Container } from '../components'
-import UserService from '../api/UserService'
+import { useAuth } from '@/context/AuthContext'
+import { login } from '@/api/userService'
+import axios from 'axios'
 
 const Form = styled.form`
   display: flex;
@@ -9,25 +10,37 @@ const Form = styled.form`
   gap: 20px;
 `
 
-const Login = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    padding: 0 100px;
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        
+`
+
+const Login = () => {
+    const { isSignedIn, signIn, signOut } = useAuth();
+
+    const handleSubmit = async (event) => {
+        event.preventDefault()
+
         try {
-            const response = await UserService.login(username, password);
-            console.log(response.data);
+            const response = await login();
+            const token = response.access_token;
+            localStorage.setItem('token', token)
+            event.preventDefault();
+            console.log(token)
+            signIn()
+            alert('Login successful')
         } catch (error) {
-            console.error('Login failed:', error);
+            alert('Login failed')
         }
-    };
+    }
 
     return (
         <Container>
-            <a href='/index' class="cas-auth-button">Login with CAS</a> 
+            <a onClick={handleSubmit} href='/'>Login</a>
         </Container>
+            // <a href='/index' class="cas-auth-button">Login with CAS</a> 
     );
 };
   
