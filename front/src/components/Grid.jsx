@@ -91,19 +91,19 @@ const ItemImage = styled.img`
   }
 `
 
-const Grid = ({ isLanding }) => {
+const Grid = ({ isLanding, data }) => {
   const length = isLanding ? 8 : 16
 
   return (
     <>
       <Container>
-        {Array.from({ length: length }).map((_, index) => (
+        {data.map((item, index) => (
           <Item>
-            <ItemImage src={painting} />
+            <ItemImage src={item.image_url} />
             <TextContainer>
-              <h1>Painting</h1>
-              <p>Painted using oil and canvas by Jack O'Donnell</p>
-              <h2>$65.00</h2>
+              <h1>{item.title}</h1>
+              <p>{item.description}</p>
+              <h2>${item.price}</h2>
             </TextContainer>
             <a href="/listing">
               <StyledButton text="view details" />

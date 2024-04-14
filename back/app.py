@@ -1,8 +1,13 @@
 from flask import request, jsonify, session, Flask
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
 import auth
+import uuid
+
+import cloudinary
+import cloudinary.uploader
 
 from models import User
 from models import Listing
@@ -18,7 +23,7 @@ db.init_app(app)
 CORS(app)
 
 # create a user
-@app.route('/users/create', methods=['POST'])
+@app.route('/api/users/create', methods=['POST'])
 def create_user():
     data = request.get_json()
     new_user = User(first_name=data['first_name'], last_name=data['last_name'],
@@ -108,18 +113,27 @@ def upload_image():
             'message': 'something failed'
         }), 500
 
+
 # HANDLE LISTING FUNCITONALITY
-@app.route('/seller/listing', methods=['POST'])
+@app.route('/api/listing/create', methods=['POST'])
+# @jwt_required()
 def create_listing():
+    # user_id = get_jwt_identity()
     data = request.get_json()
     new_listing = Listing(title=data['title'], seller_id=data['user_id'],
-                          category_id=data['category_id'],
+                          category_id=2,
                           description=data['description'], price=data['price'], 
                           image_url = data['image_url'])
     db.session.add(new_listing)
     db.session.commit()
     # what does the 201 do?
     return jsonify(new_listing.to_dict()), 201
+
+@app.route('/api/listing/items', methods=['GET'])
+# @jwt_required()
+def get_items():
+    listings = Listing.query.all()
+    return jsonify([listing.to_dict() for listing in listings])
 
 # Define a protected route
 @app.route('/protected', methods=['GET'])

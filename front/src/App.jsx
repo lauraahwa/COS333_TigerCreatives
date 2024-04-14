@@ -4,7 +4,7 @@ import {
   RouterProvider
 } from "react-router-dom"
 
-import { Home, Shop, Sellers, About, Listing, CreateListing  } from './pages'
+import { Home, Shop, Sellers, Profile, About, Listing, CreateListing  } from './pages'
 import { Navbar, Footer } from './components'
 
 
@@ -28,6 +28,10 @@ const router = createBrowserRouter([
   {
     path: "/listing",
     element: <Listing />
+  },
+  {
+    path: "/profile",
+    element: <Profile />
   },
   {
     path: "/create",
