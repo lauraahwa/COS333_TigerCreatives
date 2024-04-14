@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import UserService from '@/api/UserService'
+import { viewListings } from '@/api/listingService'
 import { Grid, Button, ButtonContainer } from '@/components'
 
 const Title = styled.div`
@@ -29,6 +29,9 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 100px;
+
+  justify-content: center;
+  align-items: center;
 
 `
 
@@ -64,6 +67,21 @@ const Banner = styled.div`
 `
 
 const Home = () => {
+  const [listingsData, setListingsData] = useState([])
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const data = await viewListings('items');
+        console.log("Data fetched", data);
+        setListingsData(data);
+      } catch (error) {
+        console.error("Fetching listings error:", error);
+      }
+    };
+
+    fetchListings();
+  }, []);
 
   return (
     <>
@@ -74,7 +92,7 @@ const Home = () => {
       <Container>
         <Header>Discover</Header>
         <Header>Products</Header>
-        <Grid isLanding={true} />
+        <Grid isLanding={true} data={listingsData}/>
         <ButtonContainer>
           <a href="/shop">
             <Button text="show more" />

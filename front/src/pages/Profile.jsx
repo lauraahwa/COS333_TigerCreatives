@@ -24,7 +24,7 @@ const Profile = () => {
                 </a>
             </ButtonContainer>
             <h2>Your listings</h2>
-            <Grid isLanding={true}/>
+            {/* <Grid isLanding={true}/> */}
         </Content>
     </Container>
   )

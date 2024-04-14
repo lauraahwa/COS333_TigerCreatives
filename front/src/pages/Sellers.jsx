@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Splash, Grid } from '@/components'
+
+import { viewListings } from '@/api/listingService'
 
 const Container = styled.div`
     display: flex;
@@ -15,11 +17,27 @@ const GridContainer = styled.div`
 `
 
 const Sellers = () => {
+  const [listingsData, setListingsData] = useState([])
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const data = await viewListings('items');
+        console.log("Data fetched", data);
+        setListingsData(data);
+      } catch (error) {
+        console.error("Fetching listings error:", error);
+      }
+    };
+
+    fetchListings();
+  }, []);
+
   return (
     <Container>
         <Splash header="Sellers" subtext="Need something creative? This is the place."/>
         <GridContainer>
-            <Grid />
+            <Grid data={listingsData}/>
         </GridContainer>
     </Container>
   )

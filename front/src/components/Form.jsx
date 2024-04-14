@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components'
 import { Button, ButtonContainer } from '@/components'
+import { uploadImage, createListing } from '@/api/listingService';
 
 const StyledForm = styled.form`
   margin-top: 80px;
@@ -29,6 +30,32 @@ const Form = () => {
     itemDescription: '',
     itemPrice: '',
   });
+  const [photo, setPhoto] = useState(null)
+
+  useEffect(() => {
+    console.log("photo" + photo)
+  }, [photo])
+
+  const postListingData = async () => {
+    const listingData = {
+      'title': formData['itemName'],
+      'description': formData['itemDescription'],
+      'price': formData['itemPrice'],
+    }
+
+    try {
+      const imageResponse = await uploadImage({'image': photo})
+      const url = imageResponse['url']
+      // const url = "http://res.cloudinary.com/dabidf33e/image/upload/Picture_%24b53214d9-9132-4570-b06e-ccef7db9ebfe"
+      console.log("imageResponse URL: " + url)
+
+      listingData['image_url'] = url
+      const response = await createListing(listingData)
+      console.log(response)
+    } catch (error) {
+      console.error("Something failed here", error)
+    }
+  }
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -38,9 +65,14 @@ const Form = () => {
     }));
   };
 
+  const handleFileChange = (event) => {
+    setPhoto(event.target.files[0])
+  }
+
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log('Form Data:', formData);
+    postListingData();
     alert('Form submitted.');
   };
 
@@ -75,6 +107,17 @@ const Form = () => {
           name="itemPrice"
           value={formData.itemPrice}
           onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <input
+          type="file"
+          id="imageUpload"
+          placeholder="Image"
+          name="image"
+          onChange={handleFileChange}
+          accept="image/*"
           required
         />
       </div>

@@ -110,6 +110,19 @@ const Grid = ({ isLanding, data }) => {
             </a>
           </Item>
         ))}
+        {data.map((item, index) => (
+          <Item>
+            <ItemImage src={item.image_url} />
+            <TextContainer>
+              <h1>{item.title}</h1>
+              <p>{item.description}</p>
+              <h2>${item.price}</h2>
+            </TextContainer>
+            <a href="/listing">
+              <StyledButton text="view details" />
+            </a>
+          </Item>
+        ))}
 
       </Container>
 

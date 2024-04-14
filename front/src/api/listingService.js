@@ -44,7 +44,7 @@ export const viewListing = async (id) => {
 export const createListing = async (listingData) => {
     try {
         console.log(listingData)
-        const endpoint = '/listing/create/'
+        const endpoint = '/api/listing/create'
 
         const response = await apiClient.post(endpoint, listingData);
 
@@ -58,4 +58,20 @@ export const createListing = async (listingData) => {
 
         throw error;
     }
+}
+
+export const uploadImage = async (formData) => {
+    // construct endpoint
+    const endpoint = '/api/upload_image'
+
+    const response = await apiClient.post(endpoint, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+    
+    console.log(response.data)
+    console.log(response.status)
+
+    return response.data
 }

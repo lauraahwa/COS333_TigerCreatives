@@ -1,7 +1,7 @@
 from flask import request, jsonify, session, Flask
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import os
 import auth
 import uuid
@@ -24,6 +24,7 @@ CORS(app)
 
 # create a user
 @app.route('/api/users/create', methods=['POST'])
+@cross_origin()
 def create_user():
     data = request.get_json()
     new_user = User(first_name=data['first_name'], last_name=data['last_name'],
@@ -84,10 +85,10 @@ def index():
 #-----------------------------------------------------------------------
 # upload an image and return the cloudinary url
 @app.route('/api/upload_image', methods=['POST'])
+@cross_origin()
 def upload_image():
     try:
         file = request.files['image']
-
         if not file:
             return jsonify({
                 'error': 'No file provided'
@@ -97,7 +98,7 @@ def upload_image():
 
         filename = f"Picture_${tag}"
 
-        cloudinary.config(cloud_name = os.getenv('CLOUD_NAME), api_key=os.getenv('API_KEY'), api_secret=os.getenv('API_SECRET')
+        cloudinary.config(cloud_name=os.getenv('CLOUD_NAME'), api_key=os.getenv('API_KEY'), api_secret=os.getenv('API_SECRET'))
 
         cloudinary.uploader.upload(file, public_id=filename, unique_filename=True)
 
@@ -112,24 +113,26 @@ def upload_image():
     
     except Exception as e:
         return jsonify({
-            'message': 'something failed'
+            'error': str(e)
         }), 500
 
 
 # HANDLE LISTING FUNCITONALITY
-@app.route('/api/listing/create', methods=['POST'])
+@app.route('/api/listing/create', methods=['POST', 'OPTIONS'])
+@cross_origin(origins='http://localhost:5173')
 # @jwt_required()
 def create_listing():
     # user_id = get_jwt_identity()
+    # note: change 12 -> user_id
     data = request.get_json()
-    new_listing = Listing(title=data['title'], seller_id=data['user_id'],
+    new_listing = Listing(title=data['title'], seller_id=12,
                           category_id=2,
                           description=data['description'], price=data['price'], 
                           image_url = data['image_url'])
     db.session.add(new_listing)
     db.session.commit()
     # what does the 201 do?
-    return jsonify(new_listing.to_dict()), 201
+    return jsonify(new_listing.to_dict()), 200
 
 @app.route('/api/listing/items', methods=['GET'])
 # @jwt_required()

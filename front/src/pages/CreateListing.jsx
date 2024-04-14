@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Splash, Form } from '@/components'
+import { uploadImage, createListing } from '@/api/listingService'
 
 const Container = styled.div`
     display: flex;
