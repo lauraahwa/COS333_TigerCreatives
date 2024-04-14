@@ -1,7 +1,7 @@
 import os
 
 from extensions import db
-import datetime
+from datetime import datetime
 
 # _DATABASE_URL = os.environ['DATABASE_URL']
 # _DATABASE_URL = _DATABASE_URL.replace('postgres://', 'postgresql://')
@@ -85,7 +85,7 @@ class Bid(db.Model):
     amount = db.Column(db.Float, nullable=False)
     bid_time = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    biditem_id = db.Column(db.Integer, db.ForeignKey('biditem.id'))
+    biditem_id = db.Column(db.Integer, db.ForeignKey('bid_item.id'))
 
     # Relationships
     user = db.relationship('User', back_populates='bids')

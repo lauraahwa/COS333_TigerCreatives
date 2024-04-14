@@ -8,6 +8,7 @@ import uuid
 
 import cloudinary
 import cloudinary.uploader
+import cloudinary.api
 
 from models import User
 from models import Listing
