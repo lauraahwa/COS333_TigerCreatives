@@ -60,6 +60,25 @@ export const createListing = async (listingData) => {
     }
 }
 
+export const createBidListing = async (listingData) => {
+    try {
+        console.log(listingData)
+        const endpoint = '/api/listing/create-bid'
+
+        const response = await apiClient.post(endpoint, listingData);
+
+        console.log(response.status);
+        console.log(response.data);
+        
+        return response.data;
+
+    } catch (error) {
+        console.error(error);
+
+        throw error;
+    }
+}
+
 export const uploadImage = async (formData) => {
     // construct endpoint
     const endpoint = '/api/upload_image'

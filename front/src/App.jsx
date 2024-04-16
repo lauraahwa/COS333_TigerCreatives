@@ -5,7 +5,7 @@ import {
   Outlet
 } from "react-router-dom"
 
-import { Home, Shop, Sellers, Profile, About, Login, Listing, CreateListing  } from './pages'
+import { Home, Shop, Sellers, Profile, About, Login, Listing, CreateListing, CreateBidListing  } from './pages'
 import { Navbar, Footer } from './components'
 
 const MainLayout = () => (
@@ -29,6 +29,7 @@ const router = createBrowserRouter([
       { path: "/profile", element: <Profile /> },
       { path: "/login", element: <Login /> },
       { path: "/create", element: <CreateListing /> },
+      { path: "/create-bid", element: <CreateBidListing /> },
     ],
   
   },
