@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { Button, ButtonContainer, Splash, Grid } from '@/components'
 import weirdswan from '@/assets/weirdswan.webp'
+import { useProfile } from '@/components/ProfileInfo';
 
 const Container = styled.div`
     display: flex;
@@ -58,7 +59,7 @@ const StyledLink = styled(Link)`
     text-decoration: none;
     margin-right: 40px;
 `
-const EditProfile = styled.div`
+const EditProfile = styled(Link)`
     background-color: #f0f0f0; 
     border: 2px solid #ccc; 
     font-size: 18px;
@@ -66,26 +67,30 @@ const EditProfile = styled.div`
     padding: 10px 20px; 
     border-radius: 5px; 
     margin-top: 20px; 
+    text-decoration: none;
 `
 
-const Profile = () => {
-    return (
-        <Container>
-            <Splash header="Profile" subtext="View your listings or create a new one!" />
-            <Content>
-                <EditProfile>Edit Profile</EditProfile>
-            
+    const Profile = () => {
+        const { profileData } = useProfile();
+
+        return (
+            <Container>
+                <Splash header="Profile" subtext="View your listings or create a new one!" />
+                <Content>
+                    <EditProfile to = "/editprofile">Edit Profile</EditProfile>
                 <ProfileContainer>
                     <ProfilePic>
                         <img src={weirdswan} />
                     </ProfilePic>
                     <ProfileDetails>
-                        <ProfileName>Username</ProfileName>
+                        <ProfileName> 
+                            {profileData.username}
+                        </ProfileName>
                         <Role>
-                            buyer/seller
+                            {profileData.userType}
                         </Role>
                         <ProfileBio>
-                            bio here...
+                            {profileData.bio}
                         </ProfileBio>
                     </ProfileDetails>
                 </ProfileContainer>
