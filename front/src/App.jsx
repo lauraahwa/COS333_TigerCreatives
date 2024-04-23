@@ -4,8 +4,8 @@ import {
   RouterProvider,
   Outlet
 } from "react-router-dom"
-
-import { Home, Shop, Sellers, Profile, About, Login, Listing, CreateListing, CreateBidListing  } from './pages'
+import {ProfileProvider} from '@/components/ProfileInfo';
+import { Home, Shop, Sellers, Profile, EditProfile, About, Login, Listing, CreateListing, CreateBidListing  } from './pages'
 import { Navbar, Footer } from './components'
 
 const MainLayout = () => (
@@ -27,6 +27,7 @@ const router = createBrowserRouter([
       { path: "/about", element: <About /> },
       { path: "/listing/:id", element: <Listing /> },
       { path: "/profile", element: <Profile /> },
+      { path: "/editprofile", element: <EditProfile /> },
       { path: "/login", element: <Login /> },
       { path: "/create", element: <CreateListing /> },
       { path: "/create-bid", element: <CreateBidListing /> },
@@ -39,7 +40,9 @@ const router = createBrowserRouter([
 function App() {
 
   return (
-    <RouterProvider router={router} />
+    <ProfileProvider>
+      <RouterProvider router={router} />
+    </ProfileProvider>
   )
 }
 
