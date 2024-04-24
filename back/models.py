@@ -47,6 +47,7 @@ class Listing(db.Model):
     description = db.Column(db.String(250))
     price = db.Column(db.Float, nullable=False)
     image_url = db.Column(db.String)
+    is_product = db.Column(db.Integer, nullable=False) # 1 if is product, 0 if is service
 
     def to_dict(self):
         return {

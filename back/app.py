@@ -144,7 +144,7 @@ def create_listing():
     new_listing = Listing(title=data['title'], seller_id=user_id,
                           category_id=2,
                           description=data['description'], price=data['price'], 
-                          image_url = data['image_url'])
+                          image_url = data['image_url'], is_product=data['is_product'])
     db.session.add(new_listing)
     db.session.commit()
     # what does the 201 do?
