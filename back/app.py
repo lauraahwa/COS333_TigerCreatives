@@ -99,7 +99,8 @@ def logoutcas():
 def login():
     access_token = create_access_token(identity=12)
     print('login')
-    username = auth.authenticate()
+    # username = auth.authenticate()
+    username = ""
     
     return jsonify({"access_token": access_token, 
                     "username": username})
