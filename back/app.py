@@ -246,15 +246,6 @@ def get_listing(id):
 #-----------------------------------------------------------------------
 # BIDDING STUFF
 
-<<<<<<< HEAD
-# # creating a bid item
-# @cross_origin()
-# @jwt_required()
-# @app.route('/api/bid/create-bid', methods=['POST', 'OPTIONS'])
-# def create_bid():
-#     user_id = get_jwt_identity()
-#     data = request.get_json()
-=======
 # creating a bid item
 @cross_origin()
 @app.route('/api/bid/create-bid', methods=['POST', 'OPTIONS'])
@@ -271,14 +262,13 @@ def create_bid():
     db.session.commit()
 
     return jsonify(new_bid.to_dict()), 200
-'''
+
 # placing a big
 @app.route('/api/bid/place', methods=['POST'])
 #
 def place_bid():
     user_id = get_jwt_identity()
     data = request.get_json()
->>>>>>> reviews
 
 #     new_bid_item = Bid(title=data['title'], seller_id=user_id,
 #                           category_id=2,
