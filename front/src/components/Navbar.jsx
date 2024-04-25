@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { useAuth } from '@/context/AuthContext'
+import { useAuth0 } from '@auth0/auth0-react'
 
 
 const Nav = styled.nav`
@@ -74,7 +74,7 @@ const StyledLink = styled(NavLink)`
 `;
 
 const Navbar = () => {
-  const { isSignedIn } = useAuth();
+  const { isAuthenticated } = useAuth0();
 
   return (
     <Nav>
@@ -99,7 +99,7 @@ const Navbar = () => {
           </StyledLink>
         </li>
         <li id="last">
-          {isSignedIn ? 
+          {isAuthenticated ? 
           <StyledLink to='/profile'>
             profile
           </StyledLink> :
@@ -107,7 +107,6 @@ const Navbar = () => {
           login
           </StyledLink>
           }
-          
         </li>
       </Links>
     </Nav>

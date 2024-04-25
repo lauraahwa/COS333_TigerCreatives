@@ -4,7 +4,7 @@ export const login = async () => {
     try {
         const endpoint = '/login'
 
-        const response = await apiClient.post(endpoint)
+        const response = await apiClient.get(endpoint)
 
         console.log(response.status)
 

@@ -5,6 +5,8 @@ import { Button, ButtonContainer, Splash, Grid } from '@/components'
 import weirdswan from '@/assets/weirdswan.webp'
 import { useProfile } from '@/components/ProfileInfo';
 
+import { useAuth0 } from "@auth0/auth0-react"
+
 import { viewListings } from '@/api/listingService'
 import { getUserInfo } from '@/api/userService'
 
@@ -81,6 +83,7 @@ const GridContainer = styled.div`
 `
 
     const Profile = () => {
+        const { user, isAuthenticated, isLoading } = useAuth0();
 
         const { profileData } = useProfile();
         const [listingsData, setListingsData] = useState([])
@@ -111,6 +114,7 @@ const GridContainer = styled.div`
             fetchListings();
         }, [])
         return (
+            isAuthenticated && (
             <Container>
                 <Splash header="Profile" subtext="View your listings or create a new one!" />
                 <Content>
@@ -146,6 +150,7 @@ const GridContainer = styled.div`
                 {/* <Grid isLanding={true}/> */}
             </Content>
         </Container>
+        )
     )
 }
 
