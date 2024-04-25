@@ -1,13 +1,14 @@
-from flask import request, jsonify, session, Flask, url_for
+from flask import request, jsonify, session, Flask, url_for, redirect
 from flask_jwt_extended import jwt_required, get_jwt_identity, JWTManager, create_access_token
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 from flask_migrate import Migrate
 
+from authlib.integrations.flask_client import OAuth
+from six.moves.urllib.parse import urlencode
+
 import os
 import uuid
-
-from authlib.integrations.flask_client import OAuth
 
 import cloudinary
 import cloudinary.uploader
@@ -21,6 +22,7 @@ from extensions import db
 load_dotenv()
 
 app = Flask(__name__)
+app.secret_key=os.getenv('APP_SECRET_KEY')
 _DATABASE_URL = os.getenv('DATABASE_URL')
 _DATABASE_URL = _DATABASE_URL.replace('postgres://', 'postgresql://')
 app.config['SQLALCHEMY_DATABASE_URI'] = _DATABASE_URL
@@ -31,15 +33,17 @@ jwt = JWTManager(app)
 app.config['APP_SECRET_KEY'] = os.getenv('APP_SECRET_KEY')
 
 oauth = OAuth(app)
-
-oauth.register(
+auth0 = oauth.register(
     "auth0",
     client_id=os.getenv("AUTH0_CLIENT_ID"),
     client_secret=os.getenv("AUTH0_CLIENT_SECRET"),
     client_kwargs={
         "scope": "openid profile email",
     },
-    server_metadata_url=f'https://{os.getenv("AUTH0_DOMAIN")}/.well-known/openid-configuration'
+    server_metadata_url=f'https://{os.getenv("AUTH0_DOMAIN")}/.well-known/openid-configuration',
+    authorize_url=f'https://{os.getenv("AUTH0_DOMAIN")}/authorize',
+    api_base_url=f'https://{os.getenv("AUTH0_DOMAIN")}',
+    access_token_url=f'https://{os.getenv("AUTH0_DOMAIN")}/oauth/token',
 )
 
 
@@ -109,25 +113,27 @@ def logoutcas():
 #-----------------------------------------------------------------------
 # LOGIN STUFF
 
-@app.route("/login", methods=["POST"])
-def login():
-    return oauth.authorize_redirect(
-        redirect_uri=url_for("callback", _external=True)
-    )
+# @app.route("/login", methods=["GET"])
+# @cross_origin()
+# def login():
+#     return auth0.authorize_redirect(
+#         redirect_uri=url_for("callback", _external=True)
+#     )
 
-@app.route("/callback", methods=["GET", "POST"])
-def callback():
-    # Exchange authorization code for access token
-    token = oauth.authorize_access_token()
-    # You could also retrieve additional user information if needed
-    userinfo = oauth.get('userinfo').json()
+# @app.route("/callback", methods=["GET", "POST"])
+# @cross_origin()
+# def callback():
+#     # Exchange authorization code for access token
+#     token = auth0.authorize_access_token()
+#     # You could also retrieve additional user information if needed
+#     userinfo = auth0.get('userinfo').json()
     
-    # For REST API, send the token information back to the client
-    return jsonify({
-        'access_token': token['access_token'],
-        'id_token': token.get('id_token'),
-        'userinfo': userinfo
-    })
+#     # For REST API, send the token information back to the client
+#     return jsonify({
+#         'access_token': token['access_token'],
+#         'id_token': token.get('id_token'),
+#         'userinfo': userinfo
+#     })
 
 @app.route('/protected', methods=['GET'])
 def protected():
@@ -217,9 +223,10 @@ def get_services():
 @cross_origin()
 def get_user_items():
 
-    user_id = get_jwt_identity()
+    jwt = session.get('jwt')
 
-    listings = Listing.query.filter_by(seller_id=user_id).all()
+    # listings = Listing.query.filter_by(seller_id=user_id).all()
+    listings = Listing.query.all()
 
     return jsonify([listing.to_dict() for listing in listings])
 
