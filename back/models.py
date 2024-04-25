@@ -3,6 +3,8 @@ import os
 from extensions import db
 from datetime import datetime
 
+from sqlalchemy import Boolean
+
 # _DATABASE_URL = os.environ['DATABASE_URL']
 # _DATABASE_URL = _DATABASE_URL.replace('postgres://', 'postgresql://')
 
@@ -14,7 +16,7 @@ from datetime import datetime
 # create a user model
 class User(db.Model):
     __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer,  primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     university = db.Column(db.String(100))
@@ -42,7 +44,8 @@ class Listing(db.Model):
     description = db.Column(db.String(250))
     price = db.Column(db.Float, nullable=False)
     image_url = db.Column(db.String)
-    is_auction = db.Column(db.Boolean, default=False, nullable=False)  # Default is not an auction
+    is_service = db.Column(Boolean, default=False, nullable=False) # field for whether or not it is a service
+    is_auction = db.Column(Boolean, default=False, nullable=False)
 
     def to_dict(self):
         return {
@@ -54,6 +57,7 @@ class Listing(db.Model):
             'price': self.price,
             'image_url': self.image_url,
             'is_auction': self.is_auction
+            'is_service': self.is_service,
         }
 
 # create a category model

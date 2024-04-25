@@ -2,8 +2,9 @@ from flask import request, jsonify, session, Flask, abort
 from flask_jwt_extended import jwt_required, get_jwt_identity, JWTManager, create_access_token
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
+from flask_migrate import Migrate
+
 import os
-import auth
 import uuid
 
 import cloudinary
@@ -12,9 +13,7 @@ import cloudinary.api
 
 from dotenv import load_dotenv
 
-from models import User
-from models import Listing
-from models import Bid
+from models import User, Listing, Bid
 from extensions import db
 
 load_dotenv()
@@ -26,9 +25,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = _DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'meowmeow44556'
 jwt = JWTManager(app)
-db.init_app(app)
-
 CORS(app)
+
+migrate = Migrate(app, db)
+db.init_app(app)
 
 # create a user
 @app.route('/api/users/create', methods=['POST'])
@@ -146,20 +146,12 @@ def upload_image():
 def create_listing():
     user_id = get_jwt_identity()
     data = request.get_json()
-
-    # Retrieve is_auction from the data with a default of False if not provided
-    is_auction = data.get('is_auction', False)
-
-    new_listing = Listing(
-        title=data['title'],
-        seller_id=user_id,
-        category_id=data.get('category_id', 2),  # Optionally allow category to be specified, default to 2
-        description=data['description'],
-        price=data['price'],
-        image_url=data['image_url'],
-        is_auction=is_auction
-    )
-
+    new_listing = Listing(title=data['title'], seller_id=user_id,
+                          category_id=2,
+                          description=data['description'], price=data['price'], 
+                          image_url = data['image_url'], is_service=data['is_service'],
+                          is_auction=data['is_auction'])
+main
     db.session.add(new_listing)
     db.session.commit()
 
@@ -169,7 +161,12 @@ def create_listing():
 @app.route('/api/listing/items', methods=['GET'])
 # @jwt_required()
 def get_items():
-    listings = Listing.query.all()
+    listings = Listing.query.filter(Listing.is_service == False).all()
+    return jsonify([listing.to_dict() for listing in listings])
+
+@app.route('/api/listing/services', methods=['GET'])
+def get_services():
+    listings = Listing.query.filter(Listing.is_service == True).all()
     return jsonify([listing.to_dict() for listing in listings])
 
 @app.route('/api/listing/item/<int:id>', methods=['GET'])
