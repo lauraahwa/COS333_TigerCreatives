@@ -98,18 +98,17 @@ const GridContainer = styled.div`
                 }
             };
 
-            const fetchUserInfo = async () => {
-                try {
-                    const data = await getUserInfo();
-                    console.log("User data fetched", data)
-                    setUserData(data)
-                } catch (error) {
-                    console.error("Fetching user data error", error)
-                }
-            }
+            // const fetchUserInfo = async () => {
+            //     try {
+            //         const data = await getUserInfo();
+            //         console.log("User data fetched", data)
+            //         setUserData(data)
+            //     } catch (error) {
+            //         console.error("Fetching user data error", error)
+            //     }
+            // }
 
             fetchListings();
-            fetchUserInfo();
         }, [])
         return (
             <Container>

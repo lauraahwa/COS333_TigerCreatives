@@ -25,6 +25,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = _DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'meowmeow44556'
 jwt = JWTManager(app)
+
 CORS(app)
 
 migrate = Migrate(app, db)
@@ -43,7 +44,7 @@ def create_user():
     return jsonify(new_user.to_dict()), 201
 
 # get info for a specific user
-@app.route('api/user/get_user/<int:user_id>', methods=['GET'])
+@app.route('/api/user/get_user/<int:user_id>', methods=['GET'])
 def get_user(user_id):
 
     if not user_id:
@@ -91,7 +92,8 @@ def logoutcas():
 #-----------------------------------------------------------------------
 # LOGIN STUFF
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST', 'OPTIONS'])
+@cross_origin()
 def login():
     access_token = create_access_token(identity=12)
     return jsonify(access_token=access_token)
@@ -169,14 +171,14 @@ def create_listing():
 
 # get a list of all items/products listed on the platform
 @app.route('/api/listing/items', methods=['GET'])
+@jwt_required()
 @cross_origin()
-# @jwt_required()
 def get_items():
     listings = Listing.query.filter(Listing.is_service == False).all()
     return jsonify([listing.to_dict() for listing in listings])
 
 # get a list of all of the services listed on the platform
-@app.route('/api/listing/services', methods=['GET'])
+@app.route('/api/listing/services', methods=['GET', 'OPTIONS'])
 @cross_origin()
 def get_services():
     listings = Listing.query.filter(Listing.is_service == True).all()
@@ -194,7 +196,7 @@ def get_user_items():
 
     return jsonify([listing.to_dict() for listing in listings])
 
-@app.route('/api/listing/item/<int:id>', methods=['GET'])
+@app.route('/api/listing/item/<int:id>', methods=['GET', 'OPTIONS'])
 def get_listing(id):
     # Query the database for the listing with the provided ID
     listing = Listing.query.get(id)

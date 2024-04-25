@@ -16,8 +16,15 @@ const GridContainer = styled.div`
     margin: 50px 0;
 `
 
+const SearchInput = styled.input`
+    margin: 20px 100px;
+    padding: 10px;
+    font-size: 16px;
+`
+
 const Sellers = () => {
   const [listingsData, setListingsData] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -33,11 +40,21 @@ const Sellers = () => {
     fetchListings();
   }, []);
 
+  const filteredData = listingsData.filter(listing =>
+    listing.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <Container>
         <Splash header="Sellers" subtext="Need something creative? This is the place."/>
+        <SearchInput
+          type="text"
+          placeholder="Search services..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+        />
         <GridContainer>
-            <Grid data={listingsData}/>
+            <Grid data={filteredData}/>
         </GridContainer>
     </Container>
   )

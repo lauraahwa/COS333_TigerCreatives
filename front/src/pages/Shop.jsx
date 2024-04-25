@@ -16,14 +16,23 @@ const GridContainer = styled.div`
     margin: 50px 0;
 `
 
+const SearchInput = styled.input`
+    margin: 20px 100px;
+    padding: 10px;
+    font-size: 16px;
+`
+
 const Shop = () => {
   const [listingsData, setListingsData] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     const fetchListings = async () => {
       try {
         const data = await viewListings('items');
         console.log("Data fetched", data);
+
+        
         setListingsData(data);
       } catch (error) {
         console.error("Fetching listings error:", error);
@@ -33,11 +42,22 @@ const Shop = () => {
     fetchListings();
   }, []);
 
+  const filteredData = listingsData.filter(listing =>
+    listing.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+
   return (
     <Container>
         <Splash header="Shop" subtext="Want to browse stuff already made? This is the place."/>
+        <SearchInput
+          type="text"
+          placeholder="Search items..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+        />
         <GridContainer>
-            <Grid data={listingsData} />
+            <Grid data={filteredData} />
         </GridContainer>
         
     </Container>
