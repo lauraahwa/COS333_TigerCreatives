@@ -2,8 +2,9 @@ from flask import request, jsonify, session, Flask
 from flask_jwt_extended import jwt_required, get_jwt_identity, JWTManager, create_access_token
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
+from flask_migrate import Migrate
+
 import os
-import auth
 import uuid
 
 import cloudinary
@@ -12,9 +13,7 @@ import cloudinary.api
 
 from dotenv import load_dotenv
 
-from models import User
-from models import Listing
-from models import Bid
+from models import User, Listing, Bid
 from extensions import db
 
 load_dotenv()
@@ -26,9 +25,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = _DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'meowmeow44556'
 jwt = JWTManager(app)
-db.init_app(app)
-
 CORS(app)
+
+migrate = Migrate(app, db)
+db.init_app(app)
 
 # create a user
 @app.route('/api/users/create', methods=['POST'])
@@ -149,7 +149,8 @@ def create_listing():
     new_listing = Listing(title=data['title'], seller_id=user_id,
                           category_id=2,
                           description=data['description'], price=data['price'], 
-                          image_url = data['image_url'])
+                          image_url = data['image_url'], is_service=data['is_service'],
+                          is_auction=data['is_auction'])
     db.session.add(new_listing)
     db.session.commit()
     # what does the 201 do?

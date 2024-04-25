@@ -50,6 +50,7 @@ class Listing(db.Model):
     price = db.Column(db.Float, nullable=False)
     image_url = db.Column(db.String)
     is_service = db.Column(Boolean, default=False, nullable=False) # field for whether or not it is a service
+    is_auction = db.Column(Boolean, default=False, nullable=False)
 
     def to_dict(self):
         return {
@@ -60,6 +61,7 @@ class Listing(db.Model):
             'description': self.description,
             'price': self.price,
             'image_url': self.image_url,
+            'is_service': self.is_service,
         }
 
 # create a category model
