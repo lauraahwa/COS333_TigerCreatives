@@ -4,6 +4,7 @@ from extensions import db
 from datetime import datetime
 
 from sqlalchemy import Boolean
+from sqlalchemy.orm import relationship
 
 # _DATABASE_URL = os.environ['DATABASE_URL']
 # _DATABASE_URL = _DATABASE_URL.replace('postgres://', 'postgresql://')
@@ -39,18 +40,19 @@ class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), nullable=False)
     seller_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    # allows you to access the seller (a 'User' object) directly from a 
-    # 'Listing; object through "listing.seller"
-    # relationship() tells SQLAlchemy that this model should be linked to 'User'
-    # backref adds a 'listings' attribute to the 'User' module which will
-    # be a list of all listings associated with that user
     seller = db.relationship('User', backref=db.backref('listings', lazy=True))
-    category_id = db.Column(db.Integer, nullable=False) # implement foreignkey to category
+    category_id = db.Column(db.Integer, nullable=False)  # FK to category should be defined if not already
     description = db.Column(db.String(250))
     price = db.Column(db.Float, nullable=False)
     image_url = db.Column(db.String)
-    is_service = db.Column(Boolean, default=False, nullable=False) # field for whether or not it is a service
+    is_service = db.Column(Boolean, default=False, nullable=False)
     is_auction = db.Column(Boolean, default=False, nullable=False)
+    bid_item_id = db.Column(db.Integer, db.ForeignKey('bid_item.id'))
+    bid_item = relationship('BidItem',
+                            back_populates='listing',
+                            uselist=False,
+                            lazy='joined',
+                            primaryjoin="Listing.id==foreign(remote(BidItem.listing_id))")
 
     def to_dict(self):
         return {
@@ -72,44 +74,30 @@ class Category(db.Model):
     description = db.Column(db.String)
 
 # # create an item to bid on
-# class BidItem(db.Model):
-#     __tablename__ = 'bid_item'
-#     id = db.Column(db.Integer, primary_key=True)
-#     title = db.Column(db.String, nullable=False)
-#     description = db.Column(db.String)
-#     start_time = db.Column(db.DateTime, default=datetime.datetime.now)
-#     end_time = db.Column(db.DateTime, nullable=False)
+class BidItem(db.Model):
+    __tablename__ = 'bid_item'
+    id = db.Column(db.Integer, primary_key=True)
+    listing_id = db.Column(db.Integer, db.ForeignKey('listing.id'))  # Ensure this FK is correct
+    auction_start_time = db.Column(db.DateTime)
+    auction_duration = db.Column(db.Interval)
+    listing = relationship('Listing',
+                           back_populates='bid_item',
+                           remote_side=[id],
+                           foreign_keys=[listing_id])
 
-#     # relationships
-#     bids = db.relationship('Bid', back_populates='item')
+    @property
+    def auction_end_time(self):
+        if self.auction_start_time and self.auction_duration:
+            return self.auction_start_time + self.auction_duration
+        return None
 
 # create a bid
-'''
-class Bid(db.Model):
-    __tablename__ = 'bids'
-    id = db.Column(db.Integer, primary_key=True)
-    amount = db.Column(db.Float, nullable=False)
-    bid_time = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    biditem_id = db.Column(db.Integer, db.ForeignKey('bid_item.id'))
-'''
 class Bid(db.Model):
     __tablename__ = 'bid'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(50), nullable=False)
-    seller_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    # allows you to access the seller (a 'User' object) directly from a 
-    # 'Listing; object through "listing.seller"
-    # relationship() tells SQLAlchemy that this model should be linked to 'User'
-    # backref adds a 'listings' attribute to the 'User' module which will
-    # be a list of all listings associated with that user
-    seller = db.relationship('User', backref=db.backref('bids', lazy=True))
-    category_id = db.Column(db.Integer, nullable=False) # implement foreignkey to category
-    description = db.Column(db.String(250))
-    price = db.Column(db.Float, nullable=False)
-    image_url = db.Column(db.String)
-    bid_time = db.Column(db.DateTime, default=datetime.utcnow)
+    bid_item_id = db.Column(db.Integer, db.ForeignKey('bid_item.id'))  # Link to the bid item
+    bidder_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Link to the user making the bid
+    bid_amount = db.Column(db.Float, nullable=False)  # The amount of the bid
+    bid_time = db.Column(db.DateTime, default=datetime.utcnow)  # When the bid was placed
 
-#     # Relationships
-#     user = db.relationship('User', back_populates='bids')
-#     item = db.relationship('BidItem', back_populates='bids')
+    bidder = db.relationship('User', backref='bids', lazy=True)

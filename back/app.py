@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, JWTManager, creat
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 from flask_migrate import Migrate
+from datetime import datetime, timedelta
 
 import os
 import uuid
@@ -13,7 +14,7 @@ import cloudinary.api
 
 from dotenv import load_dotenv
 
-from models import User, Listing, Bid
+from models import User, Listing, BidItem, Bid
 from extensions import db
 
 load_dotenv()
@@ -159,15 +160,27 @@ def upload_image():
 def create_listing():
     user_id = get_jwt_identity()
     data = request.get_json()
-    new_listing = Listing(title=data['title'], seller_id=user_id,
-                          category_id=2,
-                          description=data['description'], price=data['price'], 
-                          image_url = data['image_url'], is_service=data['is_service'],
-                          is_auction=data['is_auction'])
+    new_listing = Listing(
+        title=data['title'],
+        seller_id=user_id,
+        category_id=data.get('category_id', 2),
+        description=data['description'],
+        price=data['price'],
+        image_url=data['image_url'],
+        is_auction=data['is_auction']
+    )
+    
+    if new_listing.is_auction:
+        duration_hours = data.get('auction_duration_hours', 24)  # Default to 24 hours if not specified
+        new_bid_item = BidItem(auction_duration=timedelta(hours=duration_hours))
+        db.session.add(new_bid_item)
+        db.session.flush()
+        new_listing.bid_item = new_bid_item
+
     db.session.add(new_listing)
     db.session.commit()
-    # what does the 201 do?
-    return jsonify(new_listing.to_dict()), 200
+
+    return jsonify(new_listing.to_dict()), 201
 
 # get a list of all items/products listed on the platform
 @app.route('/api/listing/items', methods=['GET'])
@@ -228,21 +241,31 @@ def create_bid():
     db.session.commit()
 
     return jsonify(new_bid.to_dict()), 200
-'''
-# placing a big
+
+# place bid
 @app.route('/api/bid/place', methods=['POST'])
-# @jwt_required()
+@jwt_required()
 def place_bid():
     user_id = get_jwt_identity()
     data = request.get_json()
+    bid_item = BidItem.query.get(data['bid_item_id'])
+    if not bid_item:
+        return jsonify({"error": "Bid item not found"}), 404
 
-    new_bid = Bid(amount=data['amount'], user_id=user_id, 
-        biditem_id=data['biditem_id'])
+    if not bid_item.auction_start_time:
+        bid_item.auction_start_time = datetime.utcnow()
 
+    new_bid = Bid(
+        bid_item_id=bid_item.id,
+        bidder_id=user_id,
+        bid_amount=data['bid_amount']
+    )
     db.session.add(new_bid)
     db.session.commit()
-    return jsonify(new_bid.to_dict()), 200
-'''
+
+    return jsonify(new_bid.to_dict()), 201
+
+
 # view bid items
 @app.route('/api/biditem/view', methods=['GET'])
 def get_bids_for_item(biditem_id):
