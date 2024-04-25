@@ -24,7 +24,7 @@ const StyledButton = styled(Button)`
   font-size: 0.9rem;
 `
 
-const BidForm = () => {
+const BidForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
     itemName: '',
     itemDescription: '',
@@ -76,13 +76,14 @@ const BidForm = () => {
     console.log('Form Data:', formData);
     postListingData();
     alert('Form submitted.');
+    onSubmit(formData);
   };
 
   return (
     <StyledForm onSubmit={handleSubmit}>
       <div>
         <input
-          type="text"
+          type="text" 
           id="itemName"
           placeholder="Name"
           name="itemName"

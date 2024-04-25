@@ -14,6 +14,7 @@ from models import User
 from models import Listing
 from models import Bid
 from extensions import db
+from bid import timer
 
 app = Flask(__name__)
 _DATABASE_URL = os.getenv('DATABASE_URL')
@@ -175,7 +176,7 @@ def get_listing(id):
 # creating a bid item
 @cross_origin()
 @jwt_required()
-@app.route('/api/bid/create-bid', methods=['POST', 'OPTIONS'])
+@app.route('/api/bidlisting/create-bid', methods=['POST', 'OPTIONS'])
 def create_bid():
     user_id = get_jwt_identity()
     data = request.get_json()
@@ -187,6 +188,9 @@ def create_bid():
     
     db.session.add(new_bid_item)
     db.session.commit()
+
+    timer_thread = threading.Thread(target=timer, args=(data['bid_time'],))
+    timer_thread.start()
 
     return jsonify(new_bid.to_dict()), 200
 '''
@@ -205,7 +209,7 @@ def place_bid():
     return jsonify(new_bid.to_dict()), 200
 '''
 # view bid items
-@app.route('/api/biditem/view', methods=['GET'])
+@app.route('/api/bidlisting/biditem/', methods=['GET'])
 def get_bids_for_item(biditem_id):
     bids = Bid.query.filter_by(biditem_id=biditem_id).all()
     

@@ -91,19 +91,11 @@ class Bid(db.Model):
 class Bid(db.Model):
     __tablename__ = 'bid'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(50), nullable=False)
-    seller_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    # allows you to access the seller (a 'User' object) directly from a 
-    # 'Listing; object through "listing.seller"
-    # relationship() tells SQLAlchemy that this model should be linked to 'User'
-    # backref adds a 'listings' attribute to the 'User' module which will
-    # be a list of all listings associated with that user
-    seller = db.relationship('User', backref=db.backref('listings', lazy=True))
-    category_id = db.Column(db.Integer, nullable=False) # implement foreignkey to category
-    description = db.Column(db.String(250))
-    price = db.Column(db.Float, nullable=False)
-    image_url = db.Column(db.String)
+    amount = db.Column(db.Float, nullable=False)
     bid_time = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    biditem_id = db.Column(db.Integer, db.ForeignKey('bid_item.id'))
+
 
 #     # Relationships
 #     user = db.relationship('User', back_populates='bids')

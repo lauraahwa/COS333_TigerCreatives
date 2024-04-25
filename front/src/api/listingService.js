@@ -60,7 +60,7 @@ export const createListing = async (listingData) => {
     }
 }
 
-export const createBidListing = async (listingData) => {
+export const createBidListing = async (bidListingData) => {
     try {
         console.log(listingData)
         const endpoint = '/api/listing/create-bid'

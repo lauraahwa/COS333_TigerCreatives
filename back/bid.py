@@ -4,23 +4,17 @@ import time
 import sqlalchemy
 import sqlalchemy.orm
 
-models.Base.metadata.drop_all(models._engine)
-models.Base.metadata.create_all(models._engine)
+app = Flask(__name__)
+CORS(app)
 
-with sqlalchemy.orm.Session(models._engine) as session:
-    user = models.User(first_name='Laura', last_name='Hwa', university='Princeton', email_address='laurah4@princeton.edu')
-    session.add(user)
-    session.commit()
-
-'''
-def timer():
-    t = 5
-    while t > 0:
-        print(t)
-        t -= 1
+def timer(time_left):
+    time_left = 5
+    while time_left > 0:
+        print(time_left)
+        time_left -= 1
         time.sleep(1)
-    print("BLAST OFF!")
-
+    print("end of bidding cycle")
+'''
 def select_highest_bid():
     current_time = datetime.utcnow()
 
