@@ -1,4 +1,4 @@
-from flask import request, jsonify, session, Flask
+from flask import request, jsonify, session, Flask, abort
 from flask_jwt_extended import jwt_required, get_jwt_identity, JWTManager, create_access_token
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
@@ -146,14 +146,25 @@ def upload_image():
 def create_listing():
     user_id = get_jwt_identity()
     data = request.get_json()
-    new_listing = Listing(title=data['title'], seller_id=user_id,
-                          category_id=2,
-                          description=data['description'], price=data['price'], 
-                          image_url = data['image_url'])
+
+    # Retrieve is_auction from the data with a default of False if not provided
+    is_auction = data.get('is_auction', False)
+
+    new_listing = Listing(
+        title=data['title'],
+        seller_id=user_id,
+        category_id=data.get('category_id', 2),  # Optionally allow category to be specified, default to 2
+        description=data['description'],
+        price=data['price'],
+        image_url=data['image_url'],
+        is_auction=is_auction
+    )
+
     db.session.add(new_listing)
     db.session.commit()
-    # what does the 201 do?
-    return jsonify(new_listing.to_dict()), 200
+
+    # Use 201 Created for successful resource creation
+    return jsonify(new_listing.to_dict()), 201
 
 @app.route('/api/listing/items', methods=['GET'])
 # @jwt_required()
@@ -176,25 +187,36 @@ def get_listing(id):
 #-----------------------------------------------------------------------
 # BIDDING STUFF
 
-# creating a bid item
-@cross_origin()
-@jwt_required()
+# creating a bid item: WORKS
 @app.route('/api/bid/create-bid', methods=['POST', 'OPTIONS'])
+@jwt_required()
+@cross_origin()
 def create_bid():
-    user_id = get_jwt_identity()
-    data = request.get_json()
+    try:
+        user_id = get_jwt_identity()
+        data = request.get_json()
 
-    new_bid_item = Bid(title=data['title'], seller_id=user_id,
-                          category_id=2,
-                          description=data['description'], price=data['price'], 
-                          image_url = data['image_url'], bid_time=data['bid_time'])
-    
-    db.session.add(new_bid_item)
-    db.session.commit()
+        if not all(key in data for key in ['title', 'description', 'price', 'image_url', 'bid_time', 'category_id']):
+            abort(400, description="Missing data for required fields.")
 
-    return jsonify(new_bid.to_dict()), 200
+        new_bid_item = Bid(
+            title=data['title'],
+            seller_id=user_id,
+            category_id=data['category_id'],
+            description=data['description'],
+            price=data['price'],
+            image_url=data['image_url'],
+            bid_time=data['bid_time']
+        )
+
+        db.session.add(new_bid_item)
+        db.session.commit()
+        return jsonify(new_bid_item.to_dict_bid()), 200
+    except Exception as e:
+        abort(500, description=str(e))
+
 '''
-# placing a big
+# placing a bid
 @app.route('/api/bid/place', methods=['POST'])
 # @jwt_required()
 def place_bid():
@@ -209,10 +231,9 @@ def place_bid():
     return jsonify(new_bid.to_dict()), 200
 '''
 # view bid items
-@app.route('/api/biditem/view', methods=['GET'])
+@app.route('/api/biditem/view/<int:biditem_id>', methods=['GET'])
 def get_bids_for_item(biditem_id):
     bids = Bid.query.filter_by(biditem_id=biditem_id).all()
-    
     return jsonify([bid.to_dict() for bid in bids])
 
 # # Define a protected route
