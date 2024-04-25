@@ -77,24 +77,34 @@ class BidItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     listing_id = db.Column(db.Integer, db.ForeignKey('listing.id'))  # Ensure this FK is correct
     auction_start_time = db.Column(db.DateTime)
-    auction_duration = db.Column(db.Interval)
+    auction_end_time = db.Column(db.DateTime)
     listing = db.relationship('Listing',
                            back_populates='bid_item',
                            foreign_keys=[listing_id])
 
-    @property
-    def auction_end_time(self):
-        if self.auction_start_time and self.auction_duration:
-            return self.auction_start_time + self.auction_duration
-        return None
+    # @property
+    # def auction_end_time(self):
+    #     if self.auction_start_time and self.auction_duration:
+    #         return self.auction_start_time + self.auction_duration
+    #     return None
 
 # create a bid
 class Bid(db.Model):
     __tablename__ = 'bid'
     id = db.Column(db.Integer, primary_key=True)
-    bid_item_id = db.Column(db.Integer, db.ForeignKey('bid_item.id'))  # Link to the bid item
+    bid_item_id = db.Column(db.Integer, db.ForeignKey('bid_item.id')) # Link to the bid item
     bidder_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Link to the user making the bid
     bid_amount = db.Column(db.Float, nullable=False)  # The amount of the bid
     bid_time = db.Column(db.DateTime, default=datetime.utcnow)  # When the bid was placed
+    bidder = db.relationship('User', backref='bid', lazy=True)
+    bid_item = db.relationship('BidItem', backref=db.backref('bid', lazy='dynamic'))
 
-    bidder = db.relationship('User', backref='bids', lazy=True)
+    def to_dict(self):
+        return{
+            'id': self.id,
+            'bid_item_id': self.bid_item_id,
+            'bidder_id': self.bidder_id,
+            'bid_amount': self.bid_amount,
+            'bid_time': self.bid_time,
+        }
+        

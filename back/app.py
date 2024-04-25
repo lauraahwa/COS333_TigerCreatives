@@ -99,7 +99,8 @@ def logoutcas():
 def login():
     access_token = create_access_token(identity=12)
     print('login')
-    username = auth.authenticate()
+    # username = auth.authenticate()
+    username = ""
     
     return jsonify({"access_token": access_token, 
                     "username": username})
@@ -171,15 +172,18 @@ def create_listing():
         image_url=data['image_url'],
         is_auction=data['is_auction']
     )
-    
-    if new_listing.is_auction:
-        duration_hours = data.get('auction_duration_hours', 24)  # Default to 24 hours if not specified
-        new_bid_item = BidItem(auction_duration=timedelta(hours=duration_hours))
-        db.session.add(new_bid_item)
-        db.session.flush()
-        new_listing.bid_item = new_bid_item
 
     db.session.add(new_listing)
+    db.session.flush()
+
+    if new_listing.is_auction:
+        new_bid_item = BidItem(
+            listing_id=new_listing.id,
+            auction_start_time=None,  # Start time could be set when the first bid is made
+            auction_end_time=None    # End time could be determined based on auction duration
+        )
+        db.session.add(new_bid_item)
+
     db.session.commit()
 
     return jsonify(new_listing.to_dict()), 201
@@ -241,7 +245,7 @@ def create_bid():
     db.session.add(new_bid_item)
     db.session.commit()
 
-    return jsonify(new_bid.to_dict()), 200
+    return jsonify(new_bid_item.to_dict()), 200
 
 # place bid
 @app.route('/api/bid/place', methods=['POST'])
@@ -249,7 +253,12 @@ def create_bid():
 def place_bid():
     user_id = get_jwt_identity()
     data = request.get_json()
-    bid_item = BidItem.query.get(data['bid_item_id'])
+    
+    bid_item_id = data.get('bid_item_id')
+    if not bid_item_id:
+        return jsonify({"error": "Bid item ID must be provided"}), 400
+
+    bid_item = BidItem.query.get(bid_item_id)
     if not bid_item:
         return jsonify({"error": "Bid item not found"}), 404
 
@@ -257,7 +266,7 @@ def place_bid():
         bid_item.auction_start_time = datetime.utcnow()
 
     new_bid = Bid(
-        bid_item_id=bid_item.id,
+        bid_item_id=bid_item.id,  # Link this bid to the retrieved bid item
         bidder_id=user_id,
         bid_amount=data['bid_amount']
     )
@@ -267,12 +276,12 @@ def place_bid():
     return jsonify(new_bid.to_dict()), 201
 
 
-# view bid items
-@app.route('/api/biditem/view', methods=['GET'])
-def get_bids_for_item(biditem_id):
-    bids = Bid.query.filter_by(biditem_id=biditem_id).all()
+# # view bid items
+# @app.route('/api/biditem/view', methods=['GET'])
+# def get_bids_for_item(biditem_id):
+#     bids = Bid.query.filter_by(biditem_id=biditem_id).all()
     
-    return jsonify([bid.to_dict() for bid in bids])
+#     return jsonify([bid.to_dict() for bid in bids])
 
 # # Define a protected route
 # @app.route('/protected', methods=['GET'])
