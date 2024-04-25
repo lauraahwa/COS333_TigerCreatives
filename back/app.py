@@ -1,4 +1,4 @@
-from flask import request, jsonify, session, Flask
+from flask import request, jsonify, session, Flask, url_for
 from flask_jwt_extended import jwt_required, get_jwt_identity, JWTManager, create_access_token
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
@@ -6,6 +6,8 @@ from flask_migrate import Migrate
 
 import os
 import uuid
+
+from authlib.integrations.flask_client import OAuth
 
 import cloudinary
 import cloudinary.uploader
@@ -25,6 +27,21 @@ app.config['SQLALCHEMY_DATABASE_URI'] = _DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'meowmeow44556'
 jwt = JWTManager(app)
+
+app.config['APP_SECRET_KEY'] = os.getenv('APP_SECRET_KEY')
+
+oauth = OAuth(app)
+
+oauth.register(
+    "auth0",
+    client_id=os.getenv("AUTH0_CLIENT_ID"),
+    client_secret=os.getenv("AUTH0_CLIENT_SECRET"),
+    client_kwargs={
+        "scope": "openid profile email",
+    },
+    server_metadata_url=f'https://{os.getenv("AUTH0_DOMAIN")}/.well-known/openid-configuration'
+)
+
 
 CORS(app)
 
@@ -92,14 +109,27 @@ def logoutcas():
 #-----------------------------------------------------------------------
 # LOGIN STUFF
 
-@app.route('/login', methods=['POST', 'OPTIONS'])
-@cross_origin()
+@app.route("/login", methods=["POST"])
 def login():
-    access_token = create_access_token(identity=12)
-    return jsonify(access_token=access_token)
+    return oauth.authorize_redirect(
+        redirect_uri=url_for("callback", _external=True)
+    )
+
+@app.route("/callback", methods=["GET", "POST"])
+def callback():
+    # Exchange authorization code for access token
+    token = oauth.authorize_access_token()
+    # You could also retrieve additional user information if needed
+    userinfo = oauth.get('userinfo').json()
+    
+    # For REST API, send the token information back to the client
+    return jsonify({
+        'access_token': token['access_token'],
+        'id_token': token.get('id_token'),
+        'userinfo': userinfo
+    })
 
 @app.route('/protected', methods=['GET'])
-@jwt_required()
 def protected():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
@@ -155,7 +185,6 @@ def upload_image():
 # HANDLE LISTING FUNCITONALITY
 @app.route('/api/listing/create', methods=['POST', 'OPTIONS'])
 @cross_origin()
-@jwt_required()
 def create_listing():
     user_id = get_jwt_identity()
     data = request.get_json()
@@ -211,7 +240,6 @@ def get_listing(id):
 
 # creating a bid item
 @cross_origin()
-@jwt_required()
 @app.route('/api/bid/create-bid', methods=['POST', 'OPTIONS'])
 def create_bid():
     user_id = get_jwt_identity()
@@ -229,7 +257,7 @@ def create_bid():
 '''
 # placing a big
 @app.route('/api/bid/place', methods=['POST'])
-# @jwt_required()
+#
 def place_bid():
     user_id = get_jwt_identity()
     data = request.get_json()
