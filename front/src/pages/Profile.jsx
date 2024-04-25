@@ -1,9 +1,12 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Button, ButtonContainer, Splash, Grid } from '@/components'
 import weirdswan from '@/assets/weirdswan.webp'
 import { useProfile } from '@/components/ProfileInfo';
+
+import { viewListings } from '@/api/listingService'
+import { getUserInfo } from '@/api/userService'
 
 const Container = styled.div`
     display: flex;
@@ -70,9 +73,44 @@ const EditProfile = styled(Link)`
     text-decoration: none;
 `
 
-    const Profile = () => {
-        const { profileData } = useProfile();
+const GridContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    padding: 0 100px;
+    margin: 50px 0;
+`
 
+    const Profile = () => {
+
+        const { profileData } = useProfile();
+        const [listingsData, setListingsData] = useState([])
+        const [userData, setUserData] = useState([])
+
+
+        useEffect(() => {
+            const fetchListings = async () => {
+                try {
+                    const data = await viewListings('user_items');
+                    console.log("Data fetched", data)
+                    setListingsData(data)
+                } catch (error) {
+                    console.error("Fetching listings error:", error);
+                }
+            };
+
+            const fetchUserInfo = async () => {
+                try {
+                    const data = await getUserInfo();
+                    console.log("User data fetched", data)
+                    setUserData(data)
+                } catch (error) {
+                    console.error("Fetching user data error", error)
+                }
+            }
+
+            fetchListings();
+            fetchUserInfo();
+        }, [])
         return (
             <Container>
                 <Splash header="Profile" subtext="View your listings or create a new one!" />
@@ -94,6 +132,9 @@ const EditProfile = styled(Link)`
                         </ProfileBio>
                     </ProfileDetails>
                 </ProfileContainer>
+                <GridContainer>
+                    <Grid data={listingsData} />
+                </GridContainer>
                 <StyledButtonContainer>
                     <StyledLink to="/create">
                         <Button text="Create Listing"/>

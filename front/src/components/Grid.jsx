@@ -99,7 +99,7 @@ const Grid = ({ isLanding, data }) => {
     <>
       <Container>
         {data.map((item, index) => (
-          <Item>
+          <Item key={item.id}>
             <ItemImage src={item.image_url} />
             <TextContainer>
               <h1>{item.title}</h1>

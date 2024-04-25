@@ -42,6 +42,17 @@ def create_user():
     db.session.commit()
     return jsonify(new_user.to_dict()), 201
 
+# get info for a specific user
+@app.route('api/user/get_user/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+
+    if not user_id:
+        user_id = get_jwt_identity()
+
+    user = User.query.get_or_404(user_id)
+
+    return jsonify(user.to_dict(), 200)
+
 # get all users
 @app.route('/users', methods=['GET'])
 def get_users():
@@ -156,6 +167,7 @@ def create_listing():
     # what does the 201 do?
     return jsonify(new_listing.to_dict()), 200
 
+# get a list of all items/products listed on the platform
 @app.route('/api/listing/items', methods=['GET'])
 @cross_origin()
 # @jwt_required()
@@ -163,10 +175,23 @@ def get_items():
     listings = Listing.query.filter(Listing.is_service == False).all()
     return jsonify([listing.to_dict() for listing in listings])
 
+# get a list of all of the services listed on the platform
 @app.route('/api/listing/services', methods=['GET'])
 @cross_origin()
 def get_services():
     listings = Listing.query.filter(Listing.is_service == True).all()
+    return jsonify([listing.to_dict() for listing in listings])
+
+# get a list of all listings created by a specfic user
+@app.route('/api/listing/user_items', methods=['GET'])
+@jwt_required()
+@cross_origin()
+def get_user_items():
+
+    user_id = get_jwt_identity()
+
+    listings = Listing.query.filter_by(seller_id=user_id).all()
+
     return jsonify([listing.to_dict() for listing in listings])
 
 @app.route('/api/listing/item/<int:id>', methods=['GET'])
