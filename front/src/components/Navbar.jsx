@@ -11,7 +11,7 @@ const Nav = styled.nav`
   height: 115px;
   background-color: var(--background-color);
   padding: 0 100px 0 100px;
-  background-color: #ffd5ab;
+  background-color: #fff;
 
   &::after {
     content: '';
@@ -85,9 +85,6 @@ const Navbar = () => {
           </StyledLinkMain>
         </li>
         <li>
-          <StyledLink to='/'>
-            home
-          </StyledLink>
           <StyledLink to='/shop'>
             shop
           </StyledLink>

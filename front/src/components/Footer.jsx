@@ -6,7 +6,7 @@ const Container = styled.div`
     width: 100%;
     justify-content: space-between;
     display: flex;
-    background-color: #ffd5ab;
+    background-color: #fff;
     flex-direction: ${props => props.row ? "row" : "column"};
 `
 
