@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 
 import os
 import uuid
+import auth
 
 import cloudinary
 import cloudinary.uploader
@@ -97,7 +98,9 @@ def logoutcas():
 @cross_origin()
 def login():
     access_token = create_access_token(identity=12)
-    return jsonify(access_token=access_token)
+    username = auth.authenticate()
+    
+    return jsonify(access_token=access_token), username
 
 @app.route('/protected', methods=['GET'])
 @jwt_required()
@@ -107,16 +110,13 @@ def protected():
 
 #-----------------------------------------------------------------------
 
-@app.route('/', methods=['GET'])
+# @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
-
+    print("hii")
     username = auth.authenticate()
 
-    html_code = flask.render_template('index.html',
-        username=username)
-    response = flask.make_response(html_code)
-    return response
+    return username
 
 #-----------------------------------------------------------------------
 # upload an image and return the cloudinary url
@@ -184,7 +184,6 @@ def create_listing():
 
 # get a list of all items/products listed on the platform
 @app.route('/api/listing/items', methods=['GET'])
-@jwt_required()
 @cross_origin()
 def get_items():
     listings = Listing.query.filter(Listing.is_service == False).all()
@@ -199,7 +198,6 @@ def get_services():
 
 # get a list of all listings created by a specfic user
 @app.route('/api/listing/user_items', methods=['GET'])
-@jwt_required()
 @cross_origin()
 def get_user_items():
 

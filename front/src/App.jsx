@@ -28,6 +28,7 @@ const router = createBrowserRouter([
       { path: "/listing/:id", element: <Listing /> },
       { path: "/profile", element: <Profile /> },
       { path: "/editprofile", element: <EditProfile /> },
+      { path: "/index", element: <EditProfile /> },
       { path: "/login", element: <Login /> },
       { path: "/create", element: <CreateListing /> },
       { path: "/create-bid", element: <CreateBidListing /> },
