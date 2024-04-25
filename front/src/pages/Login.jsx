@@ -36,15 +36,14 @@ const Login = () => {
         } catch (error) {
             alert('Login failed')
         }
+
     }
 
     return (
         <Container>
-            <Link to='/profile'>
-                <button onClick={handleSubmit}>Login</button>
-            </Link>
+            <Link to="/index" className="cas-auth-button" onClick={handleSubmit}>Login with CAS</Link>
         </Container>
-            // <a href='/index' class="cas-auth-button">Login with CAS</a> 
+            // <a href='/index' class="cas-auth-button">Login with CAS</a> <button onClick={handleSubmit}>Login</button>
     );
 };
   
