@@ -171,7 +171,6 @@ def create_listing():
 
 # get a list of all items/products listed on the platform
 @app.route('/api/listing/items', methods=['GET'])
-@jwt_required()
 @cross_origin()
 def get_items():
     listings = Listing.query.filter(Listing.is_service == False).all()
@@ -186,7 +185,6 @@ def get_services():
 
 # get a list of all listings created by a specfic user
 @app.route('/api/listing/user_items', methods=['GET'])
-@jwt_required()
 @cross_origin()
 def get_user_items():
 
