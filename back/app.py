@@ -173,12 +173,12 @@ def create_listing():
         is_auction=data['is_auction']
     )
     
-    if new_listing.is_auction:
-        duration_hours = data.get('auction_duration_hours', 24)  # Default to 24 hours if not specified
-        new_bid_item = BidItem(auction_duration=timedelta(hours=duration_hours))
-        db.session.add(new_bid_item)
-        db.session.flush()
-        new_listing.bid_item = new_bid_item
+    # if new_listing.is_auction:
+    #     duration_hours = data.get('auction_duration_hours', 24)  # Default to 24 hours if not specified
+    #     new_bid_item = BidItem(auction_duration=timedelta(hours=duration_hours))
+    #     db.session.add(new_bid_item)
+    #     db.session.flush()
+    #     new_listing.bid_item = new_bid_item
 
     db.session.add(new_listing)
     db.session.commit()

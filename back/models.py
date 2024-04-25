@@ -47,10 +47,10 @@ class Listing(db.Model):
     image_url = db.Column(db.String)
     is_service = db.Column(Boolean, default=False, nullable=False)
     is_auction = db.Column(Boolean, default=False, nullable=False)
-    bid_item = db.relationship('BidItem',
-                            back_populates='listing',
-                            uselist=False,
-                            lazy='joined')
+    # bid_item = db.relationship('BidItem',
+    #                         back_populates='listing',
+    #                         uselist=False,
+    #                         lazy='joined')
 
     def to_dict(self):
         return {
