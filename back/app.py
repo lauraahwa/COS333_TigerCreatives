@@ -158,7 +158,12 @@ def create_listing():
 @app.route('/api/listing/items', methods=['GET'])
 # @jwt_required()
 def get_items():
-    listings = Listing.query.all()
+    listings = Listing.query.filter(Listing.is_service == False).all()
+    return jsonify([listing.to_dict() for listing in listings])
+
+@app.route('/api/listing/services', methods=['GET'])
+def get_services():
+    listings = Listing.query.filter(Listing.is_service == True).all()
     return jsonify([listing.to_dict() for listing in listings])
 
 @app.route('/api/listing/item/<int:id>', methods=['GET'])

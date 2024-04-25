@@ -22,7 +22,7 @@ const Sellers = () => {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const data = await viewListings('items');
+        const data = await viewListings('services');
         console.log("Data fetched", data);
         setListingsData(data);
       } catch (error) {

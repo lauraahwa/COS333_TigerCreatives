@@ -3,6 +3,8 @@ import os
 from extensions import db
 from datetime import datetime
 
+from sqlalchemy import Boolean
+
 # _DATABASE_URL = os.environ['DATABASE_URL']
 # _DATABASE_URL = _DATABASE_URL.replace('postgres://', 'postgresql://')
 
@@ -47,6 +49,7 @@ class Listing(db.Model):
     description = db.Column(db.String(250))
     price = db.Column(db.Float, nullable=False)
     image_url = db.Column(db.String)
+    is_service = db.Column(Boolean, default=False, nullable=False) # field for whether or not it is a service
 
     def to_dict(self):
         return {
