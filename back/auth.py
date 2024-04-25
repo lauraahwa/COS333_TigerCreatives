@@ -52,6 +52,7 @@ def validate(ticket):
 # Do not return unless the user is successfully authenticated.
 
 def authenticate():
+    print("hello")
 
     # If the username is in the session, then the user was
     # authenticated previously.  So return the username.

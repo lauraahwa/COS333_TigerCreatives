@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 
 import os
 import uuid
+import auth
 
 import cloudinary
 import cloudinary.uploader
@@ -96,7 +97,9 @@ def logoutcas():
 @cross_origin()
 def login():
     access_token = create_access_token(identity=12)
-    return jsonify(access_token=access_token)
+    username = auth.authenticate()
+    
+    return jsonify(access_token=access_token), username
 
 @app.route('/protected', methods=['GET'])
 @jwt_required()
@@ -106,16 +109,13 @@ def protected():
 
 #-----------------------------------------------------------------------
 
-@app.route('/', methods=['GET'])
+# @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
-
+    print("hii")
     username = auth.authenticate()
 
-    html_code = flask.render_template('index.html',
-        username=username)
-    response = flask.make_response(html_code)
-    return response
+    return username
 
 #-----------------------------------------------------------------------
 # upload an image and return the cloudinary url
