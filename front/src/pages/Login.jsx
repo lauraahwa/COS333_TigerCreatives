@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useAuth } from '@/context/AuthContext'
-import { login } from '@/api/userService'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 
@@ -30,7 +29,6 @@ const Login = () => {
 
     const handleSubmit = async (event) => {
         // event.preventDefault()
-        window.location = 'https://dev-j5to76bfzcvu3rqq.us.auth0.com/authorize?response_type=code&client_id=43UniHhUR59WBmahlW9QVWH4gnwehKHb&redirect_uri=http%3A%2F%2F127.0.0.1%3A5000%2Fcallback&scope=openid+profile+email';
         try {
             const response = await login();
             console.log(response)
@@ -38,7 +36,7 @@ const Login = () => {
             localStorage.setItem('token', token)
             event.preventDefault();
             console.log(token)
-            signIn()
+            loginWithRedirect()
             // alert('Login successful')
 
         } catch (error) {

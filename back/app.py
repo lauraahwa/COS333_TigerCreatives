@@ -118,19 +118,28 @@ def logoutcas():
 @app.route('/login', methods=['POST', 'OPTIONS'])
 @cross_origin()
 def login():
-    access_token = create_access_token(identity=12)
-    print('login')
-    username = auth.authenticate()
-    username = ""
-    
-    return jsonify({"access_token": access_token, 
-                    "username": username})
+    data = request.get_json()
+    print(data)
+    print(type(data))
+    email = data.get('email')
+    user = User.query.filter(User.email_address == email).all()
+    if user:
+        access_token = create_access_token(identity=user[0].id)
+        return jsonify(access_token), 200
+    new_user = User(email_address=email, first_name=data['given_name'],
+                    last_name=data['family_name'])
+    db.session.add(new_user)
+    db.session.commit()
+    access_token = create_access_token(identity=user.id)
+    return jsonify(new_user.to_dict(), access_token), 201
+
 
 @app.route('/protected', methods=['GET'])
+@jwt_required()
 def protected():
+    print(request.headers)  # Debug: Print headers to see if Authorization is present
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
-
 #-----------------------------------------------------------------------
 
 # @app.route('/', methods=['GET'])
@@ -178,10 +187,14 @@ def upload_image():
 
 # HANDLE LISTING FUNCITONALITY
 @app.route('/api/listing/create', methods=['POST', 'OPTIONS'])
+@jwt_required()
 @cross_origin()
 def create_listing():
+    print('test')
     user_id = get_jwt_identity()
+    print(user_id)
     data = request.get_json()
+    print(data)
     new_listing = Listing(
         title=data['title'],
         seller_id=user_id,
@@ -189,7 +202,9 @@ def create_listing():
         description=data['description'],
         price=data['price'],
         image_url=data['image_url'],
-        is_auction=data['is_auction']
+        is_service=True,
+        is_auction=False
+
     )
     
     # if new_listing.is_auction:
@@ -215,6 +230,7 @@ def get_items():
 @app.route('/api/listing/services', methods=['GET', 'OPTIONS'])
 @cross_origin()
 def get_services():
+    print(request.headers)
     listings = Listing.query.filter(Listing.is_service == True).all()
     return jsonify([listing.to_dict() for listing in listings])
 
@@ -223,11 +239,11 @@ def get_services():
 @cross_origin()
 @jwt_required()
 def get_user_items():
+    print(request.headers)
+    user_id = get_jwt_identity()
+    print(user_id)
 
-    jwt = session.get('jwt')
-
-    # listings = Listing.query.filter_by(seller_id=user_id).all()
-    listings = Listing.query.all()
+    listings = Listing.query.filter(Listing.seller_id == user_id).all()
 
     return jsonify([listing.to_dict() for listing in listings])
 

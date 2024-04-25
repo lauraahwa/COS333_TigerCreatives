@@ -8,7 +8,8 @@ import { useProfile } from '@/components/ProfileInfo';
 import { useAuth0 } from "@auth0/auth0-react"
 
 import { viewListings } from '@/api/listingService'
-import { getUserInfo } from '@/api/userService'
+import { login } from '@/api/userService'
+
 
 const Container = styled.div`
     display: flex;
@@ -83,22 +84,52 @@ const GridContainer = styled.div`
 `
 
     const Profile = () => {
-        const { user, isAuthenticated, isLoading } = useAuth0();
+        const { user, isAuthenticated, handleRedirectCallback, getAccessTokenSilently } = useAuth0();
 
         const { profileData } = useProfile();
         const [listingsData, setListingsData] = useState([])
         const [userData, setUserData] = useState([])
 
+        // useEffect(() => {
+        //     const handleAuthCallback = async () => {
+        //         await handleRedirectCallback()
+            
+        //         if (isAuthenticated) {
+        //             const accessToken = await getAccessTokenSilently()
+        //             console.log(accessToken)
+        //         }
+        //     }
+
+        //     handleAuthCallback()
+        // }, [handleRedirectCallback, isAuthenticated, getAccessTokenSilently])
 
         useEffect(() => {
+
             const fetchListings = async () => {
-                try {
-                    const data = await viewListings('user_items');
-                    console.log("Data fetched", data)
-                    setListingsData(data)
-                } catch (error) {
-                    console.error("Fetching listings error:", error);
+                if (!user) {
+                    console.log('user not defined yet')
+                    return
                 }
+                console.log(user)
+                try {
+                    const response = await login(user);
+                    const token = response;
+                    localStorage.setItem('token', token)
+                    console.log("token:" + token)
+
+                    try {
+                        const data = await viewListings('user_items');
+                        console.log("Data fetched", data)
+                        setListingsData(data)
+                    } catch (error) {
+                        console.error("Fetching listings error:", error);
+                    }
+                } catch (error) {
+                    console.error('token error', error)
+                }
+
+
+                
             };
 
             // const fetchUserInfo = async () => {
@@ -125,7 +156,7 @@ const GridContainer = styled.div`
                     </ProfilePic>
                     <ProfileDetails>
                         <ProfileName> 
-                            {profileData.username}
+                            {user.email.split('@')[0]}
                         </ProfileName>
                         <Role>
                             {profileData.userType}
