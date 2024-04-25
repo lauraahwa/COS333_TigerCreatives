@@ -98,7 +98,7 @@ class Bid(db.Model):
     # relationship() tells SQLAlchemy that this model should be linked to 'User'
     # backref adds a 'listings' attribute to the 'User' module which will
     # be a list of all listings associated with that user
-    seller = db.relationship('User', backref=db.backref('listings', lazy=True))
+    seller = db.relationship('User', backref=db.backref('bids', lazy=True))
     category_id = db.Column(db.Integer, nullable=False) # implement foreignkey to category
     description = db.Column(db.String(250))
     price = db.Column(db.Float, nullable=False)

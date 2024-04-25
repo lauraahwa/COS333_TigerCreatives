@@ -10,10 +10,14 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
+from dotenv import load_dotenv
+
 from models import User
 from models import Listing
 from models import Bid
 from extensions import db
+
+load_dotenv()
 
 app = Flask(__name__)
 _DATABASE_URL = os.getenv('DATABASE_URL')
