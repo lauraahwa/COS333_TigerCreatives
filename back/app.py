@@ -226,71 +226,71 @@ def get_listing(id):
 #-----------------------------------------------------------------------
 # BIDDING STUFF
 
-# creating a bid item
-@cross_origin()
-@jwt_required()
-@app.route('/api/bid/create-bid', methods=['POST', 'OPTIONS'])
-def create_bid():
-    user_id = get_jwt_identity()
-    data = request.get_json()
+# # creating a bid item
+# @cross_origin()
+# @jwt_required()
+# @app.route('/api/bid/create-bid', methods=['POST', 'OPTIONS'])
+# def create_bid():
+#     user_id = get_jwt_identity()
+#     data = request.get_json()
 
-    new_bid_item = Bid(title=data['title'], seller_id=user_id,
-                          category_id=2,
-                          description=data['description'], price=data['price'], 
-                          image_url = data['image_url'], bid_time=data['bid_time'])
+#     new_bid_item = Bid(title=data['title'], seller_id=user_id,
+#                           category_id=2,
+#                           description=data['description'], price=data['price'], 
+#                           image_url = data['image_url'], bid_time=data['bid_time'])
     
-    db.session.add(new_bid_item)
-    db.session.commit()
+#     db.session.add(new_bid_item)
+#     db.session.commit()
 
-    return jsonify(new_bid.to_dict()), 200
+#     return jsonify(new_bid.to_dict()), 200
 
-# place bid
-@app.route('/api/bid/place', methods=['POST'])
-@jwt_required()
-def place_bid():
-    user_id = get_jwt_identity()
-    data = request.get_json()
-    bid_item = BidItem.query.get(data['bid_item_id'])
-    if not bid_item:
-        return jsonify({"error": "Bid item not found"}), 404
+# # place bid
+# @app.route('/api/bid/place', methods=['POST'])
+# @jwt_required()
+# def place_bid():
+#     user_id = get_jwt_identity()
+#     data = request.get_json()
+#     bid_item = BidItem.query.get(data['bid_item_id'])
+#     if not bid_item:
+#         return jsonify({"error": "Bid item not found"}), 404
 
-    if not bid_item.auction_start_time:
-        bid_item.auction_start_time = datetime.utcnow()
+#     if not bid_item.auction_start_time:
+#         bid_item.auction_start_time = datetime.utcnow()
 
-    new_bid = Bid(
-        bid_item_id=bid_item.id,
-        bidder_id=user_id,
-        bid_amount=data['bid_amount']
-    )
-    db.session.add(new_bid)
-    db.session.commit()
+#     new_bid = Bid(
+#         bid_item_id=bid_item.id,
+#         bidder_id=user_id,
+#         bid_amount=data['bid_amount']
+#     )
+#     db.session.add(new_bid)
+#     db.session.commit()
 
-    return jsonify(new_bid.to_dict()), 201
+#     return jsonify(new_bid.to_dict()), 201
 
 
-# view bid items
-@app.route('/api/biditem/view', methods=['GET'])
-def get_bids_for_item(biditem_id):
-    bids = Bid.query.filter_by(biditem_id=biditem_id).all()
+# # view bid items
+# @app.route('/api/biditem/view', methods=['GET'])
+# def get_bids_for_item(biditem_id):
+#     bids = Bid.query.filter_by(biditem_id=biditem_id).all()
     
-    return jsonify([bid.to_dict() for bid in bids])
+#     return jsonify([bid.to_dict() for bid in bids])
 
-# # Define a protected route
-# @app.route('/protected', methods=['GET'])
-# def protected():
-#     if 'username' not in session:
-#         return redirect(url_for('login'))
+# # # Define a protected route
+# # @app.route('/protected', methods=['GET'])
+# # def protected():
+# #     if 'username' not in session:
+# #         return redirect(url_for('login'))
     
-#     # Fetch user data from the database
-#     user = User.query.filter_by(username=session['username']).first()
-#     if not user:
-#         return 'User not found'
+# #     # Fetch user data from the database
+# #     user = User.query.filter_by(username=session['username']).first()
+# #     if not user:
+# #         return 'User not found'
     
-#     # Return user data
-#     return jsonify({
-#         'username': user.username,
-#         'email': user.email
-#     })
+# #     # Return user data
+# #     return jsonify({
+# #         'username': user.username,
+# #         'email': user.email
+# #     })
 
 if __name__ == "__main__":
     with app.app_context():
