@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { useAuth } from '@/context/AuthContext'
 import { login } from '@/api/userService'
 import axios from 'axios'
+import { Link } from 'react-router-dom'
 
 const Form = styled.form`
   display: flex;
@@ -21,7 +22,7 @@ const Login = () => {
     const { isSignedIn, signIn, signOut } = useAuth();
 
     const handleSubmit = async (event) => {
-        event.preventDefault()
+        // event.preventDefault()
 
         try {
             const response = await login();
@@ -30,7 +31,8 @@ const Login = () => {
             event.preventDefault();
             console.log(token)
             signIn()
-            alert('Login successful')
+            // alert('Login successful')
+
         } catch (error) {
             alert('Login failed')
         }
@@ -38,7 +40,9 @@ const Login = () => {
 
     return (
         <Container>
-            <a onClick={handleSubmit} href='/'>Login</a>
+            <Link to='/profile'>
+                <button onClick={handleSubmit}>Login</button>
+            </Link>
         </Container>
             // <a href='/index' class="cas-auth-button">Login with CAS</a> 
     );

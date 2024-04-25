@@ -157,12 +157,14 @@ def create_listing():
     return jsonify(new_listing.to_dict()), 200
 
 @app.route('/api/listing/items', methods=['GET'])
+@cross_origin()
 # @jwt_required()
 def get_items():
     listings = Listing.query.filter(Listing.is_service == False).all()
     return jsonify([listing.to_dict() for listing in listings])
 
 @app.route('/api/listing/services', methods=['GET'])
+@cross_origin()
 def get_services():
     listings = Listing.query.filter(Listing.is_service == True).all()
     return jsonify([listing.to_dict() for listing in listings])
