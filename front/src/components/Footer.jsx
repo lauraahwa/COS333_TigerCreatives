@@ -6,6 +6,7 @@ const Container = styled.div`
     width: 100%;
     justify-content: space-between;
     display: flex;
+    background-color: #ffd5ab;
     flex-direction: ${props => props.row ? "row" : "column"};
 `
 
@@ -14,7 +15,11 @@ const Vertical = styled.div`
     flex-direction: column;
     gap: 70px;
 `
-
+const Horizontal = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+`
 const Title = styled.h1`
     font-size: 24px;
     font-weight: 700;
@@ -39,15 +44,13 @@ const Footer = () => {
             <Vertical>
                 <Title>TigerCreatives</Title>
             </Vertical>
-            <Vertical>
-                <Header>Links</Header>
+            <Horizontal>
                 <Link href="/">Home</Link>
                 <Link href="/shop">Shop</Link>
                 <Link href="/sellers">Sellers</Link>
                 <Link href="/about">About</Link>
-            </Vertical>
+            </Horizontal>
             <Vertical>
-                <Header>Help</Header>
                 <Link>Contact Us</Link>
             </Vertical>
         </Container>
