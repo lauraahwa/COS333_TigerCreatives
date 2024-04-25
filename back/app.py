@@ -199,6 +199,7 @@ def get_services():
 # get a list of all listings created by a specfic user
 @app.route('/api/listing/user_items', methods=['GET'])
 @cross_origin()
+@jwt_required()
 def get_user_items():
 
     user_id = get_jwt_identity()
