@@ -47,12 +47,10 @@ class Listing(db.Model):
     image_url = db.Column(db.String)
     is_service = db.Column(Boolean, default=False, nullable=False)
     is_auction = db.Column(Boolean, default=False, nullable=False)
-    bid_item_id = db.Column(db.Integer, db.ForeignKey('bid_item.id'))
-    bid_item = relationship('BidItem',
+    bid_item = db.relationship('BidItem',
                             back_populates='listing',
                             uselist=False,
-                            lazy='joined',
-                            primaryjoin="Listing.id==foreign(remote(BidItem.listing_id))")
+                            lazy='joined')
 
     def to_dict(self):
         return {
@@ -80,9 +78,8 @@ class BidItem(db.Model):
     listing_id = db.Column(db.Integer, db.ForeignKey('listing.id'))  # Ensure this FK is correct
     auction_start_time = db.Column(db.DateTime)
     auction_duration = db.Column(db.Interval)
-    listing = relationship('Listing',
+    listing = db.relationship('Listing',
                            back_populates='bid_item',
-                           remote_side=[id],
                            foreign_keys=[listing_id])
 
     @property
