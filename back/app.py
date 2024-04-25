@@ -170,7 +170,9 @@ def create_listing():
         description=data['description'],
         price=data['price'],
         image_url=data['image_url'],
-        is_auction=data['is_auction']
+        is_auction=data['is_auction'],
+        is_service=['is_service'],
+        auction_end_time=['auction_end_time']
     )
 
     db.session.add(new_listing)
@@ -180,7 +182,7 @@ def create_listing():
         new_bid_item = BidItem(
             listing_id=new_listing.id,
             auction_start_time=None,  # Start time could be set when the first bid is made
-            auction_end_time=None    # End time could be determined based on auction duration
+            auction_end_time=new_listing.auction_end_time
         )
         db.session.add(new_bid_item)
 
@@ -253,22 +255,31 @@ def create_bid():
 def place_bid():
     user_id = get_jwt_identity()
     data = request.get_json()
-    
+
     bid_item_id = data.get('bid_item_id')
+    bid_amount = data.get('bid_amount')
     if not bid_item_id:
         return jsonify({"error": "Bid item ID must be provided"}), 400
+    if not bid_amount:
+        return jsonify({"error": "Bid amount must be provided"}), 400
 
     bid_item = BidItem.query.get(bid_item_id)
     if not bid_item:
         return jsonify({"error": "Bid item not found"}), 404
 
+    # Check if new bid is at least $0.50 higher than the last
+    highest_bid = bid_item.get_highest_bid()
+    if bid_amount <= highest_bid + 0.50:
+        return jsonify({"error": "Your bid must be at leat $0.50 higher than the current highest bid of ${:.2f}$".format(highest_bid)}), 400
+    
     if not bid_item.auction_start_time:
         bid_item.auction_start_time = datetime.utcnow()
 
     new_bid = Bid(
         bid_item_id=bid_item.id,  # Link this bid to the retrieved bid item
         bidder_id=user_id,
-        bid_amount=data['bid_amount']
+        bid_amount=data['bid_amount'],
+        bid_time=datetime.utcnow()
     )
     db.session.add(new_bid)
     db.session.commit()
