@@ -115,7 +115,6 @@ def logoutcas():
 #-----------------------------------------------------------------------
 # LOGIN STUFF
 
-<<<<<<< HEAD
 @app.route('/login', methods=['POST', 'OPTIONS'])
 @cross_origin()
 def login():
@@ -126,29 +125,6 @@ def login():
     
     return jsonify({"access_token": access_token, 
                     "username": username})
-=======
-# @app.route("/login", methods=["GET"])
-# @cross_origin()
-# def login():
-#     return auth0.authorize_redirect(
-#         redirect_uri=url_for("callback", _external=True)
-#     )
-
-# @app.route("/callback", methods=["GET", "POST"])
-# @cross_origin()
-# def callback():
-#     # Exchange authorization code for access token
-#     token = auth0.authorize_access_token()
-#     # You could also retrieve additional user information if needed
-#     userinfo = auth0.get('userinfo').json()
-    
-#     # For REST API, send the token information back to the client
-#     return jsonify({
-#         'access_token': token['access_token'],
-#         'id_token': token.get('id_token'),
-#         'userinfo': userinfo
-#     })
->>>>>>> reviews
 
 @app.route('/protected', methods=['GET'])
 def protected():
