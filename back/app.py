@@ -15,7 +15,7 @@ import cloudinary.api
 
 from dotenv import load_dotenv
 
-from models import User, Listing, BidItem, Bid
+from models import User, Listing
 from extensions import db
 
 load_dotenv()
