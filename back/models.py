@@ -53,13 +53,14 @@ class Listing(db.Model):
                             uselist=False,
                             lazy='joined')
     
-    @validates('is_auction', 'auction_end_time')
-    def validate_auction_details(self, key, value):
+    # IMPLEMENT THE CHECK THAT AUCTION_END_TIME NEEDS TO BE IN THE FUTURE LATER
+    # @validates('is_auction', 'auction_end_time')
+    # def validate_auction_details(self, key, value):
 
-        # make sure end time is set in the future
-        if self.is_auction and self.auction_end_time:
-            if self.auction_end_time <= datetime.utcnow():
-                raise ValueError("Auction end time must be set in the future.")
+    #     # make sure end time is set in the future
+    #     if self.is_auction and self.auction_end_time:
+    #         if self.auction_end_time <= datetime.utcnow():
+    #             raise ValueError("Auction end time must be set in the future.")
             
     def to_dict(self):
         return {

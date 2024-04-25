@@ -171,8 +171,8 @@ def create_listing():
         price=data['price'],
         image_url=data['image_url'],
         is_auction=data['is_auction'],
-        is_service=['is_service'],
-        auction_end_time=['auction_end_time']
+        is_service=data['is_service'],
+        auction_end_time=data['auction_end_time'],
     )
 
     db.session.add(new_listing)
