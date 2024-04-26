@@ -7,6 +7,8 @@ import { useProfile } from '@/components/ProfileInfo';
 
 import { useAuth0 } from "@auth0/auth0-react"
 
+import { Dialog } from '@headlessui/react'
+
 import { viewListings } from '@/api/listingService'
 import { login } from '@/api/userService'
 
@@ -153,7 +155,7 @@ const GridContainer = styled.div`
                     <EditProfile to = "/editprofile">Edit Profile</EditProfile>
                 <ProfileContainer>
                     <ProfilePic>
-                        <img src={weirdswan} />
+                        <img src={user.picture} />
                     </ProfilePic>
                     <ProfileDetails>
                         <ProfileName> 
