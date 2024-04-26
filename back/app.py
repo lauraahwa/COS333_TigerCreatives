@@ -202,7 +202,7 @@ def create_listing():
         description=data['description'],
         price=data['price'],
         image_url=data['image_url'],
-        is_service=True,
+        is_service=data['is_service'],
         is_auction=False
 
     )

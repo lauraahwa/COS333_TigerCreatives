@@ -150,6 +150,7 @@ const Listing = () => {
                 <Line />
                 <ReviewsText>5 Seller Reviews</ReviewsText>
             </ReviewsContainer>
+            <p>Sold by {listingData.seller_id}</p>
             <p>{listingData.description}</p>
             <br />
             <p>Contact: Jack O'Donnell, jodonnell@princeton.edu</p>

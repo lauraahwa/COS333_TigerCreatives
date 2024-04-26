@@ -23,6 +23,7 @@ const Content = styled.div`
 const ProfileContainer = styled.div`
     display: flex;
     align-items: center;
+    margin-bottom: 50px;
 `
 
 const ProfilePic = styled.div`
@@ -166,6 +167,7 @@ const GridContainer = styled.div`
                         </ProfileBio>
                     </ProfileDetails>
                 </ProfileContainer>
+                <h2>Your listings</h2>
                 <GridContainer>
                     <Grid data={listingsData} />
                 </GridContainer>
@@ -177,7 +179,7 @@ const GridContainer = styled.div`
                         <Button text="Create Bid Listing"/>
                     </StyledLink>
             </StyledButtonContainer>
-                <h2>Your listings</h2>
+                
                 {/* <Grid isLanding={true}/> */}
             </Content>
         </Container>
