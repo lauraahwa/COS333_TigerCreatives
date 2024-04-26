@@ -30,6 +30,7 @@ const Form = () => {
     itemDescription: '',
     itemPrice: '',
     isService: false,
+    isAuction: false,
   });
   const [photo, setPhoto] = useState(null)
 
@@ -43,6 +44,7 @@ const Form = () => {
       'description': formData['itemDescription'],
       'price': formData['itemPrice'],
       'is_service': formData['isService'],
+      'is_auction': formData['isAuction']
     }
 
     try {
@@ -131,6 +133,16 @@ const Form = () => {
           id="isService"
           name="isService"
           checked={formData.isService}
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        <label htmlFor="isAuction">Is this an auction?</label>
+        <input
+          type="checkbox"
+          id="isAuction"
+          name="isAuction"
+          checked={formData.isAuction}
           onChange={handleChange}
         />
       </div>
