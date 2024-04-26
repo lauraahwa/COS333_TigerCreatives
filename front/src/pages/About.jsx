@@ -1,10 +1,7 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import Accordion from "../components/Accordion";
 
-import "./styles.css";
-
-function App() {
+function About() {
   return (
     <div className="App">
       <Accordion
@@ -33,5 +30,4 @@ function App() {
   );
 }
 
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);
+export default About
