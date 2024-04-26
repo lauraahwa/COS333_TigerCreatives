@@ -1,10 +1,10 @@
 import apiClient from "./apiClient";
 
-export const login = async () => {
+export const login = async (data) => {
     try {
         const endpoint = '/login'
 
-        const response = await apiClient.post(endpoint)
+        const response = await apiClient.post(endpoint, data)
 
         console.log(response.status)
 

@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar as fasStar, faStarHalfAlt, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
 
 import { viewListing } from '@/api/listingService'
+import { Button } from '@/components'
 
 const Container = styled.div`
     display: flex;
@@ -51,7 +52,7 @@ const TextContainer = styled.div`
     }
 
     p {
-        width: 60%;
+        width: 90%;
     }
 `
 
@@ -117,6 +118,22 @@ const StarRating = ({ rating }) => {
     );
 }
 
+const Subtext = styled.p`
+    font-size: 0.8rem;
+    color: var(--subtext-color);
+
+`
+const ButtonContainer = styled.div`
+    width: auto;
+    text-decoration: none;
+`
+
+const StyledButton = styled(Button)`
+    margin: 20px 0;
+    font-size: 1rem;
+    padding: 5px 10px;
+`
+
 const Listing = () => {
     let { id } = useParams();
     const rating = 3.5
@@ -145,11 +162,18 @@ const Listing = () => {
         <TextContainer>
             <h1>{listingData.title}</h1>
             <h2>${listingData.price}</h2>
+            <Subtext>or Best Offer</Subtext>
+            <br/>
+            <p>Sold by Seller: {listingData.seller_id}</p>
             <ReviewsContainer>
                 <StarRating rating={rating} />
                 <Line />
                 <ReviewsText>5 Seller Reviews</ReviewsText>
             </ReviewsContainer>
+            <p>Time left: 3d 14h | Top bid: $450</p>
+            <ButtonContainer>
+                <StyledButton text="Place bid"/>
+            </ButtonContainer>
             <p>{listingData.description}</p>
             <br />
             <p>Contact: Jack O'Donnell, jodonnell@princeton.edu</p>

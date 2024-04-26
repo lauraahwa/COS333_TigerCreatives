@@ -1,16 +1,28 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { useAuth } from '@/context/AuthContext'
+import { useAuth0 } from '@auth0/auth0-react'
 
 
 const Nav = styled.nav`
+  position: relative;
   display: flex;
   align-items: center;
-  height: 105px;
+  height: 115px;
   background-color: var(--background-color);
-  padding: 0 100px;
-`
+  padding: 0 100px 0 100px;
+  background-color: var(--container-color);
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 10px; 
+    background-color: #fff; 
+  }
+`;
 
 const Links = styled.ul`
   width: 100%;
@@ -23,11 +35,12 @@ const Links = styled.ul`
     display: flex;
     flex-grow: 1;
     justify-content: center;
-    gap: 4vw;
+    gap: 5vw;
   }
 
-  #main {
-      font-weight: 700;
+  #main { 
+    font-size: 24px;
+    font-weight: 700;
   }
 
   #first {
@@ -38,39 +51,52 @@ const Links = styled.ul`
     justify-content: flex-end;
   }
 `
-
-const StyledLink = styled(Link)`
+const StyledLinkMain = styled(Link)`
   font-weight: 400;
   text-decoration: none;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
 `
 
+const StyledLink = styled(NavLink)`
+  font-weight: 400;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 15px 28px; 
+  border-radius: 20px; 
+  
+  transition: background-color 0.3s;
+  &.active {
+    font-weight: 700;
+    background-color: #fff; 
+  }
+`;
+
 const Navbar = () => {
-  const { isSignedIn } = useAuth();
+  const { isAuthenticated } = useAuth0();
 
   return (
     <Nav>
       <Links>
         <li id="first">
-          <StyledLink to='/' id="main">
+          <StyledLinkMain to='/' id="main">
           TigerCreatives
-          </StyledLink>
+          </StyledLinkMain>
         </li>
         <li>
-          <StyledLink to='/'>
-            home
-          </StyledLink>
           <StyledLink to='/shop'>
             shop
           </StyledLink>
           <StyledLink to='/sellers'>
-            sellers
+            services
           </StyledLink>
           <StyledLink to='/about'>
             about
           </StyledLink>
         </li>
         <li id="last">
-          {isSignedIn ? 
+          {isAuthenticated ? 
           <StyledLink to='/profile'>
             profile
           </StyledLink> :
@@ -78,7 +104,6 @@ const Navbar = () => {
           login
           </StyledLink>
           }
-          
         </li>
       </Links>
     </Nav>

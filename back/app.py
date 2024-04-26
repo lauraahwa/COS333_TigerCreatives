@@ -1,9 +1,12 @@
-from flask import request, jsonify, session, Flask
+from flask import request, jsonify, session, Flask, url_for, redirect
 from flask_jwt_extended import jwt_required, get_jwt_identity, JWTManager, create_access_token
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 from flask_migrate import Migrate
 from datetime import datetime, timedelta
+
+from authlib.integrations.flask_client import OAuth
+from six.moves.urllib.parse import urlencode
 
 import os
 import uuid
@@ -15,18 +18,36 @@ import cloudinary.api
 
 from dotenv import load_dotenv
 
-from models import User, Listing, BidItem, Bid
+from models import User, Listing
 from extensions import db
 
 load_dotenv()
 
 app = Flask(__name__)
+app.secret_key=os.getenv('APP_SECRET_KEY')
 _DATABASE_URL = os.getenv('DATABASE_URL')
 _DATABASE_URL = _DATABASE_URL.replace('postgres://', 'postgresql://')
 app.config['SQLALCHEMY_DATABASE_URI'] = _DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'meowmeow44556'
 jwt = JWTManager(app)
+
+app.config['APP_SECRET_KEY'] = os.getenv('APP_SECRET_KEY')
+
+oauth = OAuth(app)
+auth0 = oauth.register(
+    "auth0",
+    client_id=os.getenv("AUTH0_CLIENT_ID"),
+    client_secret=os.getenv("AUTH0_CLIENT_SECRET"),
+    client_kwargs={
+        "scope": "openid profile email",
+    },
+    server_metadata_url=f'https://{os.getenv("AUTH0_DOMAIN")}/.well-known/openid-configuration',
+    authorize_url=f'https://{os.getenv("AUTH0_DOMAIN")}/authorize',
+    api_base_url=f'https://{os.getenv("AUTH0_DOMAIN")}',
+    access_token_url=f'https://{os.getenv("AUTH0_DOMAIN")}/oauth/token',
+)
+
 
 CORS(app)
 
@@ -97,20 +118,28 @@ def logoutcas():
 @app.route('/login', methods=['POST', 'OPTIONS'])
 @cross_origin()
 def login():
-    access_token = create_access_token(identity=12)
-    print('login')
-    # username = auth.authenticate()
-    username = ""
-    
-    return jsonify({"access_token": access_token, 
-                    "username": username})
+
+    data = request.get_json()
+    print(data)
+    print(type(data))
+    email = data.get('email')
+    user = User.query.filter(User.email_address == email).all()
+    if user:
+        access_token = create_access_token(identity=user[0].id)
+        return jsonify(access_token), 200
+    new_user = User(email_address=email, first_name=data['given_name'],
+                    last_name=data['family_name'])
+    db.session.add(new_user)
+    db.session.commit()
+    access_token = create_access_token(identity=user.id)
+    return jsonify(new_user.to_dict(), access_token), 201
 
 @app.route('/protected', methods=['GET'])
 @jwt_required()
 def protected():
+    print(request.headers)  # Debug: Print headers to see if Authorization is present
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
-
 #-----------------------------------------------------------------------
 
 # @app.route('/', methods=['GET'])
@@ -158,11 +187,14 @@ def upload_image():
 
 # HANDLE LISTING FUNCITONALITY
 @app.route('/api/listing/create', methods=['POST', 'OPTIONS'])
-@cross_origin()
 @jwt_required()
+@cross_origin()
 def create_listing():
+    print('test')
     user_id = get_jwt_identity()
+    print(user_id)
     data = request.get_json()
+    print(data)
     new_listing = Listing(
         title=data['title'],
         seller_id=user_id,
@@ -186,6 +218,7 @@ def create_listing():
         )
         db.session.add(new_bid_item)
 
+
     db.session.commit()
 
     return jsonify(new_listing.to_dict()), 201
@@ -201,6 +234,7 @@ def get_items():
 @app.route('/api/listing/services', methods=['GET', 'OPTIONS'])
 @cross_origin()
 def get_services():
+    print(request.headers)
     listings = Listing.query.filter(Listing.is_service == True).all()
     return jsonify([listing.to_dict() for listing in listings])
 
@@ -209,10 +243,11 @@ def get_services():
 @cross_origin()
 @jwt_required()
 def get_user_items():
-
+    print(request.headers)
     user_id = get_jwt_identity()
+    print(user_id)
 
-    listings = Listing.query.filter_by(seller_id=user_id).all()
+    listings = Listing.query.filter(Listing.seller_id == user_id).all()
 
     return jsonify([listing.to_dict() for listing in listings])
 
@@ -233,7 +268,6 @@ def get_listing(id):
 
 # creating a bid item
 @cross_origin()
-@jwt_required()
 @app.route('/api/bid/create-bid', methods=['POST', 'OPTIONS'])
 def create_bid():
     user_id = get_jwt_identity()
@@ -249,9 +283,9 @@ def create_bid():
 
     return jsonify(new_bid_item.to_dict()), 200
 
-# place bid
+# placing a big
 @app.route('/api/bid/place', methods=['POST'])
-@jwt_required()
+#
 def place_bid():
     user_id = get_jwt_identity()
     data = request.get_json()
@@ -294,22 +328,22 @@ def place_bid():
     
 #     return jsonify([bid.to_dict() for bid in bids])
 
-# # Define a protected route
-# @app.route('/protected', methods=['GET'])
-# def protected():
-#     if 'username' not in session:
-#         return redirect(url_for('login'))
+# # # Define a protected route
+# # @app.route('/protected', methods=['GET'])
+# # def protected():
+# #     if 'username' not in session:
+# #         return redirect(url_for('login'))
     
-#     # Fetch user data from the database
-#     user = User.query.filter_by(username=session['username']).first()
-#     if not user:
-#         return 'User not found'
+# #     # Fetch user data from the database
+# #     user = User.query.filter_by(username=session['username']).first()
+# #     if not user:
+# #         return 'User not found'
     
-#     # Return user data
-#     return jsonify({
-#         'username': user.username,
-#         'email': user.email
-#     })
+# #     # Return user data
+# #     return jsonify({
+# #         'username': user.username,
+# #         'email': user.email
+# #     })
 
 if __name__ == "__main__":
     with app.app_context():

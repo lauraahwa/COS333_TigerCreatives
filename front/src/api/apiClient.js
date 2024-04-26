@@ -1,6 +1,5 @@
 import axios from 'axios'
 
-axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
 
 const apiClient = axios.create({
     baseURL: 'https://cos333-tigercreatives.onrender.com', // API base URL
@@ -11,3 +10,16 @@ const apiClient = axios.create({
 })
 
 export default apiClient
+
+apiClient.interceptors.request.use(config => {
+    // Retrieve the token from localStorage
+    const token = localStorage.getItem('token');
+    // If a token is found, set the Authorization header
+    if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+    }, error => {
+    // Do something with request error
+    return Promise.reject(error);
+})

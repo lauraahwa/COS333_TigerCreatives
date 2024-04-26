@@ -20,9 +20,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
-    university = db.Column(db.String(100))
     email_address = db.Column(db.String(100), unique=True, nullable=False)
-    age = db.Column(db.Integer)
 
     def to_dict(self):
         return {
@@ -56,6 +54,7 @@ class Listing(db.Model):
     # IMPLEMENT THE CHECK THAT AUCTION_END_TIME NEEDS TO BE IN THE FUTURE LATER
     # @validates('is_auction', 'auction_end_time')
     # def validate_auction_details(self, key, value):
+
 
     #     # make sure end time is set in the future
     #     if self.is_auction and self.auction_end_time:

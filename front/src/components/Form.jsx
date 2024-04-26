@@ -29,6 +29,7 @@ const Form = () => {
     itemName: '',
     itemDescription: '',
     itemPrice: '',
+    isService: false,
   });
   const [photo, setPhoto] = useState(null)
 
@@ -41,6 +42,7 @@ const Form = () => {
       'title': formData['itemName'],
       'description': formData['itemDescription'],
       'price': formData['itemPrice'],
+      'is_service': formData['isService'],
     }
 
     try {
@@ -58,7 +60,8 @@ const Form = () => {
   }
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const { name, type } = event.target;
+    const value = type === "checkbox" ? event.target.checked : event.target.value;
     setFormData(prevState => ({
       ...prevState,
       [name]: value
@@ -119,6 +122,16 @@ const Form = () => {
           onChange={handleFileChange}
           accept="image/*"
           required
+        />
+      </div>
+      <div>
+        <label htmlFor="isService">Is this a service?</label>
+        <input
+          type="checkbox"
+          id="isService"
+          name="isService"
+          checked={formData.isService}
+          onChange={handleChange}
         />
       </div>
       <ButtonContainer>
