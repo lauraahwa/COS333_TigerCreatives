@@ -272,6 +272,7 @@ def get_listing(id):
 def create_bid():
     user_id = get_jwt_identity()
     data = request.get_json()
+    print(data)
 
     new_bid_item = Bid(title=data['title'], seller_id=user_id,
                           category_id=2,
