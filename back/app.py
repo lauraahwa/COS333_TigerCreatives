@@ -118,6 +118,7 @@ def logoutcas():
 @app.route('/login', methods=['POST', 'OPTIONS'])
 @cross_origin()
 def login():
+
     data = request.get_json()
     print(data)
     print(type(data))
@@ -132,7 +133,6 @@ def login():
     db.session.commit()
     access_token = create_access_token(identity=user.id)
     return jsonify(new_user.to_dict(), access_token), 201
-
 
 @app.route('/protected', methods=['GET'])
 @jwt_required()
@@ -202,19 +202,23 @@ def create_listing():
         description=data['description'],
         price=data['price'],
         image_url=data['image_url'],
+        is_auction=data['is_auction'],
         is_service=data['is_service'],
-        is_auction=False
-
+        auction_end_time=data['auction_end_time'],
     )
-    
-    # if new_listing.is_auction:
-    #     duration_hours = data.get('auction_duration_hours', 24)  # Default to 24 hours if not specified
-    #     new_bid_item = BidItem(auction_duration=timedelta(hours=duration_hours))
-    #     db.session.add(new_bid_item)
-    #     db.session.flush()
-    #     new_listing.bid_item = new_bid_item
 
     db.session.add(new_listing)
+    db.session.flush()
+
+    if new_listing.is_auction:
+        new_bid_item = BidItem(
+            listing_id=new_listing.id,
+            auction_start_time=None,  # Start time could be set when the first bid is made
+            auction_end_time=new_listing.auction_end_time
+        )
+        db.session.add(new_bid_item)
+
+
     db.session.commit()
 
     return jsonify(new_listing.to_dict()), 201
@@ -277,7 +281,7 @@ def create_bid():
     db.session.add(new_bid_item)
     db.session.commit()
 
-    return jsonify(new_bid.to_dict()), 200
+    return jsonify(new_bid_item.to_dict()), 200
 
 # placing a big
 @app.route('/api/bid/place', methods=['POST'])
@@ -286,38 +290,35 @@ def place_bid():
     user_id = get_jwt_identity()
     data = request.get_json()
 
-#     new_bid_item = Bid(title=data['title'], seller_id=user_id,
-#                           category_id=2,
-#                           description=data['description'], price=data['price'], 
-#                           image_url = data['image_url'], bid_time=data['bid_time'])
+    bid_item_id = data.get('bid_item_id')
+    bid_amount = data.get('bid_amount')
+    if not bid_item_id:
+        return jsonify({"error": "Bid item ID must be provided"}), 400
+    if not bid_amount:
+        return jsonify({"error": "Bid amount must be provided"}), 400
+
+    bid_item = BidItem.query.get(bid_item_id)
+    if not bid_item:
+        return jsonify({"error": "Bid item not found"}), 404
+
+    # Check if new bid is at least $0.50 higher than the last
+    highest_bid = bid_item.get_highest_bid()
+    if bid_amount <= highest_bid + 0.50:
+        return jsonify({"error": "Your bid must be at leat $0.50 higher than the current highest bid of ${:.2f}$".format(highest_bid)}), 400
     
-#     db.session.add(new_bid_item)
-#     db.session.commit()
+    if not bid_item.auction_start_time:
+        bid_item.auction_start_time = datetime.utcnow()
 
-#     return jsonify(new_bid.to_dict()), 200
+    new_bid = Bid(
+        bid_item_id=bid_item.id,  # Link this bid to the retrieved bid item
+        bidder_id=user_id,
+        bid_amount=data['bid_amount'],
+        bid_time=datetime.utcnow()
+    )
+    db.session.add(new_bid)
+    db.session.commit()
 
-# # place bid
-# @app.route('/api/bid/place', methods=['POST'])
-# @jwt_required()
-# def place_bid():
-#     user_id = get_jwt_identity()
-#     data = request.get_json()
-#     bid_item = BidItem.query.get(data['bid_item_id'])
-#     if not bid_item:
-#         return jsonify({"error": "Bid item not found"}), 404
-
-#     if not bid_item.auction_start_time:
-#         bid_item.auction_start_time = datetime.utcnow()
-
-#     new_bid = Bid(
-#         bid_item_id=bid_item.id,
-#         bidder_id=user_id,
-#         bid_amount=data['bid_amount']
-#     )
-#     db.session.add(new_bid)
-#     db.session.commit()
-
-#     return jsonify(new_bid.to_dict()), 201
+    return jsonify(new_bid.to_dict()), 201
 
 
 # # view bid items
