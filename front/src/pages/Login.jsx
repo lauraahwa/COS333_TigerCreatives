@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { useAuth } from '@/context/AuthContext'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
+import { Grid, Button, ButtonContainer } from '@/components'
 
 import { useAuth0 } from "@auth0/auth0-react"
 
@@ -12,20 +13,77 @@ const Form = styled.form`
   gap: 20px;
 `
 
+const Banner = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: right;
+  text-align:  right;
+  background-color: var(--container-color);
+
+  padding: 78px 100px;
+  margin-top: 130px;
+
+  h1 {
+    font-weight: 700;
+    font-size: clamp(1.5rem, 4vw, 8rem);
+
+    i {
+      font-weight: 400;
+    }
+  }
+
+  h2 {
+    font-weight: 500;
+    margin-top: -0.5rem;
+    font-size: clamp(1rem, 2vw, 2rem);
+    }
+  
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%; 
+  }
+`
+const TextContainer = styled.div`
+    margin-top: 20px; 
+`;
+
 const Container = styled.div`
     display: flex;
     flex-direction: column;
     padding: 0 100px;
 
+    h1 {
+        font-weight: 700;
+        font-size: clamp(1.5rem, 4vw, 8rem);
+        margin-top: 40px;
+    
+        i {
+          font-weight: 400;
+        }
+      }
+    
+    h2 {
+        font-weight: 500;
+        margin-top: -0.5rem;
+        font-size: clamp(1rem, 2vw, 2rem);
+    }
+
+    .upper-text,
+    .lower-text {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
 `
+
 
 const Login = () => {
     const { loginWithRedirect } = useAuth0();
     // const { isSignedIn, signIn, signOut } = useAuth();
-
-    // const configureAuth0() {
-    //     const auth0Client = await createA
-    // }
 
     const handleSubmit = async (event) => {
         // event.preventDefault()
@@ -46,12 +104,29 @@ const Login = () => {
     }
 
     return (
+        <>
         <Container>
-            <Link to='/profile'>
-                <button onClick={() => loginWithRedirect()}>Login</button>
+            <h1>Are you a creative?</h1>
+            <h2>Get started by creating an account and upload your first listing. </h2>
+            <TextContainer></TextContainer>
+            <Link to='/profile' style={{ textDecoration: 'none' }}>
+                <Button text="Login/Sign Up" style={{ width: '200px' }} onClick={() => loginWithRedirect()} />
             </Link>
         </Container>
-            // <a href='/index' class="cas-auth-button">Login with CAS</a> <button onClick={handleSubmit}>Login</button>
+        <Banner>
+            <h1>Are you looking for creative goods or services to purchase?</h1>
+            <h2>Continue to browse listings or create an account to make a purchase!</h2>
+            <TextContainer></TextContainer>
+            <TextContainer className="button-container">
+              <Link to='/profile' style={{ textDecoration: 'none', marginRight: '15px' }}>
+                <Button text="Sign Up" style={{ width: '200px' }} onClick={() => loginWithRedirect()} /> 
+              </Link>
+              <Link to='/shop' style={{ textDecoration: 'none' }}>
+                <Button text="Browse Listings" style={{ width: '200px' }} />
+                </Link>
+            </TextContainer>
+        </Banner>
+        </>
     );
 };
   
