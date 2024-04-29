@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Button, ButtonContainer } from '@/components'
 import { uploadImage, createBidListing } from '@/api/listingService';
 import { ProfileInfo } from '@/components';
+import { Link } from 'react-router-dom'
 
 const StyledForm = styled.form`
   margin-top: 80px;
@@ -95,7 +96,6 @@ const ProfileForm = ({ updateProfileData, initialProfileData }) => {
           name="profilePicture"
           onChange={handleFileChange}
           accept="image/*"
-          required
         />
       </div>
       <div>
@@ -106,7 +106,6 @@ const ProfileForm = ({ updateProfileData, initialProfileData }) => {
           placeholder="Username"
           value={formData.username}
           onChange={handleChange}
-          required
         />
       </div>
       <div>
@@ -115,7 +114,6 @@ const ProfileForm = ({ updateProfileData, initialProfileData }) => {
           name="userType"
           value={formData.userType}
           onChange={handleChange}
-          required
         >
           <option value="">Select user type</option>
           <option value="buyer">Buyer</option>
@@ -130,11 +128,12 @@ const ProfileForm = ({ updateProfileData, initialProfileData }) => {
           placeholder="Bio"
           value={formData.bio}
           onChange={handleChange}
-          required
         />
       </div>
       <ButtonContainer>
-        <StyledButton text="Submit" />
+        <Link to='/profile'>
+          <StyledButton text="Save Edits" />
+        </Link>
       </ButtonContainer>
     </StyledForm>
   );

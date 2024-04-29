@@ -152,7 +152,6 @@ const GridContainer = styled.div`
             <Container>
                 <Splash header="Profile" subtext="View your listings or create a new one!" />
                 <Content>
-                    <EditProfile to = "/editprofile">Edit Profile</EditProfile>
                 <ProfileContainer>
                     <ProfilePic>
                         <img src={user.picture} />
@@ -168,7 +167,11 @@ const GridContainer = styled.div`
                             {profileData.bio}
                         </ProfileBio>
                     </ProfileDetails>
+                    <Link to='/editprofile' style={{ textDecoration: 'none' }}>
+                        <Button text="Edit Profile" style={{ width: '200px' }} />
+                    </Link>
                 </ProfileContainer>
+                
                 <h2>Your listings</h2>
                 <GridContainer>
                     <Grid data={listingsData} />

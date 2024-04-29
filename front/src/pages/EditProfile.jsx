@@ -8,6 +8,7 @@ import {ProfileProvider} from '@/components/ProfileInfo';
 const Container = styled.div`
     display: flex;
     flex-direction: column;
+    margin-bottom: 50px;
 `
 const Content = styled.div`
     padding: 0px 100px;
@@ -33,7 +34,6 @@ const EditProfile = ({ initialProfileData }) => {
             <Container>
                 <Splash header="Edit Profile" subtext="Let users know more about yourself!" />
                 <Content>
-                    <SaveProfile to = "/profile">Save Edits</SaveProfile>
                     <ProfileForm updateProfileData={updateProfileData} initialProfileData={initialProfileData} />
                 </Content>
             </Container>
