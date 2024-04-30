@@ -6,7 +6,7 @@ import painting from '@/assets/painting.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar as fasStar, faStarHalfAlt, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
 
-import { makeBid, viewBidInfo, viewListing } from '@/api/listingService'
+import { makeBid, viewBidInfo, viewListing, buyNow } from '@/api/listingService'
 import { getReviews } from '@/api/userService'
 import { Button } from '@/components'
 
@@ -63,6 +63,17 @@ const TextContainer = styled.div`
     a:hover{
         color: var(--subtext-color);
     }
+`
+
+const DescriptionContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 10px 0;
+    padding: 15px;           // Adds padding inside the container
+    border: 1px solid #ccc;  // Adds a light gray border
+    border-radius: 8px;      // Optionally round the corners of the border
+    background-color: #f9f9f9; // Gives a light background color
 `
 
 const ReviewsContainer = styled.div`
@@ -148,6 +159,10 @@ const BidContainer = styled.div`
     flex-direction: column;
     padding-top: 10px;
     gap: 10px;
+
+    input {
+        width: 25%;
+    }
 `
 
 const Listing = () => {
@@ -233,6 +248,25 @@ const Listing = () => {
 
     }
 
+    const handleBuyNow = async () => {
+        const listingId = id; // FIX
+    
+        try {
+            const response = await buyNow(listingId);
+    
+            if (response.success) {
+                alert('Purchase successful!');
+                // PUT IN UI POP UP TO DISPLAY AND X OUT
+            } else {
+                alert(`Purchase Status: ${response.message}`);
+            }
+        } catch (error) {
+            console.error('Purchase error:', error);
+            alert('An error occurred during the purchase. Please try again.');
+        }
+    };
+    
+
   return (
     <Container>
         <ImageContainer>
@@ -253,10 +287,13 @@ const Listing = () => {
                     <Line />
                     <ReviewsText>{reviewsData.numberOfReviews} Seller Reviews</ReviewsText>
                 </ReviewsContainer>
-                <p>Auction end date: {bidData.auction_end_time} | Top bid: ${bidData.highest_bid}</p>
+
+                <p style={{ marginBottom: '20px' }}>Auction end date: {bidData.auction_end_time} | Top bid: ${bidData.highest_bid}</p>
+
                 <BidContainer>
                     {isBidActive ? 
                         <>
+                        <label htmlFor="bid">Enter Bid Amount ($USD)</label>
                         <div>
                             <input
                                 id="bid"
@@ -264,7 +301,7 @@ const Listing = () => {
                                 placeholder="Bid amount"
                                 value={bid}
                                 onChange={e => setBid(e.target.value)}
-                                required 
+                                required
                             />
                         </div>
                         <ButtonContainer>
@@ -276,8 +313,9 @@ const Listing = () => {
                     </ButtonContainer>
                     }
                 </BidContainer>
-
-                <p>{listingData.description}</p>
+                <ReviewsContainer>
+                    <p>{listingData.description}</p>
+                </ReviewsContainer>
                 <br />
                 <p>Contact: Jack O'Donnell, jodonnell@princeton.edu</p>
             </TextContainer>
@@ -296,6 +334,9 @@ const Listing = () => {
                 </ReviewsContainer>
                 <p>{listingData.description}</p>
                 <br />
+                <ButtonContainer>
+                    <StyledButton text="Buy Now" onClick={handleBuyNow}/>
+                </ButtonContainer>
                 <p>Contact: Jack O'Donnell, jodonnell@princeton.edu</p>
             </TextContainer>
         )}
