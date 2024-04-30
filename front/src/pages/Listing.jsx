@@ -6,7 +6,8 @@ import painting from '@/assets/painting.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar as fasStar, faStarHalfAlt, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
 
-import { viewListing } from '@/api/listingService'
+import { makeBid, viewBidInfo, viewListing } from '@/api/listingService'
+import { getReviews } from '@/api/userService'
 import { Button } from '@/components'
 
 const Container = styled.div`
@@ -155,6 +156,8 @@ const Listing = () => {
 
     const [listingData, setListingData] = useState({})
     const [isAuction, setIsAuction] = useState(false)
+    const [reviewsData, setReviewsData] = useState({ reviews: [], numberOfReviews: 0, avgRating: 0 });
+    const [bidData, setBidData] = useState([])
 
     const [isBidActive, setIsBidActive] = useState(false)
     const [bid, setBid] = useState('')
@@ -171,11 +174,63 @@ const Listing = () => {
             }
         }
 
+        const fetchBidInfo = async () => {
+            try {
+                const data = await viewBidInfo(id)
+                // console.log(data)
+                setBidData(data)
+            } catch (error) {
+                console.error('DOESNT WORK HELP', error)
+            }
+        }
+
         fetchListing()
+        fetchBidInfo()
     }, [])
 
-    const createBid = () => {
-        console.log('meow')
+    useEffect(() => {
+        const processReviews = (reviews) => {
+            const numberOfReviews = reviews.length
+            let totalRating = 0;
+
+            reviews.forEach(review => {
+                totalRating += review.rating
+            })
+
+            const avgRating = numberOfReviews > 0 ? totalRating / numberOfReviews : 0;
+
+            return { numberOfReviews, avgRating }
+        }
+
+        const fetchReviews = async () => {
+
+            console.log("LISTING DATA", listingData)
+            try {
+                const data = await getReviews(listingData.seller_id)
+                console.log(data)
+                const { numberOfReviews, avgRating } = processReviews(data)
+                setReviewsData({ reviews: data, numberOfReviews, avgRating })
+            } catch (error) {
+                console.error("fetching reviews error", error)
+            }
+        }
+
+        fetchReviews()
+    }, [listingData])
+
+    const createBid = async () => {
+        const bidData = {
+            'listing_id': id,
+            'bid_amount': bid
+        }
+
+        try {
+            const response = await makeBid(bidData)
+            console.log(response)
+        } catch (error) {
+            console.error('some error with bid creation', error)
+        }
+
     }
 
   return (
@@ -194,11 +249,11 @@ const Listing = () => {
                 </Link>
                 
                 <ReviewsContainer>
-                    <StarRating rating={rating} />
+                    <StarRating rating={reviewsData.avgRating} />
                     <Line />
-                    <ReviewsText>5 Seller Reviews</ReviewsText>
+                    <ReviewsText>{reviewsData.numberOfReviews} Seller Reviews</ReviewsText>
                 </ReviewsContainer>
-                <p>Time left: 3d 14h | Top bid: $450</p>
+                <p>Auction end date: {bidData.auction_end_time} | Top bid: ${bidData.highest_bid}</p>
                 <BidContainer>
                     {isBidActive ? 
                         <>

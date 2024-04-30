@@ -6,7 +6,7 @@ from flask_migrate import Migrate
 from flask_mail import Mail, Message
 from datetime import datetime, timedelta
 import pytz
-from apscheduler.schedulers.background import BackgroundScheduler
+# from apscheduler.schedulers.background import BackgroundScheduler
 
 from authlib.integrations.flask_client import OAuth
 from six.moves.urllib.parse import urlencode
@@ -89,9 +89,11 @@ def create_user():
 # get info for a specific user
 @app.route('/api/users/get_user/<int:user_id>', methods=['GET', 'OPTIONS'])
 @cross_origin()
+@jwt_required()
 def get_user(user_id):
 
-    if not user_id:
+    if user_id == 0:
+        print('this runs')
         user_id = get_jwt_identity()
 
     user = User.query.get_or_404(user_id)
@@ -269,8 +271,8 @@ def upload_image():
 
 #----------------------------------------------------------------------------
 
-scheduler = BackgroundScheduler()
-scheduler.start()
+# scheduler = BackgroundScheduler()
+# scheduler.start()
 # HANDLE LISTING FUNCITONALITY
 @app.route('/api/listing/create', methods=['POST', 'OPTIONS'])
 @jwt_required()
@@ -325,12 +327,12 @@ def create_listing():
         )
         db.session.add(new_bid_item)
 
-        scheduler.add_job(
-        func=process_auction_end, 
-        trigger='date', 
-        run_date=auction_end_time,
-        args=[new_listing.id]
-        )
+        # scheduler.add_job(
+        # func=process_auction_end, 
+        # trigger='date', 
+        # run_date=auction_end_time,
+        # args=[new_listing.id]
+        # )
 
     db.session.commit()
 
@@ -479,8 +481,19 @@ def place_bid():
     user_id = get_jwt_identity()
     data = request.get_json()
 
-    bid_item_id = data.get('bid_item_id')
-    bid_amount = data.get('bid_amount')
+    listing_id = data.get('listing_id')
+    listing = Listing.query.get(listing_id)
+
+    if not listing:
+        return jsonify({"error": "listing not found"}), 404
+
+    if listing.bid_item:
+        bid_item_id = listing.bid_item.id
+    else:
+        return jsonify({"error": "not an auction"}), 404
+
+
+    bid_amount = float(data.get('bid_amount'))
     if not bid_item_id:
         return jsonify({"error": "Bid item ID must be provided"}), 400
     if not bid_amount:
@@ -488,7 +501,7 @@ def place_bid():
 
     bid_item = BidItem.query.get(bid_item_id)
     if not bid_item:
-        return jsonify({"error": "Bid item not found"}), 404
+        return jsonify({"error": "Bid item not found"}), 405
 
     # Check if new bid is at least $0.50 higher than the last
     highest_bid = bid_item.get_highest_bid()
@@ -514,6 +527,31 @@ def place_bid():
     db.session.commit()
 
     return jsonify(new_bid.to_dict()), 201
+
+@app.route('/api/bid/get_info/<int:listing_id>', methods=['GET'])
+@cross_origin()
+def get_bid_info(listing_id):
+    listing = Listing.query.get(listing_id)
+
+    if not listing:
+        return jsonify({"error": "listing not found"}), 404
+
+    if listing.bid_item:
+        bid_item_id = listing.bid_item.id
+    else:
+        return jsonify({"error": "not an auction"}), 404
+
+    bid_item = BidItem.query.get(bid_item_id)
+
+    if not bid_item:
+        return jsonify({'error': 'Bid item not found'}), 404
+
+    # get the highest bid
+    highest_bid = Bid.query.filter_by(bid_item_id=bid_item.id).order_by(Bid.bid_amount.desc()).first().bid_amount
+
+    bid_item_dict = bid_item.to_dict()
+
+    return jsonify({**bid_item_dict, 'highest_bid': highest_bid}), 200
 
 #-------------------------------------------------------------------------
 
