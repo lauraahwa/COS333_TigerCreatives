@@ -46,7 +46,7 @@ const Services = () => {
 
   return (
     <Container>
-        <Splash header="Services" subtext="Need something creative? This is the place."/>
+        <Splash header="Services" subtext="Need a creative service? This is the place."/>
         <SearchInput
           type="text"
           placeholder="Search services..."

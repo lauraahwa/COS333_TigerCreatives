@@ -336,6 +336,26 @@ def create_listing():
 
     return jsonify(new_listing.to_dict()), 201
 
+#----------------------------------------------------------------------------
+@app.route('/api/listing/buynow', methods=['PUT'])
+@jwt_required()
+@cross_origin()
+def buy():
+    listing_id = request.get_json()
+    print(listing_id)
+
+    listing = Listing.query.get(listing_id)
+
+    if listing is None:
+        return jsonify({'error': 'Listing not found'}), 404
+    
+    listing.is_processed = True
+    db.session.commit()
+
+    return jsonify({'message': 'Marked as bought in database'}), 200
+    
+#----------------------------------------------------------------------------
+
 # delete a listing
 @app.route('/api/listing/delete/<int:listing_id>', methods=['DELETE'])
 @jwt_required()
