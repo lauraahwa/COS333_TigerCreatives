@@ -2,6 +2,7 @@ import os
 
 from extensions import db
 from datetime import datetime
+import pytz
 
 from sqlalchemy import Boolean
 from sqlalchemy.orm import relationship, validates
@@ -19,9 +20,7 @@ class User(db.Model):
             'id': self.id,
             'first_name': self.first_name,
             'last_name': self.last_name,
-            'university': self.university,
             'email_address': self.email_address,
-            'age': self.age,
         }
 
 # create a listing model
@@ -31,7 +30,6 @@ class Listing(db.Model):
     title = db.Column(db.String(50), nullable=False)
     seller_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     seller = db.relationship('User', backref=db.backref('listings', lazy=True))
-    category_id = db.Column(db.Integer, nullable=False) 
     description = db.Column(db.String(250))
     price = db.Column(db.Float, nullable=False)
     image_url = db.Column(db.String)
@@ -50,7 +48,6 @@ class Listing(db.Model):
             'id': self.id,
             'title': self.title,
             'seller_id': self.seller_id,
-            'category_id': self.category_id,
             'description': self.description,
             'price': self.price,
             'image_url': self.image_url,
@@ -60,18 +57,12 @@ class Listing(db.Model):
             'is_processed': self.is_processed,
         }
 
-# create a category model
-class Category(db.Model):
-    __tablename__ = 'category'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    description = db.Column(db.String)
-
-# # create an item to bid on
+# create an item to bid on
 class BidItem(db.Model):
     __tablename__ = 'bid_item'
     id = db.Column(db.Integer, primary_key=True)
-    listing_id = db.Column(db.Integer, db.ForeignKey('listing.id'))  # Ensure this FK is correct
+    listing_id = db.Column(db.Integer, db.ForeignKey('listing.id'))
+    bid_count = db.Column(db.Integer, default=0) # initialize bid count
     auction_start_time = db.Column(db.DateTime)
     auction_end_time = db.Column(db.DateTime)
     listing = db.relationship('Listing',
@@ -96,7 +87,14 @@ class Bid(db.Model):
     bid_item_id = db.Column(db.Integer, db.ForeignKey('bid_item.id')) # Link to the bid item
     bidder_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Link to the user making the bid
     bid_amount = db.Column(db.Float, nullable=False)  # The amount of the bid
-    bid_time = db.Column(db.DateTime, default=datetime.utcnow)  # When the bid was placed
+
+    def get_est_now():
+        est_tz = pytz.timezone('US/Eastern')
+        utc_now = datetime.utcnow().replace(tzinfo=pytz.utc)
+        return utc_now.astimezone(est_tz)
+
+    bid_time = db.Column(db.DateTime, default=get_est_now)  # When the bid was placed
+
     bidder = db.relationship('User', backref='bid', lazy=True)
     bid_item = db.relationship('BidItem', backref=db.backref('bid', lazy='dynamic'))
 
