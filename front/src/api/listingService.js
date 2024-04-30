@@ -95,11 +95,28 @@ export const uploadImage = async (formData) => {
     return response.data
 }
 
-export const makeBid = async (bid) => {
-    const endpoint = '/api/bid'
+export const makeBid = async (data) => {
+    const endpoint = '/api/bid/place'
 
     try {
-        const response = await apiClient.post(endpoint, bid) 
+        const response = await apiClient.post(endpoint, data) 
+        console.log(response.status);
+        console.log(response.data);
+        
+        return response.data;
+
+    } catch (error) {
+        console.error(error);
+
+        throw error;
+    }
+}
+
+export const viewBidInfo = async (id) => {
+    const endpoint = `/api/bid/get_info/${id}`
+
+    try {
+        const response = await apiClient.get(endpoint)
         console.log(response.status);
         console.log(response.data);
         

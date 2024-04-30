@@ -108,6 +108,15 @@ class BidItem(db.Model):
         highest_bid = db.session.query(db.func.max(Bid.bid_amount)).filter_by(bid_item_id=self.id).scalar()
         return highest_bid if highest_bid is not None else 0
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'listing_id': self.listing_id,
+            'bid_count': self.bid_count,
+            'auction_start_time': self.auction_start_time,
+            'auction_end_time': self.auction_end_time,
+        }
+
 # create a bid
 class Bid(db.Model):
     __tablename__ = 'bid'

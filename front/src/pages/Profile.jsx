@@ -10,7 +10,7 @@ import { useAuth0 } from "@auth0/auth0-react"
 import { Dialog } from '@headlessui/react'
 
 import { viewListings } from '@/api/listingService'
-import { login } from '@/api/userService'
+import { login, getReviews, getProfile } from '@/api/userService'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar as fasStar, faStarHalfAlt, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
@@ -154,9 +154,9 @@ const StarRating = ({ rating }) => {
     const Profile = () => {
         const { user, isAuthenticated, handleRedirectCallback, getAccessTokenSilently } = useAuth0();
 
-        const { profileData } = useProfile();
         const [listingsData, setListingsData] = useState([])
         const [userData, setUserData] = useState([])
+        const [reviewsData, setReviewsData] = useState([])
 
         const rating = 4.2
 
@@ -197,23 +197,62 @@ const StarRating = ({ rating }) => {
                 } catch (error) {
                     console.error('token error', error)
                 }
-
-
                 
             };
 
-            // const fetchUserInfo = async () => {
-            //     try {
-            //         const data = await getUserInfo();
-            //         console.log("User data fetched", data)
-            //         setUserData(data)
-            //     } catch (error) {
-            //         console.error("Fetching user data error", error)
-            //     }
-            // }
+            const fetchUserInfo = async () => {
+                try {
+                    const data = await getProfile('0');
+                    console.log("User data fetched", data)
+                    setUserData(data)
+                } catch (error) {
+                    console.error("Fetching user data error", error)
+                }
+            }
 
             fetchListings();
+            fetchUserInfo();
+            
         }, [])
+
+        useEffect(() => {
+            const processReviews = (reviews) => {
+                const numberOfReviews = reviews.length
+                let totalRating = 0;
+
+                if (numberOfReviews == null) {
+                    return { 'numberOfReviews': 0, 'avgRating': 0 }
+                }
+    
+                reviews.forEach(review => {
+                    totalRating += review.rating
+                })
+    
+                const avgRating = numberOfReviews > 0 ? totalRating / numberOfReviews : 0;
+    
+                return { numberOfReviews, avgRating }
+            }
+    
+            const fetchReviews = async () => {
+                if (!userData || !userData.id) {  // Check if userData and userData.id are valid
+                    console.log("User data not available yet");
+                    return;
+                }
+
+                try {
+                    console.log(userData)
+                    const data = await getReviews(userData.id)
+                    console.log(data)
+                    const { numberOfReviews, avgRating } = processReviews(data)
+                    setReviewsData({ reviews: data, numberOfReviews, avgRating })
+                } catch (error) {
+                    console.error("fetching reviews error", error)
+                }
+            }
+
+            fetchReviews()
+        }, [userData])
+        
         return (
             isAuthenticated && (
             <Container>
@@ -229,9 +268,9 @@ const StarRating = ({ rating }) => {
                             {user.email.split('@')[0]}
                         </ProfileName>
                         <ReviewsContainer>
-                            <StarRating rating={rating} />
+                            <StarRating rating={reviewsData.avgRating} />
                             <Line />
-                            <ReviewsText>5 Seller Reviews</ReviewsText>
+                            <ReviewsText>{reviewsData.numberOfReviews} Seller Reviews</ReviewsText>
                         </ReviewsContainer>
                         <StyledButtonContainer>
                             <StyledLink to="/create">
@@ -245,9 +284,9 @@ const StarRating = ({ rating }) => {
                             {profileData.bio}
                         </ProfileBio> */}
                     </ProfileDetails>
-                    <Link to='/editprofile' style={{ textDecoration: 'none' }}>
+                    {/* <Link to='/editprofile' style={{ textDecoration: 'none' }}>
                         <Button text="Edit Profile" style={{ width: '200px' }} />
-                    </Link>
+                    </Link> */}
                 </ProfileContainer>
                 
                 <h2>Your listings</h2>
