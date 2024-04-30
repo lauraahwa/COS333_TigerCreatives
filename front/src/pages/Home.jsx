@@ -102,7 +102,7 @@ const Home = () => {
       </Container>
       <Banner>
           <h1>Are you a creative?</h1>
-          <h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </h2>
+          <h2>TigerCreatives is a platform for members of the Princeton community to list and purchase creative goods and services in a seamless fashion. From handmade jewelry to photography services, TigerCreatives aims to be Princetons go-to hub for artistry exchange. </h2>
           <Button text="get started" />
       </Banner>
     </>

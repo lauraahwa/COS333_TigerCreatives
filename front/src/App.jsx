@@ -5,8 +5,8 @@ import {
   Outlet
 } from "react-router-dom"
 import {ProfileProvider} from '@/components/ProfileInfo';
-import { Home, Shop, Sellers, Profile, EditProfile, About, Login, Listing, CreateListing, CreateBidListing  } from './pages'
-import { Navbar, Footer } from './components'
+import { Home, Shop, Services, Seller, Profile, EditProfile, About, Login, Listing, CreateListing  } from './pages'
+import { Navbar, Footer, ReviewForm } from './components'
 
 const MainLayout = () => (
   <>
@@ -23,15 +23,16 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <Home />, index: true },
       { path: "/shop", element: <Shop /> },
-      { path: "/sellers", element: <Sellers /> },
+      { path: "/services", element: <Services /> },
       { path: "/about", element: <About /> },
       { path: "/listing/:id", element: <Listing /> },
       { path: "/profile", element: <Profile /> },
+      { path: "/seller/:id", element: <Seller />},
       { path: "/editprofile", element: <EditProfile /> },
       { path: "/index", element: <EditProfile /> },
       { path: "/login", element: <Login /> },
       { path: "/create", element: <CreateListing /> },
-      { path: "/create-bid", element: <CreateBidListing /> },
+      { path: "/create-review/:id", element: <ReviewForm /> },
     ],
   
   },

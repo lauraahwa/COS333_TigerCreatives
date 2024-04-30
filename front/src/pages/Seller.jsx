@@ -9,11 +9,11 @@ import { useAuth0 } from "@auth0/auth0-react"
 
 import { Dialog } from '@headlessui/react'
 
-import { viewListings } from '@/api/listingService'
-import { login } from '@/api/userService'
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar as fasStar, faStarHalfAlt, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
+
+import { getProfile, getReviews } from '@/api/userService'
+import { viewListings } from '@/api/listingService'
 
 
 const Container = styled.div`
@@ -62,9 +62,8 @@ const ProfileBio = styled.p`
 `
 
 const StyledButtonContainer = styled.div`
-    margin-top: 20px;
+    margin: 50px;
     display: flex;
-    margin-left: 50px;
 `
 
 const StyledLink = styled(Link)`
@@ -121,18 +120,6 @@ const ReviewsContainer = styled.div`
     align-items: center;
 `
 
-const Line = styled.div`
-    margin: 0 1.5vw;
-    border-left: 1px solid var(--subtext-color);
-    height: 20px;
-`
-
-const ReviewsText = styled.p`
-    font-size: 0.8rem;
-    color: var(--subtext-color);
-    font-weight: 400;
-`
-
 const StarRating = ({ rating }) => {
     const fullStars = Math.floor(rating);
     const halfStars = rating % 1 >= 0.5 ? 1 : 0;
@@ -151,14 +138,27 @@ const StarRating = ({ rating }) => {
     );
 }
 
-    const Profile = () => {
+const Line = styled.div`
+    margin: 0 1.5vw;
+    border-left: 1px solid var(--subtext-color);
+    height: 20px;
+`
+
+const ReviewsText = styled.p`
+    font-size: 0.8rem;
+    color: var(--subtext-color);
+    font-weight: 400;
+`
+
+    const Seller = () => {
         const { user, isAuthenticated, handleRedirectCallback, getAccessTokenSilently } = useAuth0();
+        const rating = 3.5
 
-        const { profileData } = useProfile();
+        let { id } = useParams()
+        const [profileData, setProfileData] = useState([])
         const [listingsData, setListingsData] = useState([])
-        const [userData, setUserData] = useState([])
-
-        const rating = 4.2
+        const [reviewsData, setReviewsData] = useState({ reviews: [], numberOfReviews: 0, avgRating: 0 });
+        const [email, setEmail] = useState('')
 
         // useEffect(() => {
         //     const handleAuthCallback = async () => {
@@ -174,33 +174,52 @@ const StarRating = ({ rating }) => {
         // }, [handleRedirectCallback, isAuthenticated, getAccessTokenSilently])
 
         useEffect(() => {
+            const fetchProfile = async () => {
+                try {
+                    const data = await getProfile(id)
+                    console.log(data)
+                    setProfileData(data)
+                    setEmail(data.email_address)
+                } catch (error) {
+                    console.error("fetching profile error", error)
+                }                         
+            };
 
             const fetchListings = async () => {
-                if (!user) {
-                    console.log('user not defined yet')
-                    return
-                }
-                console.log(user)
                 try {
-                    const response = await login(user);
-                    const token = response;
-                    localStorage.setItem('token', token)
-                    console.log("token:" + token)
-
-                    try {
-                        const data = await viewListings('user_items');
-                        console.log("Data fetched", data)
-                        setListingsData(data)
-                    } catch (error) {
-                        console.error("Fetching listings error:", error);
-                    }
+                    const data = await viewListings(`seller_items/${id}`)
+                    console.log("Data fetched", data)
+                    setListingsData(data)
                 } catch (error) {
-                    console.error('token error', error)
+                    console.error("Fetching listings error:", error);
                 }
+            }
+
+            const processReviews = (reviews) => {
+                const numberOfReviews = reviews.length
+                let totalRating = 0;
+
+                reviews.forEach(review => {
+                    totalRating += review.rating
+                })
+
+                const avgRating = numberOfReviews > 0 ? totalRating / numberOfReviews : 0;
+
+                return { numberOfReviews, avgRating }
+            }
+
+            const fetchReviews = async () => {
+                try {
+                    const data = await getReviews(id)
+                    console.log(data)
+                    const { numberOfReviews, avgRating } = processReviews(data)
+                    setReviewsData({ reviews: data, numberOfReviews, avgRating })
+                } catch (error) {
+                    console.error("fetching reviews error", error)
+                }
+            }
 
 
-                
-            };
 
             // const fetchUserInfo = async () => {
             //     try {
@@ -212,48 +231,46 @@ const StarRating = ({ rating }) => {
             //     }
             // }
 
-            fetchListings();
+            fetchProfile();
+            fetchListings()
+            fetchReviews()
         }, [])
         return (
             isAuthenticated && (
             <Container>
-                <Splash header="Profile" subtext="View your listings or create a new one!" />
+                <Splash header="Profile" subtext="Find a seller with a style that you enjoy most!" />
                 <Content>
-                    {/* <EditProfile to = "/editprofile">Edit Bio</EditProfile> */}
                 <ProfileContainer>
                     <ProfilePic>
                         <img src={user.picture} />
                     </ProfilePic>
                     <ProfileDetails>
                         <ProfileName> 
-                            {user.email.split('@')[0]}
+                            {email.split('@')[0]}
                         </ProfileName>
                         <ReviewsContainer>
-                            <StarRating rating={rating} />
+                            <StarRating rating={reviewsData.avgRating} />
                             <Line />
-                            <ReviewsText>5 Seller Reviews</ReviewsText>
+                            <ReviewsText>{reviewsData.numberOfReviews} Seller Reviews</ReviewsText>
                         </ReviewsContainer>
                         <StyledButtonContainer>
-                            <StyledLink to="/create">
-                                <Button text="Create Listing"/>
+                            <StyledLink to={`/create-review/${profileData.id}`}>
+                                <Button text="Leave a review"/>
                             </StyledLink>
                         </StyledButtonContainer>
-                        {/* <Role>
+                        <Role>
                             {profileData.userType}
                         </Role>
                         <ProfileBio>
                             {profileData.bio}
-                        </ProfileBio> */}
+                        </ProfileBio>
                     </ProfileDetails>
-                    <Link to='/editprofile' style={{ textDecoration: 'none' }}>
-                        <Button text="Edit Profile" style={{ width: '200px' }} />
-                    </Link>
                 </ProfileContainer>
-                
-                <h2>Your listings</h2>
+                <h2>Their listings</h2>
                 <GridContainer>
                     <Grid data={listingsData} />
                 </GridContainer>
+
                 
                 {/* <Grid isLanding={true}/> */}
             </Content>
@@ -262,4 +279,4 @@ const StarRating = ({ rating }) => {
     )
 }
 
-export default Profile
+export default Seller

@@ -88,7 +88,7 @@ const Navbar = () => {
           <StyledLink to='/shop'>
             shop
           </StyledLink>
-          <StyledLink to='/sellers'>
+          <StyledLink to='/services'>
             services
           </StyledLink>
           <StyledLink to='/about'>

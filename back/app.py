@@ -21,7 +21,7 @@ import cloudinary.api
 
 from dotenv import load_dotenv
 
-from models import User, Listing, Bid, BidItem
+from models import User, Listing, Bid, BidItem, Review
 from extensions import db
 
 #----------------------------------------------------------------------------
@@ -87,7 +87,8 @@ def create_user():
 #----------------------------------------------------------------------------
 
 # get info for a specific user
-@app.route('/api/user/get_user/<int:user_id>', methods=['GET'])
+@app.route('/api/users/get_user/<int:user_id>', methods=['GET', 'OPTIONS'])
+@cross_origin()
 def get_user(user_id):
 
     if not user_id:
@@ -95,7 +96,9 @@ def get_user(user_id):
 
     user = User.query.get_or_404(user_id)
 
-    return jsonify(user.to_dict(), 200)
+    return jsonify(user.to_dict()), 200
+
+# edit user info
 
 #----------------------------------------------------------------------------
 
@@ -136,6 +139,56 @@ def logoutapp():
 def logoutcas():
     return auth.logoutcas()
 
+
+#-----------------------------------------------------------------------
+# REVIEWS
+
+@app.route('/api/reviews/create', methods=['POST', 'OPTIONS'])
+@cross_origin()
+@jwt_required()
+def create_review():
+    data = request.get_json()
+    
+    user_id = get_jwt_identity()
+    seller_id = data.get('seller_id')
+    rating = data.get('rating')
+    text = data.get('text')
+
+    # if any of fields are missing
+    if not seller_id or not rating:
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    # Check if the listing exists
+    seller = User.query.get(seller_id)
+    if not seller:
+        return jsonify({'error': 'Listing not found'}), 404
+
+    # Check if the user is trying to review their own listing
+    if seller_id == user_id:
+        return jsonify({'error': "Cannot review your own listing"}), 403
+
+    # Check if the user has already reviewed this seller
+    existing_review = Review.query.filter_by(user_id=user_id, seller_id=seller_id).first()
+    if existing_review:
+        return jsonify({'error': "You have already reviewed this seller"}), 400
+
+    # All checks passed, create the review
+    new_review = Review(user_id=user_id, seller_id=seller_id, rating=rating, text=text)
+    db.session.add(new_review)
+    db.session.commit()
+    return jsonify(new_review.to_dict()), 201
+
+@app.route('/api/reviews/get/<int:seller_id>', methods=['GET'])
+@cross_origin()
+def get_reviews(seller_id):
+    
+    reviews = Review.query.filter_by(seller_id=seller_id).all()
+
+    if reviews:
+        return jsonify([review.to_dict() for review in reviews]), 200
+    else:
+        return jsonify({'message': 'No reviews found for this user'}), 200
+
 #-----------------------------------------------------------------------
 
 # GENERATE TOKEN FOR TESTING
@@ -168,7 +221,6 @@ def login():
 @app.route('/protected', methods=['GET'])
 @jwt_required()
 def protected():
-    print(request.headers)  # Debug: Print headers to see if Authorization is present
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
 #-----------------------------------------------------------------------
@@ -242,6 +294,12 @@ def create_listing():
             return jsonify({"error": "Invalid format for auction end time. Use YYYY-MM-DD HH:MM:SS."}), 400
     else:
         auction_end_time = None
+    print(data)
+
+    try:
+        bid_start_price = data['bid_start_price']
+    except:
+        bid_start_price = None
 
     new_listing = Listing(
         title=data['title'],
@@ -251,8 +309,9 @@ def create_listing():
         image_url=data['image_url'],
         is_auction=data['is_auction'],
         is_service=data['is_service'],
-        auction_end_time=data['auction_end_time'],
-        is_processed=data['is_processed']
+        auction_end_time=auction_end_time,
+        is_processed=data['is_processed'],
+        bid_start_price=bid_start_price,
     )
 
     db.session.add(new_listing)
@@ -277,12 +336,24 @@ def create_listing():
 
     return jsonify(new_listing.to_dict()), 201
 
-def process_auction_end(bid_item_id):
-    return "stuff from process route, fix later"
+# delete a listing
+@app.route('/api/listing/delete/<int:listing_id>', methods=['DELETE'])
+@jwt_required()
+@cross_origin()
+def delete_listing(listing_id):
+    listing = Listing.query.get(listing_id)
+    if listing is None:
+        return jsonify({'error': 'Listing not found'}), 404
 
-#----------------------------------------------------------------------------
-# BELOW IS FOR LISTING DISPLAY
-#----------------------------------------------------------------------------
+    user_id = get_jwt_identity()
+    if listing.seller_id != user_id:
+        return jsonify({'error': 'Unauthorized to delete this listing'}), 403
+
+    # Delete the listing from the database
+    db.session.delete(listing)
+    db.session.commit()
+    
+    return jsonify({'message': 'Listing deleted successfully'}), 200
 
 # get a list of all items/products listed on the platform
 @app.route('/api/listing/items', methods=['GET'])
@@ -316,7 +387,13 @@ def get_user_items():
 
     return jsonify([listing.to_dict() for listing in listings])
 
-#----------------------------------------------------------------------------
+# get a list of all listings created by a specfic user
+@app.route('/api/listing/seller_items/<int:seller_id>', methods=['GET', 'OPTIONS'])
+@cross_origin()
+def get_seller_items(seller_id):
+    listings = Listing.query.filter(Listing.seller_id == seller_id).all()
+
+    return jsonify([listing.to_dict() for listing in listings]), 200
 
 @app.route('/api/listing/item/<int:id>', methods=['GET', 'OPTIONS'])
 def get_listing(id):
@@ -326,6 +403,7 @@ def get_listing(id):
     # If no listing is found, return an error message with a 404 status code
     if listing is None:
         return jsonify({"error": "Listing not found"}), 404
+        
     
     # If a listing is found, return it as JSON
     return jsonify(listing.to_dict()), 200
