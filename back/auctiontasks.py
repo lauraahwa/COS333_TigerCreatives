@@ -1,21 +1,20 @@
-import apscheduler
-from apscheduler.schedulers.background import BackgroundScheduler
-import atexit
-from models import BidItem, Bid
-from datetime import datetime, timedelta
+from datetime import datetime
+from models import db, BidItem, Bid  # Assume appropriate models are imported
 
 def check_auctions():
-    now = datetime.utcnow()
-    recently_ended_items = BidItem.query.filter(BidItem.auction_end_time <= now, BidItem.auction_end_time > now - timedelta(minutes=1)).all()
-    for item in recently_ended_items:
-        highest_bid = Bid.query.filter_by(bid_item_id=item.id).order_by(Bid.bid_amount.desc()).first()
-        if highest_bid:
-            print(f'Highest bid for item {item.id} was {highest_bid.bid_amount} by user {highest_bid.bidder_id}')
+    current_time = datetime.utcnow()
+    # Query BidItems whose auction end time has passed but not yet marked as processed
+    bid_items = BidItem.query.filter(BidItem.auction_end_time <= current_time, BidItem.processed == False).all()
 
-def setup_scheduler():
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(check_auctions, 'interval', minutes=1)
-    scheduler.start()
+    for item in bid_items:
+        process_auction_end(item)
 
-    # Shut down the scheduler when exiting the app
-    atexit.register(lambda: scheduler.shutdown())
+def process_auction_end(bid_item):
+    # Here you would implement the logic to handle the end of an auction
+    # For example, determine the highest bid and mark the winner
+    highest_bid = Bid.query.filter_by(bid_item_id=bid_item.id).order_by(Bid.bid_amount.desc()).first()
+    if highest_bid:
+        print(f"Highest bid for item {bid_item.id} is {highest_bid.bid_amount} by user {highest_bid.bidder_id}")
+        # Implement logic to mark the item as processed or notify users, etc.
+    # bid_item.processed = True  # Mark the bid item as processed to avoid reprocessing
+    db.session.commit()

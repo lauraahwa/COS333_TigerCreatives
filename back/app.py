@@ -18,7 +18,7 @@ import cloudinary.api
 
 from dotenv import load_dotenv
 
-from models import User, Listing
+from models import User, Listing, Bid, BidItem
 from extensions import db
 
 load_dotenv()
@@ -113,8 +113,15 @@ def logoutcas():
     return auth.logoutcas()
 
 #-----------------------------------------------------------------------
-# LOGIN STUFF
 
+# GENERATE TOKEN FOR TESTING
+@app.route('/token', methods=['GET'])
+@cross_origin()
+def get_token():
+    access_token = create_access_token(identity=12)
+    return jsonify({'access_token': access_token}), 200
+
+# LOGIN STUFF
 @app.route('/login', methods=['POST', 'OPTIONS'])
 @cross_origin()
 def login():
@@ -205,6 +212,7 @@ def create_listing():
         is_auction=data['is_auction'],
         is_service=data['is_service'],
         auction_end_time=data['auction_end_time'],
+        is_processed=data['is_processed']
     )
 
     db.session.add(new_listing)
@@ -284,7 +292,7 @@ def create_bid():
 
     return jsonify(new_bid_item.to_dict()), 200
 
-# placing a big
+# placing a bid
 @app.route('/api/bid/place', methods=['POST'])
 #
 def place_bid():

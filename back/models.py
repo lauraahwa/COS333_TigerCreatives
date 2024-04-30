@@ -46,6 +46,7 @@ class Listing(db.Model):
     is_service = db.Column(Boolean, default=False, nullable=False)
     is_auction = db.Column(Boolean, default=False, nullable=False)
     auction_end_time = db.Column(db.DateTime, nullable=True)
+    is_processed = db.Column(Boolean, nullable=False)
     bid_item = db.relationship('BidItem',
                             back_populates='listing',
                             uselist=False,
@@ -73,6 +74,7 @@ class Listing(db.Model):
             'is_service': self.is_service,
             'is_auction': self.is_auction,
             'auction_end_time': self.auction_end_time,
+            'is_processed': self.is_processed,
         }
 
 # create a category model
