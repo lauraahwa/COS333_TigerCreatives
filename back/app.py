@@ -18,7 +18,7 @@ import cloudinary.api
 
 from dotenv import load_dotenv
 
-from models import User, Listing
+from models import User, Listing, Review
 from extensions import db
 
 load_dotenv()
@@ -67,7 +67,8 @@ def create_user():
     return jsonify(new_user.to_dict()), 201
 
 # get info for a specific user
-@app.route('/api/user/get_user/<int:user_id>', methods=['GET'])
+@app.route('/api/users/get_user/<int:user_id>', methods=['GET', 'OPTIONS'])
+@cross_origin()
 def get_user(user_id):
 
     if not user_id:
@@ -75,7 +76,7 @@ def get_user(user_id):
 
     user = User.query.get_or_404(user_id)
 
-    return jsonify(user.to_dict(), 200)
+    return jsonify(user.to_dict()), 200
 
 # get all users
 @app.route('/users', methods=['GET'])
@@ -111,6 +112,47 @@ def logoutapp():
 @app.route('/logoutcas', methods=['GET'])
 def logoutcas():
     return auth.logoutcas()
+
+
+#-----------------------------------------------------------------------
+# REVIEWS
+
+@app.route('/api/reviews/create', methods=['POST', 'OPTIONS'])
+@cross_origin()
+@jwt_required()
+def create_review():
+    data = request.get_json()
+    
+    user_id = get_jwt_identity()
+    listing_id = data.get('listing_id')
+    rating = data.get('rating')
+    text = data.get('text')
+
+    # if any of fields are missing
+    if not listing_id or not rating:
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    # Check if the listing exists
+    listing = Listing.query.get(listing_id)
+    if not listing:
+        return jsonify({'error': 'Listing not found'}), 404
+
+    # Check if the user is trying to review their own listing
+    if listing.seller_id == user_id:
+        return jsonify({'error': "Cannot review your own listing"}), 403
+
+    # Check if the user has already reviewed this listing
+    existing_review = Review.query.filter_by(user_id=user_id, listing_id=listing_id).first()
+    if existing_review:
+        return jsonify({'error': "You have already reviewed this item"}), 400
+
+    # All checks passed, create the review
+    new_review = Review(user_id=user_id, listing_id=listing_id, rating=rating, text=text)
+    db.session.add(new_review)
+    db.session.commit()
+    return jsonify(new_review.to_dict()), 201
+
+    
 
 #-----------------------------------------------------------------------
 # LOGIN STUFF
@@ -276,13 +318,12 @@ def get_user_items():
     return jsonify([listing.to_dict() for listing in listings])
 
 # get a list of all listings created by a specfic user
-@app.route('/api/listing/seller_items/<int:seller_id>', methods=['GET'])
+@app.route('/api/listing/seller_items/<int:seller_id>', methods=['GET', 'OPTIONS'])
 @cross_origin()
-@jwt_required()
 def get_seller_items(seller_id):
     listings = Listing.query.filter(Listing.seller_id == seller_id).all()
 
-    return jsonify([listing.to_dict() for listing in listings])
+    return jsonify([listing.to_dict() for listing in listings]), 200
 
 @app.route('/api/listing/item/<int:id>', methods=['GET', 'OPTIONS'])
 def get_listing(id):

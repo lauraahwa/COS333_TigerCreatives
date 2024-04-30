@@ -142,6 +142,11 @@ const StyledButton = styled(Button)`
     padding: 5px 10px;
 `
 
+const BidContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+`
+
 const Listing = () => {
     let { id } = useParams();
     const rating = 3.5
@@ -185,9 +190,12 @@ const Listing = () => {
                     <ReviewsText>5 Seller Reviews</ReviewsText>
                 </ReviewsContainer>
                 <p>Time left: 3d 14h | Top bid: $450</p>
-                <ButtonContainer>
-                    <StyledButton text="Place bid"/>
-                </ButtonContainer>
+                <BidContainer>
+                    <ButtonContainer>
+                        <StyledButton text="Place bid" onClick={() => setModalIsOpen(true)}/>
+                    </ButtonContainer>
+                </BidContainer>
+
                 <p>{listingData.description}</p>
                 <br />
                 <p>Contact: Jack O'Donnell, jodonnell@princeton.edu</p>

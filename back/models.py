@@ -27,10 +27,33 @@ class User(db.Model):
             'id': self.id,
             'first_name': self.first_name,
             'last_name': self.last_name,
-            'university': self.university,
             'email_address': self.email_address,
-            'age': self.age,
         }
+
+class Review(db.Model):
+    __tablename__ = 'review'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    text = db.Column(db.String(500), nullable=False)  # You can adjust the length as needed
+    rating = db.Column(db.Integer, nullable=False)
+
+    # relationship to the User model
+    user = db.relationship('User', backref=db.backref('reviews', lazy=True))
+
+    @validates('rating')
+    def validate_rating(self, key, value):
+        if not (1 <= value <= 5):
+            raise ValueError("Rating must be between 1 and 5")
+        return value
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'text': self.text,
+            'rating': self.rating,
+        }
+
 
 # create a listing model
 class Listing(db.Model):

@@ -9,6 +9,7 @@ import { useAuth0 } from "@auth0/auth0-react"
 
 import { Dialog } from '@headlessui/react'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar as fasStar, faStarHalfAlt, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
 
 import { getProfile } from '@/api/userService'
@@ -61,9 +62,8 @@ const ProfileBio = styled.p`
 `
 
 const StyledButtonContainer = styled.div`
-    margin-top: 50px;
+    margin: 50px;
     display: flex;
-    margin-bottom: 50px;
 `
 
 const StyledLink = styled(Link)`
@@ -86,6 +86,35 @@ const GridContainer = styled.div`
     flex-direction: column;
     padding: 0 100px;
     margin: 50px 0;
+`
+
+const FullStar = styled(FontAwesomeIcon)`
+  margin-right: 5px;
+
+  path {
+    fill: var(--accent-color)
+  }
+  
+`;
+
+const HalfStar = styled(FontAwesomeIcon)`
+  margin-right: 5px;
+
+  path {
+    fill: var(--accent-color);
+  }
+`;
+
+const EmptyStar = styled(FontAwesomeIcon)`
+  margin-right: 5px;
+
+  path {
+    fill: #e3e3e3;
+  }
+`;
+
+const StarContainer = styled.div`
+    margin-left: 50px; 
 `
 
 const StarRating = ({ rating }) => {
@@ -172,9 +201,16 @@ const StarRating = ({ rating }) => {
                     </ProfilePic>
                     <ProfileDetails>
                         <ProfileName> 
-                            {user.email.split('@')[0]}
+                            {profileData.email_address.split('@')[0]}
                         </ProfileName>
-                        <StarRating rating={rating} />
+                        <StarContainer>
+                            <StarRating rating={rating} />
+                        </StarContainer>
+                        <StyledButtonContainer>
+                            <StyledLink to="/create-review">
+                                <Button text="Leave a review"/>
+                            </StyledLink>
+                        </StyledButtonContainer>
                         <Role>
                             {profileData.userType}
                         </Role>
@@ -183,15 +219,11 @@ const StarRating = ({ rating }) => {
                         </ProfileBio>
                     </ProfileDetails>
                 </ProfileContainer>
-                <h2>Your listings</h2>
+                <h2>Their listings</h2>
                 <GridContainer>
                     <Grid data={listingsData} />
                 </GridContainer>
-                <StyledButtonContainer>
-                    <StyledLink to="/create">
-                        <Button text="Create Listing"/>
-                    </StyledLink>
-            </StyledButtonContainer>
+
                 
                 {/* <Grid isLanding={true}/> */}
             </Content>
