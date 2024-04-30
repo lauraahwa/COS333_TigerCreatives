@@ -33,6 +33,15 @@ _DATABASE_URL = _DATABASE_URL.replace('postgres://', 'postgresql://')
 app.config['SQLALCHEMY_DATABASE_URI'] = _DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'meowmeow44556'
+
+# TO SEND EMAILS
+app.config['MAIL_SERVER'] = 'smtp.example.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'your-email@example.com'
+app.config['MAIL_PASSWORD'] = 'your-password'
+mail = Mail(app)
+
 jwt = JWTManager(app)
 
 app.config['APP_SECRET_KEY'] = os.getenv('APP_SECRET_KEY')
@@ -256,36 +265,7 @@ def create_listing():
     return jsonify(new_listing.to_dict()), 201
 
 def process_auction_end(bid_item_id):
-    bid_item = BidItem.query.get(bid_item_id)
-    if not bid_item:
-        return {'error': 'Bid item not found'}, 404
-    
-    # check if auction has ended
-    est_tz = pytz.timezone('US/Eastern')
-    auction_end_time = datetime.strptime(bid_item['auction_end_time'], '%Y-%m-%d %H:%M:%S')
-    auction_end_time = est_tz.localize(auction_end_time)
-    if bid_item.auction_end_time > datetime.now(est_tz):
-        return {'error': 'Auction has not ended yet'}, 400
-    
-    # get listing tied to bid_item_id
-    listing = bid_item.listing
-    print(listing.seller_id)
-    print(listing == None)
-
-    if listing.is_processed:
-        return {'error': 'Auction already processed'}, 400
-    # find the highest bid
-    highest_bid = Bid.query.filter_by(bid_item_id=bid_item.id).order_by(Bid.bid_amount.desc()).first()
-    if highest_bid:
-        listing.is_processed = True
-        db.session.commit()
-        return {
-            'message': f"Highest bid for item {bid_item_id} is {highest_bid.bid_amount}",
-            'bidder_id': highest_bid.bidder_id,
-            'listing_id': 1
-        }, 200
-    else:
-        return {'message': 'No bids found for this item'}, 404
+    return "stuff from process route, fix later"
 
 # get a list of all items/products listed on the platform
 @app.route('/api/listing/items', methods=['GET'])
@@ -419,29 +399,17 @@ def place_bid():
     return jsonify(new_bid.to_dict()), 201
 
 
-# # view bid items
-# @app.route('/api/biditem/view', methods=['GET'])
-# def get_bids_for_item(biditem_id):
-#     bids = Bid.query.filter_by(biditem_id=biditem_id).all()
-    
-#     return jsonify([bid.to_dict() for bid in bids])
+# view listings that are actively being bid on
+@app.route('/api/listings/active', methods=['GET'])
+def get_active_listings():
+    # Directly query the Listing model for active auction listings
+    active_listings = Listing.query.filter(
+        Listing.is_auction == True,
+        Listing.is_processed == False
+    ).all()
 
-# # # Define a protected route
-# # @app.route('/protected', methods=['GET'])
-# # def protected():
-# #     if 'username' not in session:
-# #         return redirect(url_for('login'))
-    
-# #     # Fetch user data from the database
-# #     user = User.query.filter_by(username=session['username']).first()
-# #     if not user:
-# #         return 'User not found'
-    
-# #     # Return user data
-# #     return jsonify({
-# #         'username': user.username,
-# #         'email': user.email
-# #     })
+    # Serialize the listings to JSON, assuming you have a method to do so
+    return jsonify([listing.to_dict() for listing in active_listings])
 
 if __name__ == "__main__":
     with app.app_context():
