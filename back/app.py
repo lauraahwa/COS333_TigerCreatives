@@ -24,6 +24,8 @@ from dotenv import load_dotenv
 from models import User, Listing, Bid, BidItem
 from extensions import db
 
+#----------------------------------------------------------------------------
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -43,6 +45,8 @@ app.config['MAIL_PASSWORD'] = 'your-password'
 mail = Mail(app)
 
 jwt = JWTManager(app)
+
+#----------------------------------------------------------------------------
 
 app.config['APP_SECRET_KEY'] = os.getenv('APP_SECRET_KEY')
 
@@ -66,6 +70,8 @@ CORS(app)
 migrate = Migrate(app, db)
 db.init_app(app)
 
+#----------------------------------------------------------------------------
+
 # create a user
 @app.route('/api/users/create', methods=['POST'])
 @cross_origin()
@@ -78,6 +84,8 @@ def create_user():
     db.session.commit()
     return jsonify(new_user.to_dict()), 201
 
+#----------------------------------------------------------------------------
+
 # get info for a specific user
 @app.route('/api/user/get_user/<int:user_id>', methods=['GET'])
 def get_user(user_id):
@@ -89,11 +97,15 @@ def get_user(user_id):
 
     return jsonify(user.to_dict(), 200)
 
+#----------------------------------------------------------------------------
+
 # get all users
 @app.route('/users', methods=['GET'])
 def get_users():
     users = User.query.all()
     return jsonify([user.to_dict() for user in users])
+
+#----------------------------------------------------------------------------
 
 @app.route('/users/<int:user_id>', methods=['PUT', 'DELETE'])
 def handle_user(user_id):
@@ -204,6 +216,7 @@ def upload_image():
         }), 500
 
 #----------------------------------------------------------------------------
+
 scheduler = BackgroundScheduler()
 scheduler.start()
 # HANDLE LISTING FUNCITONALITY
@@ -267,12 +280,18 @@ def create_listing():
 def process_auction_end(bid_item_id):
     return "stuff from process route, fix later"
 
+#----------------------------------------------------------------------------
+# BELOW IS FOR LISTING DISPLAY
+#----------------------------------------------------------------------------
+
 # get a list of all items/products listed on the platform
 @app.route('/api/listing/items', methods=['GET'])
 @cross_origin()
 def get_items():
     listings = Listing.query.filter(Listing.is_service == False).all()
     return jsonify([listing.to_dict() for listing in listings])
+
+#----------------------------------------------------------------------------
 
 # get a list of all of the services listed on the platform
 @app.route('/api/listing/services', methods=['GET', 'OPTIONS'])
@@ -281,6 +300,8 @@ def get_services():
     print(request.headers)
     listings = Listing.query.filter(Listing.is_service == True).all()
     return jsonify([listing.to_dict() for listing in listings])
+
+#----------------------------------------------------------------------------
 
 # get a list of all listings created by a specfic user
 @app.route('/api/listing/user_items', methods=['GET'])
@@ -295,6 +316,8 @@ def get_user_items():
 
     return jsonify([listing.to_dict() for listing in listings])
 
+#----------------------------------------------------------------------------
+
 @app.route('/api/listing/item/<int:id>', methods=['GET', 'OPTIONS'])
 def get_listing(id):
     # Query the database for the listing with the provided ID
@@ -307,8 +330,21 @@ def get_listing(id):
     # If a listing is found, return it as JSON
     return jsonify(listing.to_dict()), 200
 
-#-----------------------------------------------------------------------
-# BIDDING STUFF
+#----------------------------------------------------------------------------
+
+# view listings that are actively being bid on
+@app.route('/api/listings/active', methods=['GET'])
+def get_active_listings():
+    active_listings = Listing.query.filter(
+        Listing.is_auction == True,
+        Listing.is_processed == False
+    ).all()
+
+    return jsonify([listing.to_dict() for listing in active_listings])
+
+#----------------------------------------------------------------------------
+# BELOW IS FOR BIDDING
+#----------------------------------------------------------------------------
 
 # creating a bid item
 @cross_origin()
@@ -327,6 +363,7 @@ def create_bid():
 
     return jsonify(new_bid_item.to_dict()), 200
 
+#----------------------------------------------------------------------------
 
 # process the bidding when its done; FOR TESTING
 @app.route('/api/bid/process/<int:bid_item_id>', methods=['POST'])
@@ -354,6 +391,8 @@ def process_auction_end(bid_item_id):
         }), 200
     else:
         return jsonify({"message": "no bids found for this item"}), 200
+    
+#----------------------------------------------------------------------------
 
 # placing a bid
 @app.route('/api/bid/place', methods=['POST'])
@@ -398,18 +437,7 @@ def place_bid():
 
     return jsonify(new_bid.to_dict()), 201
 
-
-# view listings that are actively being bid on
-@app.route('/api/listings/active', methods=['GET'])
-def get_active_listings():
-    # Directly query the Listing model for active auction listings
-    active_listings = Listing.query.filter(
-        Listing.is_auction == True,
-        Listing.is_processed == False
-    ).all()
-
-    # Serialize the listings to JSON, assuming you have a method to do so
-    return jsonify([listing.to_dict() for listing in active_listings])
+#-------------------------------------------------------------------------
 
 if __name__ == "__main__":
     with app.app_context():
