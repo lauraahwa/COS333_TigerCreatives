@@ -6,14 +6,6 @@ from datetime import datetime
 from sqlalchemy import Boolean
 from sqlalchemy.orm import relationship, validates
 
-# _DATABASE_URL = os.environ['DATABASE_URL']
-# _DATABASE_URL = _DATABASE_URL.replace('postgres://', 'postgresql://')
-
-# _engine = db.create_engine(_DATABASE_URL)
-# Base = db.orm.declarative_base()
-# Base.metadata.drop_all(_engine)
-# Base.metadata.create_all(_engine)
-
 # create a user model
 class User(db.Model):
     __tablename__ = 'user'
@@ -46,21 +38,12 @@ class Listing(db.Model):
     is_service = db.Column(Boolean, default=False, nullable=False)
     is_auction = db.Column(Boolean, default=False, nullable=False)
     auction_end_time = db.Column(db.DateTime, nullable=True)
-    is_processed = db.Column(Boolean, nullable=False)
+    is_processed = db.Column(Boolean, default=False, nullable=False)
     bid_item = db.relationship('BidItem',
                             back_populates='listing',
                             uselist=False,
                             lazy='joined')
-    
-    # IMPLEMENT THE CHECK THAT AUCTION_END_TIME NEEDS TO BE IN THE FUTURE LATER
-    # @validates('is_auction', 'auction_end_time')
-    # def validate_auction_details(self, key, value):
 
-
-    #     # make sure end time is set in the future
-    #     if self.is_auction and self.auction_end_time:
-    #         if self.auction_end_time <= datetime.utcnow():
-    #             raise ValueError("Auction end time must be set in the future.")
             
     def to_dict(self):
         return {

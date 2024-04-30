@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 from flask_migrate import Migrate
 from datetime import datetime, timedelta
+from apscheduler.schedulers.background import BackgroundScheduler
 
 from authlib.integrations.flask_client import OAuth
 from six.moves.urllib.parse import urlencode
@@ -192,6 +193,8 @@ def upload_image():
         }), 500
 
 
+scheduler = BackgroundScheduler()
+scheduler.start()
 # HANDLE LISTING FUNCITONALITY
 @app.route('/api/listing/create', methods=['POST', 'OPTIONS'])
 @jwt_required()
@@ -199,9 +202,21 @@ def upload_image():
 def create_listing():
     print('test')
     user_id = get_jwt_identity()
-    print(user_id)
     data = request.get_json()
-    print(data)
+
+    # Check if is_auction is True and validate auction_end_time
+    if data.get('is_auction', True):
+        try:
+            # Parse the auction_end_time from the request data
+            auction_end_time = datetime.strptime(data['auction_end_time'], '%Y-%m-%d %H:%M:%S')
+            # timezone is in utc and we shift it to est
+            if auction_end_time < (datetime.utcnow() + timedelta(minutes=15) - 4):
+                return jsonify({"error": "Auction end time must be at least 15 mins from now."}), 400
+        except ValueError:
+            return jsonify({"error": "Invalid format for auction end time. Use YYYY-MM-DD HH:MM:SS."}), 400
+    else:
+        auction_end_time = None
+
     new_listing = Listing(
         title=data['title'],
         seller_id=user_id,
@@ -226,10 +241,38 @@ def create_listing():
         )
         db.session.add(new_bid_item)
 
+        scheduler.add_job(
+        func=process_auction_end, 
+        trigger='date', 
+        run_date=auction_end_time,
+        args=[new_listing.id]
+        )
 
     db.session.commit()
 
     return jsonify(new_listing.to_dict()), 201
+
+def process_auction_end(bid_item_id):
+    bid_item = BidItem.query.get(bid_item_id)
+    if not bid_item:
+        return {'error': 'Bid item not found'}, 404
+    if bid_item.auction_end_time > datetime.utcnow():
+        return {'error': 'Auction has not ended yet'}, 400
+    
+    # get listing tied to bid_item_id
+    listing = bid_item.listing
+    if listing.is_processed:
+        return {'error': 'Auction already processed'}, 400
+    # find the highest bid
+    highest_bid = Bid.query.filter_by(bid_item_id=bid_item.id).order_by(Bid.bid_amount.desc()).first()
+    if highest_bid:
+        listing.is_processed = True
+        return {
+            'message': f"Highest bid for item {bid_item_id} is {highest_bid.bid_amount}",
+            'bidder_id': highest_bid.bidder_id
+        }, 200
+    else:
+        return {'message': 'No bids found for this item'}, 404
 
 # get a list of all items/products listed on the platform
 @app.route('/api/listing/items', methods=['GET'])
@@ -292,9 +335,29 @@ def create_bid():
 
     return jsonify(new_bid_item.to_dict()), 200
 
+
+# process the bidding when its done; FOR TESTING
+# @app.route('/api/bid/process/<int:bid_item_id>', methods=['POST'])
+# def process_auction_end(bid_item_id):
+#     bid_item = BidItem.query.get(bid_item_id)
+#     if not bid_item:
+#         return jsonify({'error': 'Bid item not found'}), 404
+#     if bid_item.auction_end_time > datetime.utcnow():
+#         return jsonify({'error': 'Auctino has not ended yet'}), 400
+    
+#     # find the highest bid
+#     highest_bid = Bid.query.filter_by(bid_item_id=bid_item.id).order_by(Bid.bid_amount.desc()).first()
+#     if highest_bid:
+#         return jsonify({
+#             "message": f"Highest bid for item {bid_item_id} is {highest_bid.bid_amount}",
+#             "bidder_id": highest_bid.bidder_id
+#         }), 200
+#     else:
+#         return jsonify({"message": "no bids found for this item"}), 200
+
 # placing a bid
 @app.route('/api/bid/place', methods=['POST'])
-#
+@jwt_required()
 def place_bid():
     user_id = get_jwt_identity()
     data = request.get_json()
@@ -316,13 +379,13 @@ def place_bid():
         return jsonify({"error": "Your bid must be at leat $0.50 higher than the current highest bid of ${:.2f}$".format(highest_bid)}), 400
     
     if not bid_item.auction_start_time:
-        bid_item.auction_start_time = datetime.utcnow()
+        bid_item.auction_start_time = datetime.utcnow() - 4
 
     new_bid = Bid(
         bid_item_id=bid_item.id,  # Link this bid to the retrieved bid item
         bidder_id=user_id,
         bid_amount=data['bid_amount'],
-        bid_time=datetime.utcnow()
+        bid_time=datetime.utcnow() - 4
     )
     db.session.add(new_bid)
     db.session.commit()
