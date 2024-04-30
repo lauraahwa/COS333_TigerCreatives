@@ -22,7 +22,7 @@ const SearchInput = styled.input`
     font-size: 16px;
 `
 
-const Sellers = () => {
+const Services = () => {
   const [listingsData, setListingsData] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -60,4 +60,4 @@ const Sellers = () => {
   )
 }
 
-export default Sellers
+export default Services

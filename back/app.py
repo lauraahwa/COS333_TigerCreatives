@@ -137,7 +137,6 @@ def login():
 @app.route('/protected', methods=['GET'])
 @jwt_required()
 def protected():
-    print(request.headers)  # Debug: Print headers to see if Authorization is present
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
 #-----------------------------------------------------------------------
@@ -195,6 +194,12 @@ def create_listing():
     print(user_id)
     data = request.get_json()
     print(data)
+
+    try:
+        auction_end_time = data['auction_end_time']
+    except:
+        auction_end_time = None
+
     new_listing = Listing(
         title=data['title'],
         seller_id=user_id,
@@ -204,7 +209,7 @@ def create_listing():
         image_url=data['image_url'],
         is_auction=data['is_auction'],
         is_service=data['is_service'],
-        auction_end_time=data['auction_end_time'],
+        auction_end_time=auction_end_time,
     )
 
     db.session.add(new_listing)
@@ -222,6 +227,25 @@ def create_listing():
     db.session.commit()
 
     return jsonify(new_listing.to_dict()), 201
+
+# delete a listing
+@app.route('/api/listing/delete/<int:listing_id>', methods=['DELETE'])
+@jwt_required()
+@cross_origin()
+def delete_listing(listing_id):
+    listing = Listing.query.get(listing_id)
+    if listing is None:
+        return jsonify({'error': 'Listing not found'}), 404
+
+    user_id = get_jwt_identity()
+    if listing.seller_id != user_id:
+        return jsonify({'error': 'Unauthorized to delete this listing'}), 403
+
+    # Delete the listing from the database
+    db.session.delete(listing)
+    db.session.commit()
+    
+    return jsonify({'message': 'Listing deleted successfully'}), 200
 
 # get a list of all items/products listed on the platform
 @app.route('/api/listing/items', methods=['GET'])
@@ -251,6 +275,15 @@ def get_user_items():
 
     return jsonify([listing.to_dict() for listing in listings])
 
+# get a list of all listings created by a specfic user
+@app.route('/api/listing/seller_items/<int:seller_id>', methods=['GET'])
+@cross_origin()
+@jwt_required()
+def get_seller_items(seller_id):
+    listings = Listing.query.filter(Listing.seller_id == seller_id).all()
+
+    return jsonify([listing.to_dict() for listing in listings])
+
 @app.route('/api/listing/item/<int:id>', methods=['GET', 'OPTIONS'])
 def get_listing(id):
     # Query the database for the listing with the provided ID
@@ -259,6 +292,7 @@ def get_listing(id):
     # If no listing is found, return an error message with a 404 status code
     if listing is None:
         return jsonify({"error": "Listing not found"}), 404
+        
     
     # If a listing is found, return it as JSON
     return jsonify(listing.to_dict()), 200

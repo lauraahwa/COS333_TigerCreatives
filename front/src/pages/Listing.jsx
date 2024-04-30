@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import styled from 'styled-components'
 import painting from '@/assets/painting.png'
 
@@ -53,6 +53,14 @@ const TextContainer = styled.div`
 
     p {
         width: 90%;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    a:hover{
+        color: var(--subtext-color);
     }
 `
 
@@ -139,6 +147,7 @@ const Listing = () => {
     const rating = 3.5
 
     const [listingData, setListingData] = useState({})
+    const [isAuction, setIsAuction] = useState(false)
 
     useEffect(() => {
         const fetchListing = async () => {
@@ -146,6 +155,7 @@ const Listing = () => {
                 const data = await viewListing(id)
                 console.log(data)
                 setListingData(data)
+                setIsAuction(data["is_auction"])
             } catch (error) {
                 console.error("fetching listing error", error)
             }
@@ -159,25 +169,48 @@ const Listing = () => {
         <ImageContainer>
             <Image src={listingData.image_url} />
         </ImageContainer>
-        <TextContainer>
-            <h1>{listingData.title}</h1>
-            <h2>${listingData.price}</h2>
-            <Subtext>or Best Offer</Subtext>
-            <br/>
-            <p>Sold by Seller: {listingData.seller_id}</p>
-            <ReviewsContainer>
-                <StarRating rating={rating} />
-                <Line />
-                <ReviewsText>5 Seller Reviews</ReviewsText>
-            </ReviewsContainer>
-            <p>Time left: 3d 14h | Top bid: $450</p>
-            <ButtonContainer>
-                <StyledButton text="Place bid"/>
-            </ButtonContainer>
-            <p>{listingData.description}</p>
-            <br />
-            <p>Contact: Jack O'Donnell, jodonnell@princeton.edu</p>
-        </TextContainer>
+        {isAuction ? (
+            <TextContainer>
+                <h1>{listingData.title}</h1>
+                <h2>${listingData.price}</h2>
+                <Subtext>or Best Offer</Subtext>
+                <br/>
+                <Link to={`/seller/${listingData.seller_id}`}>
+                    <a>Sold by Seller: {listingData.seller_id}</a>
+                </Link>
+                
+                <ReviewsContainer>
+                    <StarRating rating={rating} />
+                    <Line />
+                    <ReviewsText>5 Seller Reviews</ReviewsText>
+                </ReviewsContainer>
+                <p>Time left: 3d 14h | Top bid: $450</p>
+                <ButtonContainer>
+                    <StyledButton text="Place bid"/>
+                </ButtonContainer>
+                <p>{listingData.description}</p>
+                <br />
+                <p>Contact: Jack O'Donnell, jodonnell@princeton.edu</p>
+            </TextContainer>
+        ) : (
+            <TextContainer>
+                <h1>{listingData.title}</h1>
+                <h2>${listingData.price}</h2>
+                <br/>
+                <Link to={`/seller/${listingData.seller_id}`}>
+                    <a>Sold by Seller: {listingData.seller_id}</a>
+                </Link>
+                <ReviewsContainer>
+                    <StarRating rating={rating} />
+                    <Line />
+                    <ReviewsText>5 Seller Reviews</ReviewsText>
+                </ReviewsContainer>
+                <p>{listingData.description}</p>
+                <br />
+                <p>Contact: Jack O'Donnell, jodonnell@princeton.edu</p>
+            </TextContainer>
+        )}
+        
     </Container>
   )
 }

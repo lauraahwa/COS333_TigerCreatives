@@ -45,10 +45,10 @@ const Footer = () => {
                 <Title>TigerCreatives</Title>
             </Vertical>
             <Horizontal>
-                <Link href="/">Home</Link>
-                <Link href="/shop">Shop</Link>
-                <Link href="/sellers">Sellers</Link>
-                <Link href="/about">About</Link>
+                <Link to="/">Home</Link>
+                <Link to="/shop">Shop</Link>
+                <Link to="/services">Services</Link>
+                <Link to="/about">About</Link>
             </Horizontal>
             <Vertical>
                 <Link>Contact Us</Link>

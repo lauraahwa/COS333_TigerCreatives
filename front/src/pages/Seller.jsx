@@ -9,8 +9,10 @@ import { useAuth0 } from "@auth0/auth0-react"
 
 import { Dialog } from '@headlessui/react'
 
+import { faStar as fasStar, faStarHalfAlt, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
+
+import { getProfile } from '@/api/userService'
 import { viewListings } from '@/api/listingService'
-import { login } from '@/api/userService'
 
 
 const Container = styled.div`
@@ -86,12 +88,31 @@ const GridContainer = styled.div`
     margin: 50px 0;
 `
 
-    const Profile = () => {
-        const { user, isAuthenticated, handleRedirectCallback, getAccessTokenSilently } = useAuth0();
+const StarRating = ({ rating }) => {
+    const fullStars = Math.floor(rating);
+    const halfStars = rating % 1 >= 0.5 ? 1 : 0;
+    const emptyStars = 5 - fullStars - halfStars;
 
-        const { profileData } = useProfile();
+    return (
+        <>
+            {Array.from({ length: fullStars }, (_, index) => (
+                <FullStar key={`full_${index}`} icon={fasStar} />
+            ))}
+            {halfStars === 1 && <HalfStar key="half" icon={faStarHalfAlt} />}
+            {Array.from({ length: emptyStars }, (_, index) => (
+                <EmptyStar key={`empty_${index}`} icon={farStar} />
+            ))}
+        </>
+    );
+}
+
+    const Seller = () => {
+        const { user, isAuthenticated, handleRedirectCallback, getAccessTokenSilently } = useAuth0();
+        const rating = 3.5
+
+        let { id } = useParams()
+        const [profileData, setProfileData] = useState([])
         const [listingsData, setListingsData] = useState([])
-        const [userData, setUserData] = useState([])
 
         // useEffect(() => {
         //     const handleAuthCallback = async () => {
@@ -107,33 +128,25 @@ const GridContainer = styled.div`
         // }, [handleRedirectCallback, isAuthenticated, getAccessTokenSilently])
 
         useEffect(() => {
+            const fetchProfile = async () => {
+                try {
+                    const data = await getProfile(id)
+                    console.log(data)
+                    setProfileData(data)
+                } catch (error) {
+                    console.error("fetching profile error", error)
+                }                         
+            };
 
             const fetchListings = async () => {
-                if (!user) {
-                    console.log('user not defined yet')
-                    return
-                }
-                console.log(user)
                 try {
-                    const response = await login(user);
-                    const token = response;
-                    localStorage.setItem('token', token)
-                    console.log("token:" + token)
-
-                    try {
-                        const data = await viewListings('user_items');
-                        console.log("Data fetched", data)
-                        setListingsData(data)
-                    } catch (error) {
-                        console.error("Fetching listings error:", error);
-                    }
+                    const data = await viewListings(`seller_items/${id}`)
+                    console.log("Data fetched", data)
+                    setListingsData(data)
                 } catch (error) {
-                    console.error('token error', error)
+                    console.error("Fetching listings error:", error);
                 }
-
-
-                
-            };
+            }
 
             // const fetchUserInfo = async () => {
             //     try {
@@ -145,14 +158,14 @@ const GridContainer = styled.div`
             //     }
             // }
 
-            fetchListings();
+            fetchProfile();
+            fetchListings()
         }, [])
         return (
             isAuthenticated && (
             <Container>
-                <Splash header="Profile" subtext="View your listings or create a new one!" />
+                <Splash header="Profile" subtext="Find a seller with a style that you enjoy most!" />
                 <Content>
-                    <EditProfile to = "/editprofile">Edit Profile</EditProfile>
                 <ProfileContainer>
                     <ProfilePic>
                         <img src={user.picture} />
@@ -161,6 +174,7 @@ const GridContainer = styled.div`
                         <ProfileName> 
                             {user.email.split('@')[0]}
                         </ProfileName>
+                        <StarRating rating={rating} />
                         <Role>
                             {profileData.userType}
                         </Role>
@@ -186,4 +200,4 @@ const GridContainer = styled.div`
     )
 }
 
-export default Profile
+export default Seller

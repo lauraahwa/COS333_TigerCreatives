@@ -16,7 +16,7 @@ export const login = async (data) => {
     }
 }
 
-export const getUserInfo = async (id) => {
+export const getProfile = async (id) => {
     try {
         const endpoint = `api/users/get_user/${id}`
 
