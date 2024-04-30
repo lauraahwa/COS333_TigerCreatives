@@ -16,7 +16,7 @@ const ReviewForm = ({ setVisible, setReviews, reviews }) => {
     setFormState(initialFormState);
   }
 
-  function handleRatingChange(rating) {
+  function handleReatingChange(rating) {
     setFormState({ rating });
     setDisabled(rating === 0);
   }
