@@ -12,7 +12,7 @@ import { Dialog } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar as fasStar, faStarHalfAlt, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
 
-import { getProfile } from '@/api/userService'
+import { getProfile, getReviews } from '@/api/userService'
 import { viewListings } from '@/api/listingService'
 
 
@@ -113,8 +113,11 @@ const EmptyStar = styled(FontAwesomeIcon)`
   }
 `;
 
-const StarContainer = styled.div`
+const ReviewsContainer = styled.div`
     margin-left: 50px; 
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 `
 
 const StarRating = ({ rating }) => {
@@ -135,6 +138,18 @@ const StarRating = ({ rating }) => {
     );
 }
 
+const Line = styled.div`
+    margin: 0 1.5vw;
+    border-left: 1px solid var(--subtext-color);
+    height: 20px;
+`
+
+const ReviewsText = styled.p`
+    font-size: 0.8rem;
+    color: var(--subtext-color);
+    font-weight: 400;
+`
+
     const Seller = () => {
         const { user, isAuthenticated, handleRedirectCallback, getAccessTokenSilently } = useAuth0();
         const rating = 3.5
@@ -142,6 +157,8 @@ const StarRating = ({ rating }) => {
         let { id } = useParams()
         const [profileData, setProfileData] = useState([])
         const [listingsData, setListingsData] = useState([])
+        const [reviewsData, setReviewsData] = useState([])
+        const [email, setEmail] = useState('')
 
         // useEffect(() => {
         //     const handleAuthCallback = async () => {
@@ -162,6 +179,7 @@ const StarRating = ({ rating }) => {
                     const data = await getProfile(id)
                     console.log(data)
                     setProfileData(data)
+                    setEmail(data.email_address)
                 } catch (error) {
                     console.error("fetching profile error", error)
                 }                         
@@ -177,6 +195,20 @@ const StarRating = ({ rating }) => {
                 }
             }
 
+            const fetchReviews = async () => {
+                try {
+                    const data = await getReviews(id)
+                    console.log(data)
+                    setReviewsData(data)
+                } catch (error) {
+                    console.error("fetching reviews error", error)
+                }
+            }
+
+            const processReviews = () => {
+
+            }
+
             // const fetchUserInfo = async () => {
             //     try {
             //         const data = await getUserInfo();
@@ -189,6 +221,7 @@ const StarRating = ({ rating }) => {
 
             fetchProfile();
             fetchListings()
+            fetchReviews()
         }, [])
         return (
             isAuthenticated && (
@@ -201,13 +234,15 @@ const StarRating = ({ rating }) => {
                     </ProfilePic>
                     <ProfileDetails>
                         <ProfileName> 
-                            {profileData.email_address.split('@')[0]}
+                            {email.split('@')[0]}
                         </ProfileName>
-                        <StarContainer>
+                        <ReviewsContainer>
                             <StarRating rating={rating} />
-                        </StarContainer>
+                            <Line />
+                            <ReviewsText>5 Seller Reviews</ReviewsText>
+                        </ReviewsContainer>
                         <StyledButtonContainer>
-                            <StyledLink to="/create-review">
+                            <StyledLink to={`/create-review/${profileData.id}`}>
                                 <Button text="Leave a review"/>
                             </StyledLink>
                         </StyledButtonContainer>

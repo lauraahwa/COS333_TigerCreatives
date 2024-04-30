@@ -12,6 +12,9 @@ import { Dialog } from '@headlessui/react'
 import { viewListings } from '@/api/listingService'
 import { login } from '@/api/userService'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faStar as fasStar, faStarHalfAlt, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
+
 
 const Container = styled.div`
     display: flex;
@@ -59,9 +62,9 @@ const ProfileBio = styled.p`
 `
 
 const StyledButtonContainer = styled.div`
-    margin-top: 50px;
+    margin-top: 20px;
     display: flex;
-    margin-bottom: 50px;
+    margin-left: 50px;
 `
 
 const StyledLink = styled(Link)`
@@ -86,12 +89,76 @@ const GridContainer = styled.div`
     margin: 50px 0;
 `
 
+const FullStar = styled(FontAwesomeIcon)`
+  margin-right: 5px;
+
+  path {
+    fill: var(--accent-color)
+  }
+  
+`;
+
+const HalfStar = styled(FontAwesomeIcon)`
+  margin-right: 5px;
+
+  path {
+    fill: var(--accent-color);
+  }
+`;
+
+const EmptyStar = styled(FontAwesomeIcon)`
+  margin-right: 5px;
+
+  path {
+    fill: #e3e3e3;
+  }
+`;
+
+const ReviewsContainer = styled.div`
+    margin-left: 50px; 
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+`
+
+const Line = styled.div`
+    margin: 0 1.5vw;
+    border-left: 1px solid var(--subtext-color);
+    height: 20px;
+`
+
+const ReviewsText = styled.p`
+    font-size: 0.8rem;
+    color: var(--subtext-color);
+    font-weight: 400;
+`
+
+const StarRating = ({ rating }) => {
+    const fullStars = Math.floor(rating);
+    const halfStars = rating % 1 >= 0.5 ? 1 : 0;
+    const emptyStars = 5 - fullStars - halfStars;
+
+    return (
+        <>
+            {Array.from({ length: fullStars }, (_, index) => (
+                <FullStar key={`full_${index}`} icon={fasStar} />
+            ))}
+            {halfStars === 1 && <HalfStar key="half" icon={faStarHalfAlt} />}
+            {Array.from({ length: emptyStars }, (_, index) => (
+                <EmptyStar key={`empty_${index}`} icon={farStar} />
+            ))}
+        </>
+    );
+}
+
     const Profile = () => {
         const { user, isAuthenticated, handleRedirectCallback, getAccessTokenSilently } = useAuth0();
 
         const { profileData } = useProfile();
         const [listingsData, setListingsData] = useState([])
         const [userData, setUserData] = useState([])
+
+        const rating = 4.2
 
         // useEffect(() => {
         //     const handleAuthCallback = async () => {
@@ -152,7 +219,7 @@ const GridContainer = styled.div`
             <Container>
                 <Splash header="Profile" subtext="View your listings or create a new one!" />
                 <Content>
-                    <EditProfile to = "/editprofile">Edit Profile</EditProfile>
+                    {/* <EditProfile to = "/editprofile">Edit Bio</EditProfile> */}
                 <ProfileContainer>
                     <ProfilePic>
                         <img src={user.picture} />
@@ -161,23 +228,28 @@ const GridContainer = styled.div`
                         <ProfileName> 
                             {user.email.split('@')[0]}
                         </ProfileName>
-                        <Role>
+                        <ReviewsContainer>
+                            <StarRating rating={rating} />
+                            <Line />
+                            <ReviewsText>5 Seller Reviews</ReviewsText>
+                        </ReviewsContainer>
+                        <StyledButtonContainer>
+                            <StyledLink to="/create">
+                                <Button text="Create Listing"/>
+                            </StyledLink>
+                        </StyledButtonContainer>
+                        {/* <Role>
                             {profileData.userType}
                         </Role>
                         <ProfileBio>
                             {profileData.bio}
-                        </ProfileBio>
+                        </ProfileBio> */}
                     </ProfileDetails>
                 </ProfileContainer>
                 <h2>Your listings</h2>
                 <GridContainer>
                     <Grid data={listingsData} />
                 </GridContainer>
-                <StyledButtonContainer>
-                    <StyledLink to="/create">
-                        <Button text="Create Listing"/>
-                    </StyledLink>
-            </StyledButtonContainer>
                 
                 {/* <Grid isLanding={true}/> */}
             </Content>

@@ -34,11 +34,13 @@ class Review(db.Model):
     __tablename__ = 'review'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    seller_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     text = db.Column(db.String(500), nullable=False)  # You can adjust the length as needed
     rating = db.Column(db.Integer, nullable=False)
 
     # relationship to the User model
-    user = db.relationship('User', backref=db.backref('reviews', lazy=True))
+    user = db.relationship('User', foreign_keys=[user_id], backref=db.backref('reviews', lazy=True))
+    seller = db.relationship('User', foreign_keys=[seller_id], backref=db.backref('received_reviews', lazy=True))
 
     @validates('rating')
     def validate_rating(self, key, value):
@@ -50,6 +52,7 @@ class Review(db.Model):
         return {
             'id': self.id,
             'user_id': self.user_id,
+            'seller_id': self.seller_id,
             'text': self.text,
             'rating': self.rating,
         }
@@ -62,7 +65,6 @@ class Listing(db.Model):
     title = db.Column(db.String(50), nullable=False)
     seller_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     seller = db.relationship('User', backref=db.backref('listings', lazy=True))
-    category_id = db.Column(db.Integer, nullable=False) 
     description = db.Column(db.String(250))
     price = db.Column(db.Float, nullable=False)
     image_url = db.Column(db.String)
@@ -89,7 +91,6 @@ class Listing(db.Model):
             'id': self.id,
             'title': self.title,
             'seller_id': self.seller_id,
-            'category_id': self.category_id,
             'description': self.description,
             'price': self.price,
             'image_url': self.image_url,

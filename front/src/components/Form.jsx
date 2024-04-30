@@ -31,6 +31,8 @@ const Form = () => {
     itemPrice: '',
     isService: false,
     isAuction: false,
+    endTime: '',
+    startPrice: ''
   });
   const [photo, setPhoto] = useState(null)
 
@@ -44,7 +46,9 @@ const Form = () => {
       'description': formData['itemDescription'],
       'price': formData['itemPrice'],
       'is_service': formData['isService'],
-      'is_auction': formData['isAuction']
+      'is_auction': formData['isAuction'],
+      'bid_start_price': formData['startPrice'],
+      'auction_end_time': formData['endTime']
     }
 
     try {
@@ -146,6 +150,32 @@ const Form = () => {
           onChange={handleChange}
         />
       </div>
+      {formData.isAuction && (
+        <>
+          <div>
+            <input
+              type="number"
+              id="auctionStartPice"
+              placeholder="Auction Start Price"
+              name="auctionStartPrice"
+              value={formData.auctionStartPrice}
+              onChange={handleChange}
+              required={formData.isAuction}
+            />
+          </div>
+          <div>
+            <input
+              type="datetime-local"
+              id="auctionEndDate"
+              placeholder="Auction End Date"
+              name="auctionEndDate"
+              value={formData.auctionEndDate}
+              onChange={handleChange}
+              required={formData.isAuction}
+            />
+          </div>
+        </>
+      )}
       <ButtonContainer>
         <StyledButton text="Submit"/>
       </ButtonContainer>

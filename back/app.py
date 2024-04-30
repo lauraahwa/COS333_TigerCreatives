@@ -78,6 +78,8 @@ def get_user(user_id):
 
     return jsonify(user.to_dict()), 200
 
+# edit user info
+
 # get all users
 @app.route('/users', methods=['GET'])
 def get_users():
@@ -124,35 +126,44 @@ def create_review():
     data = request.get_json()
     
     user_id = get_jwt_identity()
-    listing_id = data.get('listing_id')
+    seller_id = data.get('seller_id')
     rating = data.get('rating')
     text = data.get('text')
 
     # if any of fields are missing
-    if not listing_id or not rating:
+    if not seller_id or not rating:
         return jsonify({'error': 'Missing required fields'}), 400
 
     # Check if the listing exists
-    listing = Listing.query.get(listing_id)
-    if not listing:
+    seller = User.query.get(seller_id)
+    if not seller:
         return jsonify({'error': 'Listing not found'}), 404
 
     # Check if the user is trying to review their own listing
-    if listing.seller_id == user_id:
+    if seller_id == user_id:
         return jsonify({'error': "Cannot review your own listing"}), 403
 
-    # Check if the user has already reviewed this listing
-    existing_review = Review.query.filter_by(user_id=user_id, listing_id=listing_id).first()
+    # Check if the user has already reviewed this seller
+    existing_review = Review.query.filter_by(user_id=user_id, seller_id=seller_id).first()
     if existing_review:
-        return jsonify({'error': "You have already reviewed this item"}), 400
+        return jsonify({'error': "You have already reviewed this seller"}), 400
 
     # All checks passed, create the review
-    new_review = Review(user_id=user_id, listing_id=listing_id, rating=rating, text=text)
+    new_review = Review(user_id=user_id, seller_id=seller_id, rating=rating, text=text)
     db.session.add(new_review)
     db.session.commit()
     return jsonify(new_review.to_dict()), 201
 
+@app.route('/api/reviews/get/<int:seller_id>', methods=['GET'])
+@cross_origin()
+def get_reviews(seller_id):
     
+    reviews = Review.query.filter_by(seller_id=seller_id).all()
+
+    if reviews:
+        return jsonify([review.to_dict() for review in reviews]), 200
+    else:
+        return jsonify({'message': 'No reviews found for this user'}), 200
 
 #-----------------------------------------------------------------------
 # LOGIN STUFF
@@ -239,19 +250,21 @@ def create_listing():
 
     try:
         auction_end_time = data['auction_end_time']
+        bid_start_price = data['bid_start_price']
     except:
         auction_end_time = None
+        bid_start_price = None
 
     new_listing = Listing(
         title=data['title'],
         seller_id=user_id,
-        category_id=data.get('category_id', 2),
         description=data['description'],
         price=data['price'],
         image_url=data['image_url'],
         is_auction=data['is_auction'],
         is_service=data['is_service'],
         auction_end_time=auction_end_time,
+        bid_start_price=bid_start_price,
     )
 
     db.session.add(new_listing)
@@ -350,7 +363,6 @@ def create_bid():
     print(data)
 
     new_bid_item = Bid(title=data['title'], seller_id=user_id,
-                          category_id=2,
                           description=data['description'], price=data['price'], 
                           image_url = data['image_url'], bid_time=data['bid_time'])
     

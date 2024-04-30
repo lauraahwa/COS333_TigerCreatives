@@ -137,7 +137,7 @@ const ButtonContainer = styled.div`
 `
 
 const StyledButton = styled(Button)`
-    margin: 20px 0;
+    margin: 10px 0 20px 0;
     font-size: 1rem;
     padding: 5px 10px;
 `
@@ -145,6 +145,8 @@ const StyledButton = styled(Button)`
 const BidContainer = styled.div`
     display: flex;
     flex-direction: column;
+    padding-top: 10px;
+    gap: 10px;
 `
 
 const Listing = () => {
@@ -153,6 +155,9 @@ const Listing = () => {
 
     const [listingData, setListingData] = useState({})
     const [isAuction, setIsAuction] = useState(false)
+
+    const [isBidActive, setIsBidActive] = useState(false)
+    const [bid, setBid] = useState('')
 
     useEffect(() => {
         const fetchListing = async () => {
@@ -168,6 +173,10 @@ const Listing = () => {
 
         fetchListing()
     }, [])
+
+    const createBid = () => {
+        console.log('meow')
+    }
 
   return (
     <Container>
@@ -191,9 +200,26 @@ const Listing = () => {
                 </ReviewsContainer>
                 <p>Time left: 3d 14h | Top bid: $450</p>
                 <BidContainer>
+                    {isBidActive ? 
+                        <>
+                        <div>
+                            <input
+                                id="bid"
+                                name="bid"
+                                placeholder="Bid amount"
+                                value={bid}
+                                onChange={e => setBid(e.target.value)}
+                                required 
+                            />
+                        </div>
+                        <ButtonContainer>
+                            <StyledButton text="Place bid" onClick={createBid}/>
+                        </ButtonContainer> </> : 
+                    
                     <ButtonContainer>
-                        <StyledButton text="Place bid" onClick={() => setModalIsOpen(true)}/>
+                        <StyledButton text="Place bid" onClick={() => setIsBidActive(true)}/>
                     </ButtonContainer>
+                    }
                 </BidContainer>
 
                 <p>{listingData.description}</p>
