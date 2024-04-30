@@ -300,8 +300,10 @@ def create_listing():
 
     try:
         bid_start_price = data['bid_start_price']
+        is_processed = data['is_processed']
     except:
         bid_start_price = None
+        is_processed = None
 
     new_listing = Listing(
         title=data['title'],
@@ -312,7 +314,7 @@ def create_listing():
         is_auction=data['is_auction'],
         is_service=data['is_service'],
         auction_end_time=auction_end_time,
-        is_processed=data['is_processed'],
+        is_processed=is_processed,
         bid_start_price=bid_start_price,
     )
 
