@@ -157,7 +157,7 @@ const ReviewsText = styled.p`
         let { id } = useParams()
         const [profileData, setProfileData] = useState([])
         const [listingsData, setListingsData] = useState([])
-        const [reviewsData, setReviewsData] = useState([])
+        const [reviewsData, setReviewsData] = useState({ reviews: [], numberOfReviews: 0, avgRating: 0 });
         const [email, setEmail] = useState('')
 
         // useEffect(() => {
@@ -195,19 +195,31 @@ const ReviewsText = styled.p`
                 }
             }
 
+            const processReviews = (reviews) => {
+                const numberOfReviews = reviews.length
+                let totalRating = 0;
+
+                reviews.forEach(review => {
+                    totalRating += review.rating
+                })
+
+                const avgRating = numberOfReviews > 0 ? totalRating / numberOfReviews : 0;
+
+                return { numberOfReviews, avgRating }
+            }
+
             const fetchReviews = async () => {
                 try {
                     const data = await getReviews(id)
                     console.log(data)
-                    setReviewsData(data)
+                    const { numberOfReviews, avgRating } = processReviews(data)
+                    setReviewsData({ reviews: data, numberOfReviews, avgRating })
                 } catch (error) {
                     console.error("fetching reviews error", error)
                 }
             }
 
-            const processReviews = () => {
 
-            }
 
             // const fetchUserInfo = async () => {
             //     try {
@@ -237,9 +249,9 @@ const ReviewsText = styled.p`
                             {email.split('@')[0]}
                         </ProfileName>
                         <ReviewsContainer>
-                            <StarRating rating={rating} />
+                            <StarRating rating={reviewsData.avgRating} />
                             <Line />
-                            <ReviewsText>5 Seller Reviews</ReviewsText>
+                            <ReviewsText>{reviewsData.numberOfReviews} Seller Reviews</ReviewsText>
                         </ReviewsContainer>
                         <StyledButtonContainer>
                             <StyledLink to={`/create-review/${profileData.id}`}>
