@@ -1,5 +1,7 @@
 from flask import request, jsonify, session, Flask, url_for, redirect
 from flask_jwt_extended import jwt_required, get_jwt_identity, JWTManager, create_access_token
+from flask_jwt_extended.exceptions import NoAuthorizationError
+from jwt import ExpiredSignatureError
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 from flask_migrate import Migrate
@@ -69,6 +71,21 @@ CORS(app)
 
 migrate = Migrate(app, db)
 db.init_app(app)
+
+#----------------------------------------------------------------------------
+# Handle auth errors globally
+
+@jwt.unauthorized_loader
+def unauthorized_response(callback):
+    return jsonify({'error': 'Authorization required', 'redirect': '/login'}), 401
+
+@jwt.invalid_token_loader
+def invalid_token_response(callback):
+    return jsonify({'error': 'Invalid token', 'redirect': '/login'}), 422
+
+@jwt.expired_token_loader
+def expired_token_response(callback):
+    return jsonify({'error': 'Token has expired', 'redirect': '/login'}), 401
 
 #----------------------------------------------------------------------------
 
@@ -360,6 +377,7 @@ def get_sorted_auctions():
 @jwt_required()
 @cross_origin()
 def buy():
+    user_id = get_jwt_identity()
     data = request.get_json()
     listing_id = data['listingId']
     print(listing_id)
@@ -373,6 +391,7 @@ def buy():
     db.session.commit()
 
     return jsonify({'success': True, 'message': 'Marked as bought in database'}), 200
+
     
 #----------------------------------------------------------------------------
 

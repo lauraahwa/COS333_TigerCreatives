@@ -10,18 +10,52 @@ const StyledForm = styled.form`
   gap: 20px;
 
   input, textarea {
-    display: flex;
-    border-radius: 10px;
-    padding: 2px 10px;
+    width: 50%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid var(--text-color);
+    box-shadow: inset 0 1px 3px #ddd;
     justify-content: center;
     align-items: center;
-    border: 1px solid var(--text-color);
+  }
+
+  label {
+    margin-bottom: 5px;
+    color: #666;
+    font-size: 0.9rem;
   }
 `
 
 const StyledButton = styled(Button)`
   padding: 6px 17px;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
+`
+
+const CheckboxContainer = styled.div`
+  display: block;
+  margin: 10px 0;
+  user-select: none;
+  cursor: pointer;
+  font-size: 16px; // Adjust font size as needed
+
+  // Checkbox styling
+  input[type="checkbox"] {
+    appearance: none;
+    margin-right: 20px;
+    width: 20px; // Custom width
+    height: 20px; // Custom height
+    border: 1px solid #ccc;
+    border-radius: 3px; // Rounded corners for the checkbox
+    position: relative;
+
+    &:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 1px;
+      left: 4px;
+      color: green;
+    }
+  }
 `
 
 const Form = () => {
@@ -81,88 +115,110 @@ const Form = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log('Form Data:', formData);
-    postListingData();
-    alert('Form submitted.');
+
+    try {
+      postListingData();
+      setFormData({
+        itemName: '',
+        itemDescription: '',
+        itemPrice: '',
+        isService: false,
+        isAuction: false,
+        endTime: '',
+        startPrice: ''
+      }); // resetting form data
+      alert('Form submitted successfully!');
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert('An error occurred during form submission. Please try again.');
+    }
   };
 
   return (
     <StyledForm onSubmit={handleSubmit}>
+      <p>Name of Product/Service:</p>
       <div>
         <input
           type="text"
           id="itemName"
-          placeholder="Name"
+          placeholder=" "
           name="itemName"
           value={formData.itemName}
           onChange={handleChange}
           required
         />
       </div>
+      <p>Description of Product/Service:</p>
       <div>
         <textarea
           id="itemDescription"
           name="itemDescription"
-          placeholder="Description"
+          placeholder=" "
           value={formData.itemDescription}
           onChange={handleChange}
           required
         />
       </div>
+      <p>Price ($USD):</p>
       <div>
         <input
           type="number"
           id="itemPrice"
-          placeholder="Price"
+          placeholder=" "
           name="itemPrice"
           value={formData.itemPrice}
           onChange={handleChange}
           required
         />
       </div>
+      <p>Upload an Image:</p>
       <div>
         <input
           type="file"
           id="imageUpload"
-          placeholder="Image"
+          placeholder=" "
           name="image"
           onChange={handleFileChange}
           accept="image/*"
           required
         />
       </div>
-      <div>
-        <label htmlFor="isService">Is this a service?</label>
-        <input
-          type="checkbox"
-          id="isService"
-          name="isService"
-          checked={formData.isService}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <label htmlFor="isAuction">Is this an auction?</label>
-        <input
-          type="checkbox"
-          id="isAuction"
-          name="isAuction"
-          checked={formData.isAuction}
-          onChange={handleChange}
-        />
-      </div>
+      <CheckboxContainer>
+      <label htmlFor="isService">Is this a service?</label>
+      <input
+        type="checkbox"
+        id="isService"
+        name="isService"
+        checked={formData.isService}
+        onChange={handleChange}
+      />
+      </CheckboxContainer>
+      <CheckboxContainer>
+      <label htmlFor="isAuction">Is this an auction?</label>
+      <input
+        type="checkbox"
+        id="isAuction"
+        name="isAuction"
+        checked={formData.isAuction}
+        onChange={handleChange}
+      />
+      </CheckboxContainer>
+
       {formData.isAuction && (
         <>
+          <p>Auction Start Price ($USD):</p>
           <div>
             <input
               type="number"
               id="auctionStartPice"
-              placeholder="Auction Start Price"
+              placeholder=" "
               name="auctionStartPrice"
               value={formData.auctionStartPrice}
               onChange={handleChange}
               required={formData.isAuction}
             />
           </div>
+          <p>Input Auction End Date:</p>
           <div>
             <input
               type="datetime-local"
@@ -179,7 +235,7 @@ const Form = () => {
       <ButtonContainer>
         <StyledButton text="Submit"/>
       </ButtonContainer>
-      
+      <br></br>
     </StyledForm>
   );
 }
