@@ -32,7 +32,9 @@ const StyledButton = styled(Button)`
 `
 
 const CheckboxContainer = styled.div`
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 20px;
   margin: 10px 0;
   user-select: none;
   cursor: pointer;
@@ -81,7 +83,7 @@ const Form = () => {
       'price': formData['itemPrice'],
       'is_service': formData['isService'],
       'is_auction': formData['isAuction'],
-      'bid_start_price': formData['startPrice'],
+      // 'bid_start_price': formData['startPrice'],
       'auction_end_time': formData['endTime']
     }
 

@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar as fasStar, faStarHalfAlt, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
 
-import { makeBid, viewBidInfo, viewListing, buyNow } from '@/api/listingService'
+import { makeBid, viewBidInfo, viewListing, buyNow, processAuction } from '@/api/listingService'
 import { getReviews } from '@/api/userService'
 import { Button } from '@/components'
 
@@ -269,14 +269,11 @@ const Listing = () => {
 
     const handleProcessAuction = async () => {
         try {
-            const bidItemId = biditem_id;
-            const response = await apiClient.post(bidItemId);
+            const response = await processAuction(id);
     
-            if (response.status === 200) {
-                alert('Auction processed successfully!');
-            } else {
-                alert('Failed to process auction: ' + response.data.message);
-            }
+
+            alert('Auction processed successfully!');
+
         } catch (error) {
             console.error('Error processing auction:', error);
             alert('An error occurred while processing the auction.');
@@ -291,7 +288,7 @@ const Listing = () => {
     
             if (response.success) {
                 setIsSold(true);
-                setShowListing(false);
+                // setShowListing(false);
                 alert('Purchase successful!');
                 // PUT IN UI POP UP TO DISPLAY AND X OUT
             } else {

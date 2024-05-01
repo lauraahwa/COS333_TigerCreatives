@@ -3,17 +3,17 @@ import styled from 'styled-components';
 import { Splash, Form } from '@/components';
 import { uploadImage, createListing } from '@/api/listingService';
 
-const Container = styled.div'
+const Container = styled.div`
     display: flex;
-    flex-direction: row; 
+    flex-direction: column; 
+`
 
-
-const Content = styled.div'
+const Content = styled.div`
     padding: 0 50px;
     flex: 3; 
+`
 
-
-const InfoSidebar = styled.div'
+const InfoSidebar = styled.div`
     background-color: #f4f4f4; 
     padding: 20px;
     flex: 1;
@@ -21,16 +21,16 @@ const InfoSidebar = styled.div'
     display: flex;
     flex-direction: column;
     justify-content: start;
+`
 
-
-const Heading = styled.h3'
+const Heading = styled.h3`
     margin-top: 0;
     color: #333;
+`
 
-
-const Text = styled.p'
+const Text = styled.p`
     color: #666;
-
+`
 
 const CreateListing = () => {
   return (

@@ -332,7 +332,6 @@ def create_listing():
         is_service=data['is_service'],
         auction_end_time=auction_end_time,
         is_processed=is_processed,
-        bid_start_price=bid_start_price,
     )
 
     db.session.add(new_listing)
