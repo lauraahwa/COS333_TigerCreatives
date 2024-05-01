@@ -340,6 +340,21 @@ def create_listing():
 
     return jsonify(new_listing.to_dict()), 201
 
+@app.route('/api/listing/sorted', methods=['GET'])
+@cross_origin()
+def get_sorted_auctions():
+    current_time = datetime.utcnow()
+
+    auctions = Listing.query.filter(
+        Listing.is_auction == True,
+        Listing.auction_end_time != None
+    ).order_by(Listing.auction_end_time).limit(4).all()
+
+    # probably add the below field
+    # Listing.auction_end_time > current_time
+
+    return jsonify([auction.to_dict() for auction in auctions])
+
 #----------------------------------------------------------------------------
 @app.route('/api/listing/buynow', methods=['PUT'])
 @jwt_required()

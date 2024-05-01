@@ -93,12 +93,12 @@ const ItemImage = styled.img`
 `
 
 const Grid = ({ isLanding, data }) => {
-  const length = isLanding ? 8 : 16
+  const displayData = isLanding ? data.slice(0,8) : data
 
   return (
     <>
       <Container>
-        {data.map((item, index) => (
+        {displayData.map((item, index) => (
           <Item key={item.id}>
             <ItemImage src={item.image_url} />
             <TextContainer>

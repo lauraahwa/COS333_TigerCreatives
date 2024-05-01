@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { viewListings } from '@/api/listingService'
+import { viewListings, viewSortedAuctions } from '@/api/listingService'
 import { Grid, Button, ButtonContainer } from '@/components'
 
 const Title = styled.div`
@@ -68,6 +68,7 @@ const Banner = styled.div`
 
 const Home = () => {
   const [listingsData, setListingsData] = useState([])
+  const [auctionsData, setAuctionsData] = useState([])
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -79,8 +80,18 @@ const Home = () => {
         console.error("Fetching listings error:", error);
       }
     };
+    const fetchSortedAuctions = async () => {
+      try {
+        const data = await viewSortedAuctions();
+        console.log('auctions data fetched', data)
+        setAuctionsData(data)
+      } catch (error) {
+        console.error("Fetching auctions error", error)
+      }
+    }
 
     fetchListings();
+    fetchSortedAuctions()
   }, []);
 
   return (
@@ -91,6 +102,7 @@ const Home = () => {
       </Title>
       <Container>
         <Header>Discover</Header>
+        <Grid isLanding={false} data={auctionsData} />
         <Header>Products</Header>
         <Grid isLanding={true} data={listingsData}/>
         <ButtonContainer>

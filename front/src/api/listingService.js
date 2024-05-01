@@ -129,12 +129,28 @@ export const viewBidInfo = async (id) => {
     }
 }
 
-export const buyNow = async(listingId) => {
+export const buyNow = async (listingId) => {
     try{
         const endpoint = '/api/listing/buynow'
 
         const response = await apiClient.put(endpoint, listingId);
 
+        console.log(response.status);
+        console.log(response.data);
+
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const viewSortedAuctions = async () => {
+    try {
+        const endpoint = '/api/listing/sorted'
+
+        const response = await apiClient.get(endpoint)
+        
         console.log(response.status);
         console.log(response.data);
 

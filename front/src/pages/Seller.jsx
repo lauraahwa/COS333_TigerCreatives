@@ -195,22 +195,37 @@ const ReviewsText = styled.p`
                 }
             }
 
+            fetchProfile();
+            fetchListings()
+        }, [])
+
+        useEffect(() => {
             const processReviews = (reviews) => {
                 const numberOfReviews = reviews.length
                 let totalRating = 0;
 
+                if (numberOfReviews == null) {
+                    return { 'numberOfReviews': 0, 'avgRating': 0 }
+                }
+    
                 reviews.forEach(review => {
                     totalRating += review.rating
                 })
-
+    
                 const avgRating = numberOfReviews > 0 ? totalRating / numberOfReviews : 0;
-
+    
                 return { numberOfReviews, avgRating }
             }
-
+    
             const fetchReviews = async () => {
+                if (!profileData || !profileData.id) {  // Check if profileData and profileData.id are valid
+                    console.log("User data not available yet");
+                    return;
+                }
+
                 try {
-                    const data = await getReviews(id)
+                    console.log(profileData)
+                    const data = await getReviews(profileData.id)
                     console.log(data)
                     const { numberOfReviews, avgRating } = processReviews(data)
                     setReviewsData({ reviews: data, numberOfReviews, avgRating })
@@ -219,22 +234,8 @@ const ReviewsText = styled.p`
                 }
             }
 
-
-
-            // const fetchUserInfo = async () => {
-            //     try {
-            //         const data = await getUserInfo();
-            //         console.log("User data fetched", data)
-            //         setUserData(data)
-            //     } catch (error) {
-            //         console.error("Fetching user data error", error)
-            //     }
-            // }
-
-            fetchProfile();
-            fetchListings()
             fetchReviews()
-        }, [])
+        }, [profileData])
         return (
             isAuthenticated && (
             <Container>

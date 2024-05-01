@@ -208,6 +208,11 @@ const Listing = () => {
             const numberOfReviews = reviews.length
             let totalRating = 0;
 
+            if (numberOfReviews == null) {
+                console.log("AHGHHHHFDJAKFH")
+                return { 'numberOfReviews': 0, 'avgRating': 0 }
+            }
+
             reviews.forEach(review => {
                 totalRating += review.rating
             })
@@ -218,8 +223,11 @@ const Listing = () => {
         }
 
         const fetchReviews = async () => {
+            if (!listingData || !listingData.seller_id) {  // Check if userData and userData.id are valid
+                console.log("User data not available yet");
+                return;
+            }
 
-            console.log("LISTING DATA", listingData)
             try {
                 const data = await getReviews(listingData.seller_id)
                 console.log(data)
