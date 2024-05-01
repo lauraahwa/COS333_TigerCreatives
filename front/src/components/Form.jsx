@@ -87,9 +87,11 @@ const Form = () => {
       'auction_end_time': formData['auctionEndDate']
     }
 
-    console.log("endtime " + listingData['auction_end_time'])
-    listingData['auction_end_time'] = listingData['auction_end_time'].replace('T', ' ') + ':00';
-    console.log("endtime " + listingData['auction_end_time'])
+    if (listingData['is_auction']) {
+      console.log("endtime " + listingData['auction_end_time'])
+      listingData['auction_end_time'] = listingData['auction_end_time'].replace('T', ' ') + ':00';
+      console.log("endtime " + listingData['auction_end_time'])
+    }
 
     try {
       const imageResponse = await uploadImage({'image': photo})
