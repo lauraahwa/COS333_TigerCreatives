@@ -308,7 +308,7 @@ def create_listing():
             print(auction_end_time)
             auction_end_time = est_tz.localize(auction_end_time)
             cur_est = datetime.now(est_tz)
-            if auction_end_time < (cur_est + timedelta(minutes=2)):
+            if auction_end_time < (cur_est + timedelta(minutes=0)):
                 return jsonify({"error": "Auction end time must be at least 2 mins from now."}), 400
         except ValueError:
             return jsonify({"error": "Invalid format for auction end time. Use YYYY-MM-DD HH:MM:SS."}), 402
