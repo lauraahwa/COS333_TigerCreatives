@@ -261,6 +261,7 @@ const Listing = () => {
         try {
             const response = await makeBid(bidData)
             console.log(response)
+            setBid('')
         } catch (error) {
             console.error('some error with bid creation', error)
         }
@@ -270,9 +271,9 @@ const Listing = () => {
     const handleProcessAuction = async () => {
         try {
             const response = await processAuction(id);
-    
+            console.log(response)
 
-            alert('Auction processed successfully!');
+            alert(response.message + "The highest bidder was " + response.bidder_id);
 
         } catch (error) {
             console.error('Error processing auction:', error);
