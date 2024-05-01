@@ -133,7 +133,7 @@ export const buyNow = async(listingId) => {
     try{
         const endpoint = '/api/listing/buynow'
 
-        const response = await apiClient.put(endpoint, listingId);
+        const response = await apiClient.put(endpoint, {listingId});
 
         console.log(response.status);
         console.log(response.data);
