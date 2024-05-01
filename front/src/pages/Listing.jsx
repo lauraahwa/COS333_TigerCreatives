@@ -165,6 +165,15 @@ const BidContainer = styled.div`
     }
 `
 
+const SoldNotification = styled.div`
+    padding: 10px;
+    background-color: #6bb581;
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+    margin: 10px 0;
+`;
+
 const Listing = () => {
     let { id } = useParams();
     const rating = 3.5
@@ -176,6 +185,10 @@ const Listing = () => {
 
     const [isBidActive, setIsBidActive] = useState(false)
     const [bid, setBid] = useState('')
+
+    // initializations for display
+    const [isSold, setIsSold] = useState(false);
+    const[showListing, setShowListing] = useState(true);
 
     useEffect(() => {
         const fetchListing = async () => {
@@ -249,12 +262,14 @@ const Listing = () => {
     }
 
     const handleBuyNow = async () => {
-        const listingId = id; // FIX
+        const listingId = id;
     
         try {
             const response = await buyNow(listingId);
     
             if (response.success) {
+                setIsSold(true);
+                setShowListing(false);
                 alert('Purchase successful!');
                 // PUT IN UI POP UP TO DISPLAY AND X OUT
             } else {
@@ -266,7 +281,6 @@ const Listing = () => {
         }
     };
     
-
   return (
     <Container>
         <ImageContainer>
@@ -321,6 +335,7 @@ const Listing = () => {
             </TextContainer>
         ) : (
             <TextContainer>
+                {isSold && <SoldNotification>Item Sold!</SoldNotification>}
                 <h1>{listingData.title}</h1>
                 <h2>${listingData.price}</h2>
                 <br/>
