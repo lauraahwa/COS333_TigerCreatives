@@ -305,12 +305,13 @@ def create_listing():
             # Parse the auction_end_time from the request data
             est_tz = pytz.timezone('US/Eastern')
             auction_end_time = datetime.strptime(data['auction_end_time'], '%Y-%m-%d %H:%M:%S')
+            print(auction_end_time)
             auction_end_time = est_tz.localize(auction_end_time)
             cur_est = datetime.now(est_tz)
             if auction_end_time < (cur_est + timedelta(minutes=2)):
-                return jsonify({"error": "Auction end time must be at least 15 mins from now."}), 400
+                return jsonify({"error": "Auction end time must be at least 2 mins from now."}), 400
         except ValueError:
-            return jsonify({"error": "Invalid format for auction end time. Use YYYY-MM-DD HH:MM:SS."}), 400
+            return jsonify({"error": "Invalid format for auction end time. Use YYYY-MM-DD HH:MM:SS."}), 402
     else:
         auction_end_time = None
     print(data)

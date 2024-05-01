@@ -84,8 +84,12 @@ const Form = () => {
       'is_service': formData['isService'],
       'is_auction': formData['isAuction'],
       // 'bid_start_price': formData['startPrice'],
-      'auction_end_time': formData['endTime']
+      'auction_end_time': formData['auctionEndDate']
     }
+
+
+    listingData['auction_end_time'] = listingData['auction_end_time'].replace('T', ' ') + ':00';
+
 
     try {
       const imageResponse = await uploadImage({'image': photo})
@@ -120,6 +124,8 @@ const Form = () => {
 
     try {
       postListingData();
+       // resetting form data
+      alert('Form submitted successfully!');
       setFormData({
         itemName: '',
         itemDescription: '',
@@ -128,8 +134,7 @@ const Form = () => {
         isAuction: false,
         endTime: '',
         startPrice: ''
-      }); // resetting form data
-      alert('Form submitted successfully!');
+      });
     } catch (error) {
       console.error("Submission error:", error);
       alert('An error occurred during form submission. Please try again.');
