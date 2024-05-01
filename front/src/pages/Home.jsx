@@ -80,18 +80,18 @@ const Home = () => {
         console.error("Fetching listings error:", error);
       }
     };
-    const fetchSortedAuctions = async () => {
-      try {
-        const data = await viewSortedAuctions();
-        console.log('auctions data fetched', data)
-        setAuctionsData(data)
-      } catch (error) {
-        console.error("Fetching auctions error", error)
-      }
-    }
+    // const fetchSortedAuctions = async () => {
+    //   try {
+    //     const data = await viewSortedAuctions();
+    //     console.log('auctions data fetched', data)
+    //     setAuctionsData(data)
+    //   } catch (error) {
+    //     console.error("Fetching auctions error", error)
+    //   }
+    // }
 
     fetchListings();
-    fetchSortedAuctions()
+    // fetchSortedAuctions()
   }, []);
 
   return (
@@ -101,8 +101,8 @@ const Home = () => {
         <h2>buy, sell, create.</h2>
       </Title>
       <Container>
-        <Header>Discover</Header>
-        <Grid isLanding={false} data={auctionsData} />
+        {/* <Header>Discover</Header> */}
+        {/* <Grid isLanding={false} data={auctionsData} /> */}
         <Header>Products</Header>
         <Grid isLanding={true} data={listingsData}/>
         <ButtonContainer>
