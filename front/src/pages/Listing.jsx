@@ -273,7 +273,7 @@ const Listing = () => {
             const response = await processAuction(id);
             console.log(response)
 
-            alert(response.message + "The highest bidder was " + response.bidder_id);
+            alert(response.message + " The highest bidder was " + response.bidder_id);
 
         } catch (error) {
             console.error('Error processing auction:', error);
