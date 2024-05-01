@@ -187,9 +187,9 @@ def create_review():
         return jsonify({'error': "Cannot review your own listing"}), 403
 
     # Check if the user has already reviewed this seller
-    existing_review = Review.query.filter_by(user_id=user_id, seller_id=seller_id).first()
-    if existing_review:
-        return jsonify({'error': "You have already reviewed this seller"}), 400
+    # existing_review = Review.query.filter_by(user_id=user_id, seller_id=seller_id).first()
+    # if existing_review:
+    #     return jsonify({'error': "You have already reviewed this seller"}), 400
 
     # All checks passed, create the review
     new_review = Review(user_id=user_id, seller_id=seller_id, rating=rating, text=text)
