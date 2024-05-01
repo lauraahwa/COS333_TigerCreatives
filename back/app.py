@@ -360,7 +360,8 @@ def get_sorted_auctions():
 @jwt_required()
 @cross_origin()
 def buy():
-    listing_id = request.get_json()
+    data = request.get_json()
+    listing_id = data['listingId']
     print(listing_id)
 
     listing = Listing.query.get(listing_id)
@@ -371,7 +372,7 @@ def buy():
     listing.is_processed = True
     db.session.commit()
 
-    return jsonify({'message': 'Marked as bought in database'}), 200
+    return jsonify({'success': True, 'message': 'Marked as bought in database'}), 200
     
 #----------------------------------------------------------------------------
 
@@ -398,7 +399,7 @@ def delete_listing(listing_id):
 @app.route('/api/listing/items', methods=['GET'])
 @cross_origin()
 def get_items():
-    listings = Listing.query.filter(Listing.is_service == False).all()
+    listings = Listing.query.filter(Listing.is_service == False, Listing.is_processed == False).all()
     return jsonify([listing.to_dict() for listing in listings])
 
 #----------------------------------------------------------------------------

@@ -133,7 +133,7 @@ export const buyNow = async (listingId) => {
     try{
         const endpoint = '/api/listing/buynow'
 
-        const response = await apiClient.put(endpoint, listingId);
+        const response = await apiClient.put(endpoint, {listingId});
 
         console.log(response.status);
         console.log(response.data);
@@ -150,11 +150,28 @@ export const viewSortedAuctions = async () => {
         const endpoint = '/api/listing/sorted'
 
         const response = await apiClient.get(endpoint)
-        
+
         console.log(response.status);
         console.log(response.data);
 
         return response.data;
+
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+        
+export const processAuction = async(bidItemId) => {
+    try {
+        const endpoint = '/api/bid/process/${bidItemId}'
+        const response = await apiClient.post(endpoint);
+
+        console.log(response.status);
+        console.log(response.data);
+
+        return response.data;
+
     } catch (error) {
         console.error(error);
         throw error;

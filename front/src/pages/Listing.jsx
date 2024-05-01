@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import styled from 'styled-components'
-import painting from '@/assets/painting.png'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar as fasStar, faStarHalfAlt, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
@@ -165,6 +164,15 @@ const BidContainer = styled.div`
     }
 `
 
+const SoldNotification = styled.div`
+    padding: 10px;
+    background-color: #6bb581;
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+    margin: 10px 0;
+`;
+
 const Listing = () => {
     let { id } = useParams();
     const rating = 3.5
@@ -176,6 +184,9 @@ const Listing = () => {
 
     const [isBidActive, setIsBidActive] = useState(false)
     const [bid, setBid] = useState('')
+
+    // initializations for display
+    const [isSold, setIsSold] = useState(false);
 
     useEffect(() => {
         const fetchListing = async () => {
@@ -256,13 +267,31 @@ const Listing = () => {
 
     }
 
+    const handleProcessAuction = async () => {
+        try {
+            const bidItemId = biditem_id;
+            const response = await apiClient.post(bidItemId);
+    
+            if (response.status === 200) {
+                alert('Auction processed successfully!');
+            } else {
+                alert('Failed to process auction: ' + response.data.message);
+            }
+        } catch (error) {
+            console.error('Error processing auction:', error);
+            alert('An error occurred while processing the auction.');
+        }
+    };
+
     const handleBuyNow = async () => {
-        const listingId = id; // FIX
+        const listingId = id;
     
         try {
             const response = await buyNow(listingId);
     
             if (response.success) {
+                setIsSold(true);
+                setShowListing(false);
                 alert('Purchase successful!');
                 // PUT IN UI POP UP TO DISPLAY AND X OUT
             } else {
@@ -274,7 +303,6 @@ const Listing = () => {
         }
     };
     
-
   return (
     <Container>
         <ImageContainer>
@@ -318,6 +346,7 @@ const Listing = () => {
                     
                     <ButtonContainer>
                         <StyledButton text="Place bid" onClick={() => setIsBidActive(true)}/>
+                        <StyledButton text="Process Auction" onClick={handleProcessAuction}/>
                     </ButtonContainer>
                     }
                 </BidContainer>
@@ -329,6 +358,7 @@ const Listing = () => {
             </TextContainer>
         ) : (
             <TextContainer>
+                {isSold && <SoldNotification>Item Sold!</SoldNotification>}
                 <h1>{listingData.title}</h1>
                 <h2>${listingData.price}</h2>
                 <br/>
