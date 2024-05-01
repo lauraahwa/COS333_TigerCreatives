@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Button, ButtonContainer, Splash, Grid } from '@/components'
-import weirdswan from '@/assets/weirdswan.webp'
-import { useProfile } from '@/components/ProfileInfo';
 
 import { useAuth0 } from "@auth0/auth0-react"
 

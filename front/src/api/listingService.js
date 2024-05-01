@@ -144,3 +144,19 @@ export const buyNow = async(listingId) => {
         throw error;
     }
 }
+
+export const processAuction = async(bidItemId) => {
+    try {
+        const endpoint = '/api/bid/process/${bidItemId}'
+        const response = await apiClient.post(endpoint);
+
+        console.log(response.status);
+        console.log(response.data);
+
+        return response.data;
+
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import styled from 'styled-components'
-import painting from '@/assets/painting.png'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar as fasStar, faStarHalfAlt, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
@@ -188,7 +187,6 @@ const Listing = () => {
 
     // initializations for display
     const [isSold, setIsSold] = useState(false);
-    const[showListing, setShowListing] = useState(true);
 
     useEffect(() => {
         const fetchListing = async () => {
@@ -261,6 +259,22 @@ const Listing = () => {
 
     }
 
+    const handleProcessAuction = async () => {
+        try {
+            const bidItemId = biditem_id;
+            const response = await apiClient.post(bidItemId);
+    
+            if (response.status === 200) {
+                alert('Auction processed successfully!');
+            } else {
+                alert('Failed to process auction: ' + response.data.message);
+            }
+        } catch (error) {
+            console.error('Error processing auction:', error);
+            alert('An error occurred while processing the auction.');
+        }
+    };
+
     const handleBuyNow = async () => {
         const listingId = id;
     
@@ -324,6 +338,7 @@ const Listing = () => {
                     
                     <ButtonContainer>
                         <StyledButton text="Place bid" onClick={() => setIsBidActive(true)}/>
+                        <StyledButton text="Process Auction" onClick={handleProcessAuction}/>
                     </ButtonContainer>
                     }
                 </BidContainer>
