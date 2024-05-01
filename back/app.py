@@ -363,7 +363,8 @@ def get_sorted_auctions():
 
     auctions = Listing.query.filter(
         Listing.is_auction == True,
-        Listing.auction_end_time != None
+        Listing.auction_end_time != None,
+        Listing.is_processed == False
     ).order_by(Listing.auction_end_time).limit(4).all()
 
     # probably add the below field
