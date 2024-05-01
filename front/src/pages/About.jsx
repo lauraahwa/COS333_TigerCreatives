@@ -16,7 +16,7 @@ function About() {
       />
       <Accordion
         title="How do I join TigerCreatives?"
-        content="Simply sign up through our registration page through CAS to start buying or selling."
+        content="Simply sign up through our registration page through Auth0 to start buying or selling."
       />
       <Accordion
         title="What can I sell on TigerCreatives?"
