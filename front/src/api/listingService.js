@@ -162,10 +162,10 @@ export const viewSortedAuctions = async () => {
     }
 }
         
-export const processAuction = async(bidItemId) => {
+export const processAuction = async(listingId) => {
     try {
-        const endpoint = '/api/bid/process/${bidItemId}'
-        const response = await apiClient.post(endpoint);
+        const endpoint = `/api/bid/process/${listingId}`
+        const response = await apiClient.get(endpoint);
 
         console.log(response.status);
         console.log(response.data);

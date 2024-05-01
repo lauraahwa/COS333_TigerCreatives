@@ -484,8 +484,18 @@ def create_bid():
 #----------------------------------------------------------------------------
 
 # process the bidding when its done; FOR TESTING
-@app.route('/api/bid/process/<int:bid_item_id>', methods=['POST'])
-def process_auction_end(bid_item_id):
+@app.route('/api/bid/process/<int:listing_id>', methods=['GET'])
+def process_auction_end(listing_id):
+    listing = Listing.query.get(listing_id)
+
+    if not listing:
+        return jsonify({"error": "listing not found"}), 404
+
+    if listing.bid_item:
+        bid_item_id = listing.bid_item.id
+    else:
+        return jsonify({"error": "not an auction"}), 404
+
     bid_item = BidItem.query.get(bid_item_id)
     # data = request.get_json()
     if not bid_item:
