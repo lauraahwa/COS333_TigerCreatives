@@ -18,7 +18,7 @@ const Content = styled.div`
 const CreateListing = () => {
   return (
     <Container>
-        <Splash header="Create" subtext="Want to sell something you made or a service you can do? This is the place." />
+        <Splash header="Create" subtext="Want to sell something you made or offer a service you can do? This is the place." />
         <Content>
             <Form />
         </Content>
