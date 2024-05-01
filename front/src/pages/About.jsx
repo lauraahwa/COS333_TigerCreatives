@@ -7,7 +7,7 @@ function About() {
       <Accordion
         title="What is TigerCreatives"
         content="<p>TigerCreatives is a platform for members of the Princeton community to list and purchase creative goods and services in a seamless fashion.</p>
-        </br> 
+        </br>
         <p>From handmade jewelry to photography services, TigerCreatives aims to be Princetons go-to hub for artistry exchange. </p>
         </br> 
         <p>We are dedicated to enabling student creators to get the recognition they deserve in a hassle-free way, without the need to compete with full-time retailers on platforms like Etsy, or the complexities of creating their own websites.</p> 

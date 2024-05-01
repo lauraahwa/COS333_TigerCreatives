@@ -384,7 +384,7 @@ def delete_listing(listing_id):
 @app.route('/api/listing/items', methods=['GET'])
 @cross_origin()
 def get_items():
-    listings = Listing.query.filter(Listing.is_service == False).all()
+    listings = Listing.query.filter(Listing.is_service == False, Listing.is_processed == False).all()
     return jsonify([listing.to_dict() for listing in listings])
 
 #----------------------------------------------------------------------------
