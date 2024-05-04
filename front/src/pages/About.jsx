@@ -5,7 +5,7 @@ function About() {
   return (
     <div className="App">
       <Accordion
-        title="What is TigerCreatives"
+        title="What is TigerCreatives?"
         content="<p>TigerCreatives is a platform for members of the Princeton community to list and purchase creative goods and services in a seamless fashion.</p>
         </br>
         <p>From handmade jewelry to photography services, TigerCreatives aims to be Princetons go-to hub for artistry exchange. </p>
@@ -16,15 +16,15 @@ function About() {
       />
       <Accordion
         title="How do I join TigerCreatives?"
-        content="Simply sign up through our registration page through Auth0 to start buying or selling."
+        content="<p>Simply sign up through our registration page through Auth0 to start buying or selling.</p>"
       />
       <Accordion
         title="What can I sell on TigerCreatives?"
-        content="You can sell any creative goods or services, from artwork and handmade crafts to photography sessions and graphic design services."
+        content="<p>You can sell any creative goods or services, from artwork and handmade crafts to photography sessions and graphic design services.</p>"
       />
       <Accordion
         title="How does TigerCreatives differ from other platforms?"
-        content="Unlike broader platforms like Etsy, TigerCreatives is specifically designed for the Princeton community, which ensures a more targeted and relevant audience for your creative works. We use a bidding structure similar to Ebay for users to buy and sell"
+        content="<p>Unlike broader platforms like Etsy, TigerCreatives is specifically designed for the Princeton community, which ensures a more targeted and relevant audience for your creative works. We use a bidding structure similar to Ebay for users to buy and sell.</p>"
       />
     </div>
   );
