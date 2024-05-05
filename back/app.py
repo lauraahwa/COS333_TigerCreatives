@@ -83,9 +83,9 @@ def unauthorized_response(callback):
 def invalid_token_response(callback):
     return jsonify({'error': 'Invalid token', 'redirect': '/login'}), 422
 
-@jwt.expired_token_loader
-def expired_token_response(callback):
-    return jsonify({'error': 'Token has expired', 'redirect': '/login'}), 401
+# @jwt.expired_token_loader
+# def expired_token_response(callback):
+#     return jsonify({'error': 'Token has expired', 'redirect': '/login'}), 401
 
 #----------------------------------------------------------------------------
 
