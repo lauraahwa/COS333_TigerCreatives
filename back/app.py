@@ -75,13 +75,13 @@ db.init_app(app)
 #----------------------------------------------------------------------------
 # Handle auth errors globally
 
-@jwt.unauthorized_loader
-def unauthorized_response(callback):
-    return jsonify({'error': 'Authorization required', 'redirect': '/login'}), 401
+# @jwt.unauthorized_loader
+# def unauthorized_response(callback):
+#     return jsonify({'error': 'Authorization required', 'redirect': '/login'}), 401
 
-@jwt.invalid_token_loader
-def invalid_token_response(callback):
-    return jsonify({'error': 'Invalid token', 'redirect': '/login'}), 422
+# @jwt.invalid_token_loader
+# def invalid_token_response(callback):
+#     return jsonify({'error': 'Invalid token', 'redirect': '/login'}), 422
 
 # @jwt.expired_token_loader
 # def expired_token_response(callback):
