@@ -1,61 +1,39 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
+import { Link as RouterLink } from 'react-router-dom';
 
 const Container = styled.div`
-    padding: ${props => props.row ? "62px 100px" : "0 0"};
+    padding: ${props => props.row ? "62px 100px" : "0"};
     width: 100%;
-    justify-content: space-between;
     display: flex;
     background-color: var(--container-color);
     flex-direction: ${props => props.row ? "row" : "column"};
-`
+    justify-content: space-between;
+`;
 
-const Vertical = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 70px;
-`
-const Horizontal = styled.div`
-    display: flex;
-    flex-direction: row;
-    gap: 40px;
-`
 const Title = styled.h1`
     font-size: 24px;
     font-weight: 700;
+`;
 
-`
-
-const Header = styled.h2`
+const Link = styled(RouterLink)`
     font-size: 16px;
-    font-weight: 600;
-`
-
-const Link = styled.a`
-    font-style: 16px;
-    font-weight: 500;
+    font-weight: 400;
     text-decoration: none;
-`
+    margin-right: 100px;
+
+    &:hover {
+        font-weight: 800;
+    }
+`;
 
 const Footer = () => {
-  return (
-    <Container>
-        <Container row="true">
-            <Vertical>
-                <Title>TigerCreatives</Title>
-            </Vertical>
-            <Horizontal>
-                <Link to="/">Home</Link>
-                <Link to="/shop">Shop</Link>
-                <Link to="/services">Services</Link>
-                <Link to="/about">About</Link>
-            </Horizontal>
-            <Vertical>
-                <Link>Contact Us</Link>
-            </Vertical>
+    return (
+        <Container row>
+        <Title>TigerCreatives</Title>
+        <Link to='/contact'>Contact Us</Link>
         </Container>
-    </Container>
-  )
+    );
 }
 
 export default Footer
