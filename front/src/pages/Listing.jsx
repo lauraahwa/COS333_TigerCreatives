@@ -196,6 +196,10 @@ const Listing = () => {
                 const data = await viewListing(id);
                 setListingData(data);
                 setIsAuction(data.is_auction);
+
+                if (isAuction) {
+                    fetchBidInfo()
+                }
             } catch (error) {
                 console.error("fetching listing error", error);
             }
@@ -211,7 +215,6 @@ const Listing = () => {
         };
 
         fetchListing();
-        fetchBidInfo();
     }, [id]);
     
     // get the user information
