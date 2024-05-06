@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import Rating from 'react-rating';
+import { Button, ButtonContainer } from '@/components'
 import styled from 'styled-components'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -24,6 +25,31 @@ const EmptyStar = styled(FontAwesomeIcon)`
   }
 `;
 
+const StyledButton = styled.button`
+  padding: 8px 20px; 
+  border: 1px solid #3A3A3A;
+  border-radius: 15px;
+  background-color: #FFF;
+  font-size: 1.2rem; 
+  font-weight: 400;
+  width: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  margin-top: 20px; 
+
+  &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+  }
+
+  &:active {
+      box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.2);
+  }
+`;
 const StarRating = ({ onChange, initialRating }) => {
   return (
     <Rating
@@ -39,7 +65,7 @@ const StarRating = ({ onChange, initialRating }) => {
 };
 
 const Container = styled.div`
-  padding: 100px 0;
+  padding: 50px 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -58,20 +84,21 @@ const ReviewForm = () => {
       'seller_id': id,
       'rating': rating,
       'text': text
-    }
+    };
     try {
-      const response = await createReview(reviewData)
-      console.log(response)
+      await createReview(reviewData);
+      alert('Review submitted successfully!'); 
+      setText(''); 
+      setRating(1); 
     } catch (error) {
-      console.error('some error with review creation', error)
+      console.error('Error submitting review:', error);
+      alert('An error occurred while submitting the review. Please try again.'); 
     }
+  };
 
-  }
-
-  // Explicitly define the onChange handler
   const handleRatingChange = (newRating) => {
-    console.log("Rating changed to:", newRating); // Additional actions can be performed here
-    setRating(newRating); // Update the state
+    console.log("Rating changed to:", newRating);
+    setRating(newRating); 
   };
 
   return (
@@ -88,9 +115,9 @@ const ReviewForm = () => {
             required
           />
         </div>
-        <button className="btn" disabled={rating === 0} type="submit">
+        <StyledButton disabled={rating === 0} type="submit">
           Send
-        </button>
+        </StyledButton>
       </form>
     </Container>
   );

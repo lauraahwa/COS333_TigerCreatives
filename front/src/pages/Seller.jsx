@@ -253,7 +253,7 @@ const ReviewsText = styled.p`
                             <ReviewsText>{reviewsData.numberOfReviews} Seller Reviews</ReviewsText>
                         </ReviewsContainer>
                         <StyledButtonContainer>
-                            <StyledLink to={`/create-review/${profileData.id}`}>
+                            <StyledLink to={`/review/${profileData.id}`}>
                                 <Button text="Leave a review"/>
                             </StyledLink>
                         </StyledButtonContainer>
