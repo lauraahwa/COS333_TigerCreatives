@@ -64,6 +64,7 @@ class Listing(db.Model):
     is_service = db.Column(Boolean, default=False, nullable=False)
     is_auction = db.Column(Boolean, default=False, nullable=False)
     auction_end_time = db.Column(db.DateTime, nullable=True)
+    start_price = db.Column(db.Float, nullable=False)
     is_processed = db.Column(Boolean, default=False, nullable=False)
     bid_item = db.relationship('BidItem',
                             back_populates='listing',
@@ -82,6 +83,7 @@ class Listing(db.Model):
             'is_service': self.is_service,
             'is_auction': self.is_auction,
             'auction_end_time': self.auction_end_time,
+            'start_price': self.start_price,
             'is_processed': self.is_processed,
         }
 
@@ -93,6 +95,7 @@ class BidItem(db.Model):
     bid_count = db.Column(db.Integer, default=0) # initialize bid count
     auction_start_time = db.Column(db.DateTime)
     auction_end_time = db.Column(db.DateTime)
+    start_price = db.Column(db.Float, nullable=False)
     listing = db.relationship('Listing',
                            back_populates='bid_item',
                            foreign_keys=[listing_id])
@@ -101,6 +104,7 @@ class BidItem(db.Model):
     def create_or_update_from_listing(cls, listing):
         bid_item = listing.bid_item or cls(listing_id=listing.id)
         bid_item.auction_end_time = listing.auction_end_time
+        bid_item.start_price = listing.start_price
         return bid_item
     
     def get_highest_bid(self):
@@ -113,6 +117,7 @@ class BidItem(db.Model):
             'id': self.id,
             'listing_id': self.listing_id,
             'bid_count': self.bid_count,
+            'start_price': self.start_price,
             'auction_start_time': self.auction_start_time,
             'auction_end_time': self.auction_end_time,
         }

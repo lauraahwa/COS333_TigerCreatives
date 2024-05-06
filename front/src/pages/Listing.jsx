@@ -322,7 +322,7 @@ const Listing = () => {
         {isAuction ? (
             <TextContainer>
                 <h1>{listingData.title}</h1>
-                <h2>${listingData.price}</h2>
+                <h2>Starting Price: ${listingData.start_price}</h2>
                 <Subtext>or Best Offer</Subtext>
                 <br/>
                 <Link to={`/seller/${listingData.seller_id}`}>

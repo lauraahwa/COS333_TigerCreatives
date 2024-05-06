@@ -288,8 +288,6 @@ def upload_image():
 
 #----------------------------------------------------------------------------
 
-# scheduler = BackgroundScheduler()
-# scheduler.start()
 # HANDLE LISTING FUNCITONALITY
 @app.route('/api/listing/create', methods=['POST', 'OPTIONS'])
 @jwt_required()
@@ -305,7 +303,6 @@ def create_listing():
             # Parse the auction_end_time from the request data
             est_tz = pytz.timezone('US/Eastern')
             auction_end_time = datetime.strptime(data['auction_end_time'], '%Y-%m-%d %H:%M:%S')
-            print(auction_end_time)
             auction_end_time = est_tz.localize(auction_end_time)
             cur_est = datetime.now(est_tz)
             if auction_end_time < (cur_est + timedelta(minutes=0)):
@@ -317,10 +314,11 @@ def create_listing():
     print(data)
 
     try:
-        bid_start_price = data['bid_start_price']
+        start_price = data['start_price']
         is_processed = data['is_processed']
+
     except:
-        bid_start_price = None
+        start_price = None
         is_processed = None
 
     new_listing = Listing(
@@ -333,6 +331,7 @@ def create_listing():
         is_service=data['is_service'],
         auction_end_time=auction_end_time,
         is_processed=is_processed,
+        start_price=data['start_price']
     )
 
     db.session.add(new_listing)
@@ -342,20 +341,16 @@ def create_listing():
         new_bid_item = BidItem(
             listing_id=new_listing.id,
             auction_start_time=None,  # Start time could be set when the first bid is made
-            auction_end_time=new_listing.auction_end_time
+            auction_end_time=new_listing.auction_end_time,
+            start_price=new_listing.start_price
         )
         db.session.add(new_bid_item)
-
-        # scheduler.add_job(
-        # func=process_auction_end, 
-        # trigger='date', 
-        # run_date=auction_end_time,
-        # args=[new_listing.id]
-        # )
 
     db.session.commit()
 
     return jsonify(new_listing.to_dict()), 201
+
+#----------------------------------------------------------------------------
 
 @app.route('/api/listing/sorted', methods=['GET'])
 @cross_origin()
@@ -612,6 +607,10 @@ def place_bid():
     highest_bid = bid_item.get_highest_bid()
     if bid_amount <= highest_bid + 0.50:
         return jsonify({"error": "Your bid must be at leat $0.50 higher than the current highest bid of ${:.2f}$".format(highest_bid)}), 400
+    
+    start_price = bid_item.start_price
+    if bid_amount <= start_price + 0.50:
+        return jsonify({"error": "Your bid must be at leat $0.50 higher than the start price bid of ${:.2f}$".format(start_price)}), 400
     
     est_tz = pytz.timezone('US/Eastern')
     utc_now = datetime.utcnow().replace(tzinfo=pytz.utc)
