@@ -187,6 +187,7 @@ const Listing = () => {
 
     const [isBidActive, setIsBidActive] = useState(false);
     const [bid, setBid] = useState('');
+
     const [isSold, setIsSold] = useState(false);
 
     useEffect(() => {
@@ -277,8 +278,12 @@ const Listing = () => {
             const response = await makeBid(bidData)
             console.log(response)
             setBid('')
+            setIsBidActive(false)
+            alert("You successfully placed a bid for $" + response.bid_amount + "!");
+            window.location.reload();
         } catch (error) {
-            console.error('some error with bid creation', error)
+            console.error('Error placing bid:', error)
+            alert("Error placing bid. Please try again.")
         }
 
     }
@@ -313,7 +318,7 @@ const Listing = () => {
             alert('An error occurred during the purchase. Please try again.');
         }
     };
-    
+
   return (
     <Container>
         <ImageContainer>
