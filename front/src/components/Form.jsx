@@ -219,10 +219,10 @@ const Form = () => {
           <div>
             <input
               type="number"
-              id="auctionStartPice"
+              id="startPrice"
               placeholder=" "
-              name="auctionStartPrice"
-              value={formData.auctionStartPrice}
+              name="startPrice"
+              value={formData.startPrice}
               onChange={handleChange}
               required={formData.isAuction}
             />
