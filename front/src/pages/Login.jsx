@@ -23,7 +23,6 @@ const Banner = styled.div`
   background-color: var(--container-color);
 
   padding: 78px 100px;
-  margin-top: 130px;
 
   h1 {
     font-weight: 700;
@@ -54,6 +53,7 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     padding: 0 100px;
+    margin-bottom: 100px;
 
     h1 {
         font-weight: 700;
@@ -105,27 +105,32 @@ const Login = () => {
 
     return (
         <>
-        <Container>
+          <Banner>
+            <h1>Want to support student creatives?</h1>
+            <h2>Browse creative goods and services or create an account to make a purchase!</h2>
+            <TextContainer></TextContainer>
+            <TextContainer className="button-container">
+                <Link to='/profile' style={{ textDecoration: 'none', marginRight: '15px' }}>
+                    <Button text="Sign Up" style={{ width: '200px' }} onClick={() => loginWithRedirect()} /> 
+                </Link>
+                <Link to='/shop' style={{ textDecoration: 'none', marginRight: '15px' }}>
+                    <Button text="Browse Goods" style={{ width: '200px' }} />
+                </Link>
+                <Link to='/services' style={{ textDecoration: 'none' }}>
+                    <Button text="Browse Services" style={{ width: '200px' }} />
+                </Link>
+            </TextContainer>
+            <TextContainer></TextContainer>
+          </Banner>
+          <Container>
+          <TextContainer></TextContainer>
             <h1>Are you a creative?</h1>
             <h2>Get started by creating an account and upload your first listing. </h2>
             <TextContainer></TextContainer>
             <Link to='/profile' style={{ textDecoration: 'none' }}>
                 <Button text="Login/Sign Up" style={{ width: '200px' }} onClick={() => loginWithRedirect()} />
             </Link>
-        </Container>
-        <Banner>
-            <h1>Are you looking for creative goods or services to purchase?</h1>
-            <h2>Continue to browse listings or create an account to make a purchase!</h2>
-            <TextContainer></TextContainer>
-            <TextContainer className="button-container">
-              <Link to='/profile' style={{ textDecoration: 'none', marginRight: '15px' }}>
-                <Button text="Sign Up" style={{ width: '200px' }} onClick={() => loginWithRedirect()} /> 
-              </Link>
-              <Link to='/shop' style={{ textDecoration: 'none' }}>
-                <Button text="Browse Listings" style={{ width: '200px' }} />
-                </Link>
-            </TextContainer>
-        </Banner>
+          </Container>
         </>
     );
 };
