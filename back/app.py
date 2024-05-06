@@ -311,15 +311,18 @@ def create_listing():
             return jsonify({"error": "Invalid format for auction end time. Use YYYY-MM-DD HH:MM:SS."}), 402
     else:
         auction_end_time = None
-    print(data)
+    print(data['start_price'])
 
     try:
-        is_processed = data['is_processed']
         start_price = data['start_price']
-
+    except:
+        start_price = None
+        
+    try:
+        is_processed = data['is_processed']
     except:
         is_processed = None
-        start_price = None
+        
 
     new_listing = Listing(
         title=data['title'],

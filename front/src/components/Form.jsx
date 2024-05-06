@@ -68,7 +68,7 @@ const Form = () => {
     isService: false,
     isAuction: false,
     endTime: '',
-    startPrice: ''
+    startPrice: '',
   });
   const [photo, setPhoto] = useState(null)
 
@@ -126,6 +126,7 @@ const Form = () => {
 
     try {
       postListingData();
+      console.log(formData.startPrice)
        // resetting form data
       alert('Form submitted successfully!');
       setFormData({
@@ -224,7 +225,7 @@ const Form = () => {
               name="startPrice"
               value={formData.startPrice}
               onChange={handleChange}
-              required={formData.isAuction}
+              required
             />
           </div>
           <p>Input Auction End Date:</p>
