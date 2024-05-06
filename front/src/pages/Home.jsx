@@ -75,7 +75,7 @@ const Home = () => {
       try {
         const data = await viewListings("items");
         console.log("Data fetched", data);
-        setListingsData(data);
+        setListingsData(data.slice(0, 4));
       } catch (error) {
         console.error("Fetching listings error:", error);
       }
@@ -84,7 +84,7 @@ const Home = () => {
       try {
         const data = await viewSortedAuctions();
         console.log("auctions data fetched", data);
-        setAuctionsData(data);
+        setAuctionsData(data.slice(0, 4));
       } catch (error) {
         console.error("Fetching auctions error", error);
       }
@@ -93,7 +93,7 @@ const Home = () => {
       try {
         const data = await viewListings('services');
         console.log("services data fetched", data);
-        setServicesData(data);
+        setServicesData(data.slice(0,4));
       } catch (error) {
         console.error("Fetching services error:", error);
       }
