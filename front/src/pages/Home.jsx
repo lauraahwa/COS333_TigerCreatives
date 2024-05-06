@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { viewListings, viewSortedAuctions } from "@/api/listingService";
 import { Grid, Button, ButtonContainer } from "@/components";
 
-const Title = styled.div'
+const Title = styled.div
   display: flex;
   flex-direction: column;
   padding: 0 100px;
@@ -24,23 +24,24 @@ const Title = styled.div'
     font-size: clamp(1rem, 3vw, 2rem);
   }
 ;
-const Container = styled.div`
+
+const Container = styled.div
   display: flex;
   flex-direction: column;
   padding: 0 100px;
 
   justify-content: center;
   align-items: center;
-`;
+;
 
-const Header = styled.h1`
+const Header = styled.h1
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
   margin-bottom: 41px;
-`;
+;
 
-const Banner = styled.div`
+const Banner = styled.div
   display: flex;
   width: 100%;
   flex-direction: column;
@@ -62,7 +63,7 @@ const Banner = styled.div`
     font-size: 2.5rem;
     margin-bottom: 30px;
   }
-`;
+;
 
 const Home = () => {
   const [listingsData, setListingsData] = useState([]);
@@ -90,18 +91,19 @@ const Home = () => {
     };
     const fetchServices = async () => {
       try {
-        const data = await viewListings("services");
+        const data = await viewListings('services');
         console.log("services data fetched", data);
         setServicesData(data);
       } catch (error) {
-        console.error("Fetching listings error:", error);
+        console.error("Fetching services error:", error);
       }
     };
 
     fetchListings();
     fetchSortedAuctions();
-    fetchServices;
+    fetchServices();
   }, []);
+
 
   return (
     <>
