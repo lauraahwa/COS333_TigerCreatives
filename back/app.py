@@ -517,7 +517,7 @@ def process_auction_end(listing_id):
         return jsonify({"error": "not an auction"}), 404
 
     bid_item = BidItem.query.get(bid_item_id)
-    # data = request.get_json()
+   
     if not bid_item:
         return jsonify({'error': 'Bid item not found'}), 404
     
@@ -527,19 +527,56 @@ def process_auction_end(listing_id):
         return jsonify({'error': 'Auction has not ended yet'}), 400
     
     listing = bid_item.listing
+
     # find the highest bid
     highest_bid = Bid.query.filter_by(bid_item_id=bid_item.id).order_by(Bid.bid_amount.desc()).first()
     if highest_bid:
         listing.is_processed = True
         db.session.commit()
+
+        # get the user objects
+        bidder = User.query.get(highest_bid.bidder_id)
+        seller = User.query.get(listing.seller_id)
+
+        b_email = bidder.email_address
+        s_email = seller.email_address
+
+        text = f"Congratulations {bidder.first_name} {bidder.last_name}, you won the auction for item {listing.title} with a bid of {highest_bid.bid_amount}."
+
+        try:
+            send_email(b_email, text)
+            send_email(s_email, "Your item has been sold!")
+        except Exception as e:
+            return jsonify({"error": f"Email sending failed: {str(e)}"}), 500
+
         return jsonify({
             "message": f"Highest bid for item {bid_item_id} is {highest_bid.bid_amount}. There was/were {bid_item.bid_count} bid(s) placed",
             "bidder_id": highest_bid.bidder_id,
+            "bidder_email": bidder.email_address,
             "seller_id": listing.seller_id,
+            "seller_email": seller.email_address,
         }), 200
     else:
         return jsonify({"message": "no bids found for this item"}), 200
     
+#----------------------------------------------------------------------------
+
+def send_email(to, text):
+    MAILGUN_API_KEY = "ed54d65c-6964eaff"
+    MAILGUN_DOMAIN_NAME = "sandbox4303d2cc641e4a17b3997aa9265f3240.mailgun.org"
+    MAILGUN_API_URL = f"https://api.mailgun.net/v3/{MAILGUN_DOMAIN_NAME}/messages"
+    
+    return requests.post(
+        MAILGUN_API_URL,
+        auth=("api", MAILGUN_API_KEY),
+        data={
+            "from": f"TigerCreatives Team <mailgun@{MAILGUN_DOMAIN_NAME}>",
+            "to": [to],
+            "subject": "Finalizing Your TigerCreatives Transaction!",
+            "text": text,
+        },
+    )
+
 #----------------------------------------------------------------------------
 
 # placing a bid
