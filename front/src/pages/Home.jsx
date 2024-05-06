@@ -4,7 +4,7 @@ import { viewListings, viewSortedAuctions } from "@/api/listingService";
 import { Grid, Button, ButtonContainer } from "@/components";
 import { Link } from 'react-router-dom';
 
-const Title = styled.div
+const Title = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 100px;
@@ -24,25 +24,26 @@ const Title = styled.div
     margin-top: -0.5rem;
     font-size: clamp(1rem, 3vw, 2rem);
   }
-;
+`;
 
-const Container = styled.div
+const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 100px;
 
   justify-content: center;
   align-items: center;
-;
+`;
 
-const Header = styled.h1
+const Header = styled.h1`
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 41px;
-;
+  margin-top: 40px;
+  margin-bottom: 40px;
+`;
 
-const Banner = styled.div
+const Banner = styled.div`
   display: flex;
   width: 100%;
   flex-direction: column;
@@ -56,7 +57,7 @@ const Banner = styled.div
   h1 {
     font-weight: 700;
     font-size: clamp(1.5rem, 4vw, 8rem);
-    margin-bottom: 1rem;  /* Adds spacing between h1 and h2 */
+    margin-bottom: 1rem;
 
     i {
       font-weight: 400;
@@ -66,7 +67,7 @@ const Banner = styled.div
   h2 {
     font-weight: 500;
     margin-top: -0.5rem;
-    margin-bottom: 1.5rem;  
+    margin-bottom: 1.5rem;
     font-size: clamp(1rem, 2vw, 2rem);
   }
   
@@ -75,12 +76,19 @@ const Banner = styled.div
     justify-content: center;
     width: 100%;
   }
+`
 
-
-const WhiteDivider = styled.div
+const WhiteDivider = styled.div`
   height: 150px;
   background-color: white;
-;
+`;
+
+const HorizontalLine = styled.hr`
+  border: none;
+  border-top: 4px solid ${({ color }) => color || '#403c3c'};
+  width: ${({ width }) => width || '100%'};
+  margin-top: 70px;
+`;
 
 const Home = () => {
   const [listingsData, setListingsData] = useState([]);
@@ -130,26 +138,32 @@ const Home = () => {
         </h1>
         <h2>buy, sell, create.</h2>
       </Title>
+      <HorizontalLine />
       <Container>
         <Header>Discover</Header>
         <Grid isLanding={false} data={auctionsData} />
-
+      </Container>
+      <HorizontalLine />
+      <Container>
         <Header>Products</Header>
         <Grid isLanding={true} data={listingsData} />
         <ButtonContainer>
           <a href="/shop">
-            <Button text="show more" />
+            <Button text="Show More" />
           </a>
         </ButtonContainer>
-
+      </Container>
+      <HorizontalLine />
+      <Container>
         <Header>Services</Header>
         <Grid isLanding={true} data={servicesData} />
         <ButtonContainer>
           <a href="/services">
-            <Button text="show" />
+            <Button text="Show More" />
           </a>
         </ButtonContainer>
       </Container>
+      <HorizontalLine />
       <Banner>
         <h1>Want a creative item or service? <br /></h1>
         <h2>
