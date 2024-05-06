@@ -11,9 +11,15 @@ const Container = styled.div`
     justify-content: space-between;
 `;
 
-const Title = styled.h1`
+const TitleLink = styled(RouterLink)`
     font-size: 24px;
     font-weight: 700;
+    text-decoration: none;
+    color: inherit;
+
+    &:hover {
+        font-weight: 800;
+    }
 `;
 
 const Link = styled(RouterLink)`
@@ -30,7 +36,7 @@ const Link = styled(RouterLink)`
 const Footer = () => {
     return (
         <Container row>
-        <Title>TigerCreatives</Title>
+        <TitleLink to='/'>TigerCreatives</TitleLink>
         <Link to='/contact'>Contact Us</Link>
         </Container>
     );

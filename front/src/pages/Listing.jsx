@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar as fasStar, faStarHalfAlt, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
 
 import { makeBid, viewBidInfo, viewListing, buyNow, processAuction } from '@/api/listingService'
-import { getReviews } from '@/api/userService'
+import { getReviews, getProfile} from '@/api/userService'
 import { Button } from '@/components'
 
 const Container = styled.div`
@@ -173,46 +173,61 @@ const SoldNotification = styled.div`
     margin: 10px 0;
 `;
 
+//---------------------------------------------------------------------------
+
 const Listing = () => {
     let { id } = useParams();
-    const rating = 3.5
+    const rating = 3.5;
 
-    const [listingData, setListingData] = useState({})
-    const [isAuction, setIsAuction] = useState(false)
+    const [listingData, setListingData] = useState({});
+    const [isAuction, setIsAuction] = useState(false);
     const [reviewsData, setReviewsData] = useState({ reviews: [], numberOfReviews: 0, avgRating: 0 });
-    const [bidData, setBidData] = useState([])
+    const [bidData, setBidData] = useState([]);
+    const [userData, setUserData] = useState({});
 
-    const [isBidActive, setIsBidActive] = useState(false)
-    const [bid, setBid] = useState('')
-
-    // initializations for display
+    const [isBidActive, setIsBidActive] = useState(false);
+    const [bid, setBid] = useState('');
     const [isSold, setIsSold] = useState(false);
 
     useEffect(() => {
         const fetchListing = async () => {
             try {
-                const data = await viewListing(id)
-                console.log(data)
-                setListingData(data)
-                setIsAuction(data["is_auction"])
+                const data = await viewListing(id);
+                setListingData(data);
+                setIsAuction(data.is_auction);
             } catch (error) {
-                console.error("fetching listing error", error)
+                console.error("fetching listing error", error);
             }
-        }
+        };
 
         const fetchBidInfo = async () => {
             try {
-                const data = await viewBidInfo(id)
-                // console.log(data)
-                setBidData(data)
+                const data = await viewBidInfo(id);
+                setBidData(data);
             } catch (error) {
-                console.error('DOESNT WORK HELP', error)
+                console.error('Error fetching bid info', error);
             }
-        }
+        };
 
-        fetchListing()
-        fetchBidInfo()
-    }, [])
+        fetchListing();
+        fetchBidInfo();
+    }, [id]);
+    
+    // get the user information
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!listingData.seller_id) return;
+
+            try {
+                const data = await getProfile(listingData.seller_id);
+                setUserData(data);
+            } catch (error) {
+                console.error('Error getting user info', error);
+            }
+        };
+
+        fetchUserData();
+    }, [listingData]);
 
     useEffect(() => {
         const processReviews = (reviews) => {
@@ -288,8 +303,6 @@ const Listing = () => {
             const response = await buyNow(listingId);
     
             if (response.success) {
-                setIsSold(true);
-                // setShowListing(false);
                 alert('Purchase successful!');
                 // PUT IN UI POP UP TO DISPLAY AND X OUT
             } else {
@@ -313,7 +326,7 @@ const Listing = () => {
                 <Subtext>or Best Offer</Subtext>
                 <br/>
                 <Link to={`/seller/${listingData.seller_id}`}>
-                    <a>Sold by Seller: {listingData.seller_id}</a>
+                    <a>Sold by Seller: {userData.first_name} {userData.last_name}</a>
                 </Link>
                 
                 <ReviewsContainer>
@@ -352,7 +365,7 @@ const Listing = () => {
                     <p>{listingData.description}</p>
                 </ReviewsContainer>
                 <br />
-                <p>Contact: Jack O'Donnell, jodonnell@princeton.edu</p>
+                <p>Contact: {userData.email_address}</p>
             </TextContainer>
         ) : (
             <TextContainer>
@@ -361,7 +374,7 @@ const Listing = () => {
                 <h2>${listingData.price}</h2>
                 <br/>
                 <Link to={`/seller/${listingData.seller_id}`}>
-                    <a>Sold by Seller: {listingData.seller_id}</a>
+                    <a>Sold by Seller: {userData.first_name} {userData.last_name}</a>
                 </Link>
                 <ReviewsContainer>
                     <StarRating rating={rating} />
@@ -373,7 +386,7 @@ const Listing = () => {
                 <ButtonContainer>
                     <StyledButton text="Buy Now" onClick={handleBuyNow}/>
                 </ButtonContainer>
-                <p>Contact: Jack O'Donnell, jodonnell@princeton.edu</p>
+                <p>Contact: {userData.email_address}</p>
             </TextContainer>
         )}
         
