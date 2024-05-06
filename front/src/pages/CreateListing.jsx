@@ -65,7 +65,11 @@ const CreateListing = () => {
                 <Heading>Bidding Information</Heading>
                 <BiddingInfoContainer>
                     <InfoSection>
-                        <Text>When you create a listing on TigerCreatives, you have the option to enable bidding. This allows you to set a starting bid and specify when the bidding for your item will end. This turns your listing into an auction where buyers can compete to purchase your item or service.</Text>
+                        <Text>When you create a listing on TigerCreatives, you have the option to enable bidding. This allows you to set a starting bid and specify when the bidding for your listing will end. This turns your listing into an auction where buyers can compete to purchase your item or service.</Text>
+                    </InfoSection>
+                    <InfoSection>
+                        <Text>For an auction-listing, you may observe that there are both fields for ‘Price’ and ‘Auction Start Price’
+                            that be filled out. However, only the ‘Auction Start Price’ will be taken into account for your auction listing.</Text>
                     </InfoSection>
                     <InfoSection>
                         <Text>Begin by describing your item or service clearly and uploading high-quality images.</Text>
