@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { viewListings, viewSortedAuctions } from "@/api/listingService";
 import { Grid, Button, ButtonContainer } from "@/components";
+import { Link } from 'react-router-dom';
 
-const Title = styled.div
+const Title = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 100px;
@@ -23,25 +24,25 @@ const Title = styled.div
     margin-top: -0.5rem;
     font-size: clamp(1rem, 3vw, 2rem);
   }
-;
+`;
 
-const Container = styled.div
+const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 100px;
 
   justify-content: center;
   align-items: center;
-;
+`;
 
-const Header = styled.h1
+const Header = styled.h1`
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
   margin-bottom: 41px;
-;
+`;
 
-const Banner = styled.div
+const Banner = styled.div`
   display: flex;
   width: 100%;
   flex-direction: column;
@@ -49,21 +50,37 @@ const Banner = styled.div
   align-items: center;
   text-align: center;
   background-color: var(--container-color);
-
   padding: 78px 100px;
   margin-top: 130px;
 
   h1 {
     font-weight: 700;
-    font-size: 4rem;
+    font-size: clamp(1.5rem, 4vw, 8rem);
+    margin-bottom: 1rem;  /* Adds spacing between h1 and h2 */
+
+    i {
+      font-weight: 400;
+    }
   }
 
   h2 {
     font-weight: 500;
-    font-size: 2.5rem;
-    margin-bottom: 30px;
+    margin-top: -0.5rem;
+    margin-bottom: 1.5rem;  /* Adds spacing between h2 and the button */
+    font-size: clamp(1rem, 2vw, 2rem);
   }
-;
+  
+  .button-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+`
+
+const WhiteDivider = styled.div`
+  height: 150px;
+  background-color: white;
+`;
 
 const Home = () => {
   const [listingsData, setListingsData] = useState([]);
@@ -134,22 +151,31 @@ const Home = () => {
         </ButtonContainer>
       </Container>
       <Banner>
-        <h1>Are you a creative?</h1>
+        <h1>Want a creative item or service? <br /></h1>
         <h2>
-          TigerCreatives is a platform for members of the Princeton community to
-          list and purchase creative goods and services in a seamless fashion.
-          From handmade jewelry to photography services, TigerCreatives aims to
-          be Princetons go-to hub for artistry exchange.{" "}
+          Purchase something that your peers have thoughtfully <br />
+          offered to share with the Princeton community!<br />
+          We hope you'll find the sort of artistry that suits you. <br /> {" "}
         </h2>
-        <Button text="get started" />
+        <Link to='/profile' style={{ textDecoration: 'none' }}>
+                <Button text="Login / Sign Up" style={{ width: '200px' }} onClick={() => loginWithRedirect()} />
+        </Link>
       </Banner>
+      <Banner>
+        <h1>Are you a creator? <br /></h1>
+        <h2>
+          Share your craft with members of the Princeton community!<br />
+          We're here to encourage your artistry, connect you to appreciators
+          of creativity, <br /> and be your go-to platform for celebrating
+          what you do best.<br /> {" "}
+        </h2>
+        <Link to='/profile' style={{ textDecoration: 'none', marginRight: '15px' }}>
+                <Button text="Login / Sign Up" style={{ width: '200px' }} onClick={() => loginWithRedirect()} /> 
+              </Link>
+      </Banner>
+      <WhiteDivider />
     </>
   );
 };
-
-export default Home;
-
-  );
-}
 
 export default Home
