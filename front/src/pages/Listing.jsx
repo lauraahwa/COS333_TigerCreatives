@@ -283,7 +283,13 @@ const Listing = () => {
             window.location.reload();
         } catch (error) {
             console.error('Error placing bid:', error)
-            alert("Error placing bid. Please try again.")
+
+            // Handle specific error messages from the server
+            if (error.response && error.response.data && error.response.data.error) {
+                alert(error.response.data.error);
+            } else {
+                alert("Error placing bid. Please try again.");
+            }
         }
 
     }

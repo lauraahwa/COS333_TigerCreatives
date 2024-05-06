@@ -145,7 +145,7 @@ class Bid(db.Model):
             'id': self.id,
             'bid_item_id': self.bid_item_id,
             'bidder_id': self.bidder_id,
-            'bid_amount': self.bid_amount,
+            'bid_amount': round(self.bid_amount, 2),
             'bid_time': self.bid_time,
         }
         

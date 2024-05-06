@@ -5,7 +5,7 @@ import {
   Outlet
 } from "react-router-dom"
 import {ProfileProvider} from '@/components/ProfileInfo';
-import { Home, Shop, Services, Seller, Profile, EditProfile, About, Login, Listing, CreateListing, ContactPage, Review  } from './pages'
+import { Home, Shop, Services, Seller, Profile, EditProfile, About, Login, Listing, CreateListing, ContactPage, Review, SellerReviews} from './pages'
 import { Navbar, Footer} from './components'
 
 const MainLayout = () => (
@@ -28,6 +28,7 @@ const router = createBrowserRouter([
       { path: "/listing/:id", element: <Listing /> },
       { path: "/profile", element: <Profile /> },
       { path: "/seller/:id", element: <Seller />},
+      { path: "/itemized-reviews/:id", element: <SellerReviews /> },
       { path: "/review/:id", element: <Review />},
       { path: "/editprofile", element: <EditProfile /> },
       { path: "/index", element: <EditProfile /> },

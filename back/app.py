@@ -314,11 +314,9 @@ def create_listing():
     print(data)
 
     try:
-        start_price = data['start_price']
         is_processed = data['is_processed']
 
     except:
-        start_price = None
         is_processed = None
 
     new_listing = Listing(
@@ -606,11 +604,12 @@ def place_bid():
     # Check if new bid is at least $0.50 higher than the last
     highest_bid = bid_item.get_highest_bid()
     if bid_amount <= highest_bid + 0.50:
-        return jsonify({"error": "Your bid must be at leat $0.50 higher than the current highest bid of ${:.2f}$".format(highest_bid)}), 400
+        return jsonify({"error": "Your bid must be at least $0.50 higher than the current highest bid of ${:.2f}$".format(highest_bid)}), 400
     
+    # Check if new bid is at least $0.50 higher than the start price
     start_price = bid_item.start_price
     if bid_amount <= start_price + 0.50:
-        return jsonify({"error": "Your bid must be at leat $0.50 higher than the start price bid of ${:.2f}$".format(start_price)}), 400
+        return jsonify({"error": "Your bid must be at least $0.50 higher than the start price bid of ${:.2f}$".format(start_price)}), 400
     
     est_tz = pytz.timezone('US/Eastern')
     utc_now = datetime.utcnow().replace(tzinfo=pytz.utc)
