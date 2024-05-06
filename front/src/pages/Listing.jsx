@@ -252,21 +252,28 @@ const Listing = () => {
         fetchReviews()
     }, [listingData])
 
-    const createBid = async () => {
-        const bidData = {
-            'listing_id': id,
-            'bid_amount': bid
-        }
+const createBid = async () => {
+    const bidData = {
+      listing_id: id,
+      bid_amount: bid,
+    };
 
-        try {
-            const response = await makeBid(bidData)
-            console.log(response)
-            setBid('')
-        } catch (error) {
-            console.error('some error with bid creation', error)
-        }
+    try {
+      const response = await makeBid(bidData);
+      console.log(response);
+      setBid("");
 
+      if (response.status === 200) {
+        alert("Successful Bid placed");
+        window.location.reload();
+      } else {
+        alert("Failed to process bid: " + response.data.message);
+      }
+    } catch (error) {
+      console.error("Error processing bid:", error);
+      alert("An error occurred while processing the bid.");
     }
+  };
 
     const handleProcessAuction = async () => {
         try {
