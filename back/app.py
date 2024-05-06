@@ -315,9 +315,11 @@ def create_listing():
 
     try:
         is_processed = data['is_processed']
+        start_price = data['start_price']
 
     except:
         is_processed = None
+        start_price = None
 
     new_listing = Listing(
         title=data['title'],
@@ -329,7 +331,7 @@ def create_listing():
         is_service=data['is_service'],
         auction_end_time=auction_end_time,
         is_processed=is_processed,
-        start_price=data['start_price']
+        start_price=start_price
     )
 
     db.session.add(new_listing)

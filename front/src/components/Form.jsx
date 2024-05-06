@@ -83,7 +83,7 @@ const Form = () => {
       'price': formData['itemPrice'],
       'is_service': formData['isService'],
       'is_auction': formData['isAuction'],
-      // 'bid_start_price': formData['startPrice'],
+      'start_price': formData['startPrice'],
       'auction_end_time': formData['auctionEndDate']
     }
 
