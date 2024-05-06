@@ -1,55 +1,61 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Rating from 'react-rating';
-import { Button, ButtonContainer } from '@/components'
-import styled from 'styled-components'
+import { Button } from '@/components';
+import styled from 'styled-components';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as fasStar, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
 
-import { createReview } from '@/api/userService'
+import { createReview } from '@/api/userService';
 
 const FullStar = styled(FontAwesomeIcon)`
   margin-right: 5px;
-
   path {
     fill: var(--accent-color)
   }
-  
 `;
+
 const EmptyStar = styled(FontAwesomeIcon)`
   margin-right: 5px;
-
   path {
     fill: #e3e3e3;
   }
 `;
 
 const StyledButton = styled.button`
-  padding: 8px 20px; 
+  padding: 8px 20px;
   border: 1px solid #3A3A3A;
   border-radius: 15px;
   background-color: #FFF;
-  font-size: 1.2rem; 
+  font-size: 1.2rem;
   font-weight: 400;
-  width: auto;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  flex-shrink: 0;
   cursor: pointer;
-  margin-top: 20px; 
+  flex-shrink: 0;
+  margin-top: 20px;
 
   &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
   &:active {
-      box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.2);
   }
 `;
+
+const StyledTextarea = styled.textarea`
+  width: 100%;  // Set width to 100%
+  box-sizing: border-box; // Ensure padding is included within the width
+  padding: 10px; // Add some padding for a better user experience
+  border: 1px solid #ccc;
+  border-radius: 4px;
+`;
+
 const StarRating = ({ onChange, initialRating }) => {
   return (
     <Rating
@@ -71,14 +77,21 @@ const Container = styled.div`
   align-items: center;
   flex-direction: column;
   gap: 20px;
-`
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+`;
 
 const ReviewForm = () => {
-  let { id } = useParams()
-  const [rating, setRating] = useState(1)
-  const [text, setText] = useState('')
+  let { id } = useParams();
+  const [rating, setRating] = useState(1);
+  const [text, setText] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) =>{
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const reviewData = {
       'seller_id': id,
@@ -87,18 +100,21 @@ const ReviewForm = () => {
     };
     try {
       await createReview(reviewData);
-      alert('Review submitted successfully!'); 
-      setText(''); 
-      setRating(1); 
+      alert('Review submitted successfully!');
+      setText('');
+      setRating(1);
     } catch (error) {
       console.error('Error submitting review:', error);
-      alert('An error occurred while submitting the review. Please try again.'); 
+      alert('An error occurred while submitting the review. Please try again.');
     }
   };
 
   const handleRatingChange = (newRating) => {
-    console.log("Rating changed to:", newRating);
-    setRating(newRating); 
+    setRating(newRating);
+  };
+
+  const handleGoBack = () => {
+    navigate(`/seller/${id}`);
   };
 
   return (
@@ -106,18 +122,28 @@ const ReviewForm = () => {
       <StarRating initialRating={rating} onChange={handleRatingChange} />
       <form className="form" onSubmit={handleSubmit}>
         <div>
-          <textarea
+          <p>Please leave your review below:</p>
+          <StyledTextarea
             id="text"
             name="text"
-            placeholder="Review"
+            placeholder=''
             value={text}
             onChange={e => setText(e.target.value)}
             required
           />
         </div>
-        <StyledButton disabled={rating === 0} type="submit">
-          Send
-        </StyledButton>
+        <p>*The TigerCreatives team highly suggests you to mention
+          what item/service you purchased with this seller to be of
+          most help to other users!
+        </p>
+        <ButtonContainer>
+          <StyledButton disabled={rating === 0} type="submit">
+            Submit Review
+          </StyledButton>
+          <StyledButton type="button" onClick={handleGoBack}>
+            Go Back
+          </StyledButton>
+        </ButtonContainer>
       </form>
     </Container>
   );

@@ -436,7 +436,7 @@ def get_user_items():
     user_id = get_jwt_identity()
     print(user_id)
 
-    listings = Listing.query.filter(Listing.seller_id == user_id).all()
+    listings = Listing.query.filter(Listing.seller_id == user_id, Listing.is_processed == False).all()
 
     return jsonify([listing.to_dict() for listing in listings])
 
@@ -444,7 +444,7 @@ def get_user_items():
 @app.route('/api/listing/seller_items/<int:seller_id>', methods=['GET', 'OPTIONS'])
 @cross_origin()
 def get_seller_items(seller_id):
-    listings = Listing.query.filter(Listing.seller_id == seller_id).all()
+    listings = Listing.query.filter(Listing.seller_id == seller_id, Listing.is_processed == False).all()
 
     return jsonify([listing.to_dict() for listing in listings]), 200
 

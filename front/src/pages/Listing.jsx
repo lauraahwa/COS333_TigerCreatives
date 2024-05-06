@@ -343,7 +343,9 @@ const Listing = () => {
                 <ReviewsContainer>
                     <StarRating rating={reviewsData.avgRating} />
                     <Line />
-                    <ReviewsText>{reviewsData.numberOfReviews} Seller Reviews</ReviewsText>
+                    <Link to={`/itemized-reviews/${listingData.seller_id}`}>
+                        <ReviewsText>{reviewsData.numberOfReviews} Seller Reviews</ReviewsText>
+                    </Link>
                 </ReviewsContainer>
 
                 <p style={{ marginBottom: '20px' }}>Auction end date: {bidData.auction_end_time} | Top bid: ${bidData.highest_bid}</p>
@@ -383,19 +385,21 @@ const Listing = () => {
                 {isSold && <SoldNotification>Item Sold!</SoldNotification>}
                 <h1>{listingData.title}</h1>
                 <h2>${listingData.price}</h2>
-                <br/>
+                <br />
                 <Link to={`/seller/${listingData.seller_id}`}>
-                    <a>Sold by Seller: {userData.first_name} {userData.last_name}</a>
+                    Sold by Seller: {userData.first_name} {userData.last_name}
                 </Link>
                 <ReviewsContainer>
                     <StarRating rating={rating} />
                     <Line />
-                    <ReviewsText>5 Seller Reviews</ReviewsText>
+                    <Link to={`/itemized-reviews/${listingData.seller_id}`}>
+                        <ReviewsText>{reviewsData.numberOfReviews} Seller Reviews</ReviewsText>
+                    </Link>
                 </ReviewsContainer>
                 <p>{listingData.description}</p>
                 <br />
                 <ButtonContainer>
-                    <StyledButton text="Buy Now" onClick={handleBuyNow}/>
+                    <StyledButton text="Buy Now" onClick={handleBuyNow} />
                 </ButtonContainer>
                 <p>Contact: {userData.email_address}</p>
             </TextContainer>
