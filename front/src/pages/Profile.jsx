@@ -150,6 +150,7 @@ const StarRating = ({ rating }) => {
 }
 
     const Profile = () => {
+        let { id } = useParams();
         const { user, isAuthenticated } = useAuth0();
 
         const [listingsData, setListingsData] = useState([])
@@ -254,7 +255,7 @@ const StarRating = ({ rating }) => {
                         <ReviewsContainer>
                             <StarRating rating={reviewsData.avgRating} />
                             <Line />
-                            <Link to={`/itemized-reviews/${listingsData.seller_id}`}>
+                            <Link to={`/itemized-reviews/${userData.id}`}>
                                 <ReviewsText>{reviewsData.numberOfReviews} Seller Reviews</ReviewsText>
                             </Link>
                         </ReviewsContainer>

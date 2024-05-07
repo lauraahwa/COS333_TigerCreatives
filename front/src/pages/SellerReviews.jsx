@@ -90,7 +90,7 @@ const SellerReviews = () => {
       <Container>
         <Splash header="Seller Reviews" subtext="See what people have been saying about this seller!"  />
           <ContentArea>
-              {reviews.map(review => (
+              {reviews.length > 0 ? reviews.map(review => (
                   <ReviewContainer key={review.id}>
                       <Rating
                           start={0}
@@ -103,7 +103,8 @@ const SellerReviews = () => {
                       />
                       <ReviewText>{review.text}</ReviewText>
                   </ReviewContainer>
-              ))}
+              )) :
+              <>No current reviews</>}
           </ContentArea>
       </Container>
   );

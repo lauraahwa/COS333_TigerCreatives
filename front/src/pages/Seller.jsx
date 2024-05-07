@@ -248,7 +248,7 @@ const ReviewsText = styled.p`
                         <ReviewsContainer>
                             <StarRating rating={reviewsData.avgRating} />
                             <Line />
-                            <Link to={`/itemized-reviews/${listingsData.seller_id}`}>
+                            <Link to={`/itemized-reviews/${profileData.id}`}>
                                 <ReviewsText>{reviewsData.numberOfReviews} Seller Reviews</ReviewsText>
                             </Link>
                         </ReviewsContainer>
