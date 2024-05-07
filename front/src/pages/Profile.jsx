@@ -253,7 +253,7 @@ const StarRating = ({ rating }) => {
                         <ReviewsContainer>
                             <StarRating rating={reviewsData.avgRating} />
                             <Line />
-                            <Link to={`/itemized-reviews/${listingData.seller_id}`}>
+                            <Link to={`/itemized-reviews/${listingsData.seller_id}`}>
                                 <ReviewsText>{reviewsData.numberOfReviews} Seller Reviews</ReviewsText>
                             </Link>
                         </ReviewsContainer>
