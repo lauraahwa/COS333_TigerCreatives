@@ -111,7 +111,7 @@ const Login = () => {
             <TextContainer></TextContainer>
             <TextContainer className="button-container">
                 <Link to='/profile' style={{ textDecoration: 'none', marginRight: '15px' }}>
-                    <Button text="Sign Up" style={{ width: '200px' }} onClick={() => loginWithRedirect()} /> 
+                    <Button text="Login/Sign Up" style={{ width: '200px' }} onClick={() => loginWithRedirect()} /> 
                 </Link>
                 <Link to='/shop' style={{ textDecoration: 'none', marginRight: '15px' }}>
                     <Button text="Browse Goods" style={{ width: '200px' }} />
