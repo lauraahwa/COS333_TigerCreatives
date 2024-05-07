@@ -3,11 +3,11 @@ import styled, { css } from 'styled-components'
 import { Link as RouterLink } from 'react-router-dom';
 
 const Container = styled.div`
-    padding: ${props => props.row ? "62px 100px" : "0"};
+    padding: 62px 100px;
     width: 100%;
     display: flex;
     background-color: var(--container-color);
-    flex-direction: ${props => props.row ? "row" : "column"};
+    flex-direction: row;
     justify-content: space-between;
 `;
 
@@ -35,7 +35,7 @@ const Link = styled(RouterLink)`
 
 const Footer = () => {
     return (
-        <Container row>
+        <Container>
         <TitleLink to='/'>TigerCreatives</TitleLink>
         <Link to='/contact'>Contact Us</Link>
         </Container>

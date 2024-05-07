@@ -149,8 +149,7 @@ const ReviewsText = styled.p`
 `
 
     const Seller = () => {
-        const { user, isAuthenticated, handleRedirectCallback, getAccessTokenSilently } = useAuth0();
-        const rating = 3.5
+        const { user, isAuthenticated } = useAuth0();
 
         let { id } = useParams()
         const [profileData, setProfileData] = useState([])
@@ -241,7 +240,7 @@ const ReviewsText = styled.p`
                 <Content>
                 <ProfileContainer>
                     <ProfilePic>
-                        <img src={user.picture} />
+                        <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Ftagd.princeton.edu%2FTagdCampaign%2FLeaderboard&psig=AOvVaw1XqmUjgpN2e3rpXY5plmyq&ust=1715130116260000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJDNzNyr-oUDFQAAAAAdAAAAABAE" />
                     </ProfilePic>
                     <ProfileDetails>
                         <ProfileName> 

@@ -14,6 +14,7 @@ class User(db.Model):
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     email_address = db.Column(db.String(100), unique=True, nullable=False)
+    # image_url = db.Column(db.String)
 
     def to_dict(self):
         return {
@@ -21,6 +22,7 @@ class User(db.Model):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'email_address': self.email_address,
+            # 'image_url': self.image_url
         }
 
 class Review(db.Model):
