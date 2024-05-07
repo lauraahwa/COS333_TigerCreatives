@@ -389,10 +389,23 @@ def get_sorted_auctions():
         Listing.is_processed == False
     ).order_by(Listing.auction_end_time).limit(4).all()
 
+    auctions_data = []
+
+    for auction in auctions:
+        highest_bid = auction.bid_item.get_highest_bid()
+        if highest_bid != 0:
+            display_price = highest_bid
+        else:
+            display_price = auction.start_price
+
+        d = auction.to_dict()
+        d['price'] = display_price
+
+        auctions_data.append(d)
     # probably add the below field
     # Listing.auction_end_time > current_time
 
-    return jsonify([auction.to_dict() for auction in auctions])
+    return jsonify(auctions_data)
 
 #----------------------------------------------------------------------------
 @app.route('/api/listing/buynow', methods=['PUT'])
@@ -445,7 +458,25 @@ def delete_listing(listing_id):
 @cross_origin()
 def get_items():
     listings = Listing.query.filter(Listing.is_service == False, Listing.is_processed == False).all()
-    return jsonify([listing.to_dict() for listing in listings])
+
+    data = []
+
+    for listing in listings:
+        if listing.is_auction:
+            highest_bid = listing.bid_item.get_highest_bid()
+            if highest_bid != 0:
+                display_price = highest_bid
+            else:
+                display_price = listing.start_price
+
+            d = listing.to_dict()
+            d['price'] = display_price
+
+            data.append(d)
+        else:
+            data.append(listing.to_dict())
+
+    return jsonify(data)
 
 #----------------------------------------------------------------------------
 
@@ -563,13 +594,10 @@ def process_auction_end(listing_id):
     highest_bid = Bid.query.filter_by(bid_item_id=bid_item.id).order_by(Bid.bid_amount.desc()).first()
 
     # process even if no bids are placed
-    if highest_bid is None:
-        listing.is_processed = True
+    listing.is_processed = True
+    db.session.commit()
 
     if highest_bid:
-        listing.is_processed = True
-        db.session.commit()
-
         # get the user objects
         bidder = User.query.get(highest_bid.bidder_id)
         seller = User.query.get(listing.seller_id)
@@ -593,6 +621,15 @@ def process_auction_end(listing_id):
             "seller_email": seller.email_address,
         }), 200
     else:
+        seller = User.query.get(listing.seller_id)
+        
+        s_email = seller.email_address
+
+        try:
+            send_no_bids_mail(s_email, listing.title)
+        except Exception as e:
+            return jsonify({"error": f"Email sending failed: {str(e)}"}), 500
+
         return jsonify({"message": "No bids found for this item.\n"}), 200
     
 #----------------------------------------------------------------------------
@@ -611,6 +648,12 @@ def send_seller_mail(seller_email, bidder_email, item_name, bid_amount):
     mail.send(msg)
     return "Email sent!"
 
+def send_no_bids_mail(seller_email, item_name):
+    msg = Message("Auction ended on TigerCreatives",
+                    recipients=[seller_email])
+    msg.body = f"Your item: {item_name} has received no bids on TigerCreatives at the time of auction conclusion. Please consider relisting your item or listing other items!"
+    mail.send(msg)
+    return "Email sent!"
 #----------------------------------------------------------------------------
 
 # placing a bid

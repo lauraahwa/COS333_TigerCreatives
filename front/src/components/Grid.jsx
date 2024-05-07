@@ -105,6 +105,7 @@ const Grid = ({ isLanding, data }) => {
               <h1>{item.title}</h1>
               <p>{item.description}</p>
               <h2>${item.price}</h2>
+              
             </TextContainer>
             <Link to={`/listing/${item.id}`}>
               <StyledButton text="view details" />
