@@ -77,7 +77,7 @@ function About() {
         content={`<p>Currently, our search function queries listings based on their titles. We plan to add more search features, such as searching by category, seller name, and general seller info. Stay tuned!</p>`}
       />
       <StyledAccordion
-        title="I found a bug and/or I have feedback to offer. What should I do?"
+        title="I found a bug. I have feedback to offer. I have a more specific question. What should I do?"
         content={`<p>We're working to improve the site and welcome your feedback! Use the 'Contact Us' link in the footer to find our contact information.</p>`}
       />
       <StyledAccordion
