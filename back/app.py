@@ -721,7 +721,8 @@ def place_bid():
 
     # convert string to datetime object
     auction_end_time = parser.parse(auction_end_time_str.strip())
-    # auction_end_time = est_tz.localize(auction_end_time)
+    if auction_end_time.tzinfo is None or auction_end_time.tzinfo.utcoffset(auction_end_time) is None:
+        auction_end_time = est_tz.localize(auction_end_time)
 
     if est_now > auction_end_time:
         return jsonify({"error": "You cannot place a bid at this time.\nThe auction has already ended."}), 400
