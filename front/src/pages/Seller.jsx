@@ -240,7 +240,7 @@ const ReviewsText = styled.p`
                 <Content>
                 <ProfileContainer>
                     <ProfilePic>
-                        <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Ftagd.princeton.edu%2FTagdCampaign%2FLeaderboard&psig=AOvVaw1XqmUjgpN2e3rpXY5plmyq&ust=1715130116260000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJDNzNyr-oUDFQAAAAAdAAAAABAE" />
+                        <img src="https://tagd.princeton.edu/Content/tagd/images/Tiger%20Face_Front.png" />
                     </ProfilePic>
                     <ProfileDetails>
                         <ProfileName> 
