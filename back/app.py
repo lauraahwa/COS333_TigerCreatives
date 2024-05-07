@@ -329,8 +329,11 @@ def create_listing():
         except ValueError:
             return jsonify({"error": "Invalid format for auction end time. Use YYYY-MM-DD HH:MM:SS."}), 402
     else:
-        auction_end_time = None
-    print(data['start_price'])
+        auction_end_time_formatted = None
+    
+    # put in a default start price
+    if data['start_price'] is None:
+        data['start_price'] = 0
 
     try:
         start_price = data['start_price']
@@ -342,7 +345,7 @@ def create_listing():
     except:
         is_processed = None
         
-
+    
     new_listing = Listing(
         title=data['title'],
         seller_id=user_id,
@@ -405,6 +408,10 @@ def buy():
 
     if listing is None:
         return jsonify({'error': 'Listing not found'}), 404
+
+    # prevent seller from buying their own listing
+    if listing.seller_id == user_id:
+        return jsonify({'error': 'You cannot buy your own listing.'}), 400
     
     listing.is_processed = True
     db.session.commit()
@@ -520,6 +527,7 @@ def create_bid():
 #----------------------------------------------------------------------------
 
 # process the bidding when its done; FOR TESTING
+@cross_origin()
 @app.route('/api/bid/process/<int:listing_id>', methods=['GET'])
 def process_auction_end(listing_id):
     listing = Listing.query.get(listing_id)
@@ -538,8 +546,18 @@ def process_auction_end(listing_id):
         return jsonify({'error': 'Bid item not found'}), 404
     
     est_tz = pytz.timezone('US/Eastern')
-    auction_end_time = est_tz.localize(bid_item.auction_end_time)
-    if auction_end_time > datetime.now(est_tz):
+    print("HELLOO")
+    print(bid_item.auction_end_time)
+    # parse auction_end_time
+    auction_end_time = datetime.strptime(bid_item.auction_end_time, '%a, %d %b %Y %H:%M:%S %Z')
+
+    # strip of whitespace in case anything is trailing
+    auction_end_time_str = auction_end_time_str.strip()
+    auction_end_time = auction_end_time.astimezone(est_tz)
+
+    # get current time
+    current_time = datetime.now(est_tz)
+    if auction_end_time > current_time:
         return jsonify({'error': 'Auction has not ended yet'}), 400
     
     listing = bid_item.listing
@@ -605,6 +623,10 @@ def place_bid():
 
     if not listing:
         return jsonify({"error": "listing not found"}), 404
+    
+    # snsure that the seller isn't the one bidding
+    if listing.seller_id == user_id:
+        return jsonify({"error": "You cannot place a bid on your own listing."}), 400
 
     if listing.bid_item:
         bid_item_id = listing.bid_item.id
@@ -632,19 +654,29 @@ def place_bid():
     if bid_amount <= start_price + 0.50:
         return jsonify({"error": "Your bid must be at least $0.50 higher than the start price bid of ${:.2f}$".format(start_price)}), 400
     
+    # Get the current local time
+    local_now = datetime.now()
+
+    # Convert local time to UTC
+    utc_now = local_now.astimezone(pytz.utc)
+
+    # Convert UTC time to Eastern Time
     est_tz = pytz.timezone('US/Eastern')
-    utc_now = datetime.utcnow().replace(tzinfo=pytz.utc)
     est_now = utc_now.astimezone(est_tz)
-    print(est_now)
+
+    # Format the time
+    est_now_str = est_now.strftime('%a, %d %b %Y %H:%M:%S %Z')
+
+    print(est_now_str)
 
     if not bid_item.auction_start_time:
-        bid_item.auction_start_time = est_now
+        bid_item.auction_start_time = est_now_str
 
     new_bid = Bid(
         bid_item_id=bid_item.id,  # Link this bid to the retrieved bid item
         bidder_id=user_id,
         bid_amount=bid_amount,
-        bid_time=est_now
+        bid_time=est_now_str
     )
     db.session.add(new_bid)
     bid_item.bid_count += 1

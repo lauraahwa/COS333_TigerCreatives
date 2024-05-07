@@ -140,7 +140,7 @@ const Home = () => {
       </Title>
       <HorizontalLine />
       <Container>
-        <Header>Discover</Header>
+        <Header>Discover: Active Auctions</Header>
         <Grid isLanding={false} data={auctionsData} />
       </Container>
       <HorizontalLine />

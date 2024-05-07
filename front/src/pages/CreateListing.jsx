@@ -80,12 +80,12 @@ const CreateListing = () => {
             </InfoSection>
             <InfoSection>
               <Text>
-                Select how long the auction will last. This can range from a few hours to several days, depending on how quickly you want to sell.
+                Select how long the auction will last. This can range from a few hours to several days, depending on how quickly you want to sell. Your auction expiry must be at least 2 minutes beyond the time that you're placing the listing.
               </Text>
             </InfoSection>
             <InfoSection>
               <Text>
-                Once your listing is live, buyers can start placing bids. Each bid needs to be at least $0.50 higher than the last.
+                Once your listing is live, buyers can start placing bids starting from $0.50 more than your start price. Each subsequent bid will be at least $0.50 higher than the last.
               </Text>
             </InfoSection>
           </InfoSidebar>
