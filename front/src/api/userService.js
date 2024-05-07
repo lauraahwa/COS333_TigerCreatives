@@ -22,7 +22,7 @@ export const getProfile = async (id) => {
         if (id) {
             endpoint = `/api/users/get_user/${id}`;
         } else {
-            endpoint = '/api/users/get_self/';
+            endpoint = '/api/users/get_self';
         }
 
         

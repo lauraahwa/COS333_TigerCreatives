@@ -117,7 +117,7 @@ def get_user(user_id):
 
     return jsonify(user.to_dict()), 200
 
-@app.route('/api/users/get_self', methods=['GET'])
+@app.route('/api/users/get_self', methods=['GET', 'OPTIONS'])
 @jwt_required()
 @cross_origin()
 def get_current_user():
@@ -234,7 +234,6 @@ def login():
 
     data = request.get_json()
     print(data)
-    print(type(data))
     email = data.get('email')
     user = User.query.filter(User.email_address == email).all()
     if user:
