@@ -509,7 +509,25 @@ def get_user_items():
 
     listings = Listing.query.filter(Listing.seller_id == user_id, Listing.is_processed == False).all()
 
-    return jsonify([listing.to_dict() for listing in listings])
+    data = []
+
+    for listing in listings:
+        if listing.is_auction:
+            highest_bid = listing.bid_item.get_highest_bid()
+            if highest_bid != 0:
+                display_price = highest_bid
+            else:
+                display_price = listing.start_price
+
+            d = listing.to_dict()
+            d['price'] = display_price
+
+            data.append(d)
+        else:
+            data.append(listing.to_dict())
+
+    return jsonify(data)
+
 
 # get a list of all listings created by a specfic user
 @app.route('/api/listing/seller_items/<int:seller_id>', methods=['GET', 'OPTIONS'])
@@ -517,7 +535,24 @@ def get_user_items():
 def get_seller_items(seller_id):
     listings = Listing.query.filter(Listing.seller_id == seller_id, Listing.is_processed == False).all()
 
-    return jsonify([listing.to_dict() for listing in listings]), 200
+    data = []
+
+    for listing in listings:
+        if listing.is_auction:
+            highest_bid = listing.bid_item.get_highest_bid()
+            if highest_bid != 0:
+                display_price = highest_bid
+            else:
+                display_price = listing.start_price
+
+            d = listing.to_dict()
+            d['price'] = display_price
+
+            data.append(d)
+        else:
+            data.append(listing.to_dict())
+
+    return jsonify(data)
 
 @app.route('/api/listing/item/<int:id>', methods=['GET', 'OPTIONS'])
 def get_listing(id):
@@ -537,12 +572,29 @@ def get_listing(id):
 # view listings that are actively being bid on
 @app.route('/api/listings/active', methods=['GET'])
 def get_active_listings():
-    active_listings = Listing.query.filter(
+    listings = Listing.query.filter(
         Listing.is_auction == True,
         Listing.is_processed == False
     ).all()
 
-    return jsonify([listing.to_dict() for listing in active_listings])
+    data = []
+
+    for listing in listings:
+        if listing.is_auction:
+            highest_bid = listing.bid_item.get_highest_bid()
+            if highest_bid != 0:
+                display_price = highest_bid
+            else:
+                display_price = listing.start_price
+
+            d = listing.to_dict()
+            d['price'] = display_price
+
+            data.append(d)
+        else:
+            data.append(listing.to_dict())
+
+    return jsonify(data)
 
 #----------------------------------------------------------------------------
 # BELOW IS FOR BIDDING
