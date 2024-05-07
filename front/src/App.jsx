@@ -5,7 +5,7 @@ import {
   Outlet
 } from "react-router-dom"
 import {ProfileProvider} from '@/components/ProfileInfo';
-import { Home, Shop, Services, Seller, Profile, EditProfile, About, Login, Listing, CreateListing, ContactPage, Review, SellerReviews} from './pages'
+import { Home, Shop, Services, Seller, Profile, EditProfile, About, Login, Listing, CreateListing, ContactPage, Review, NotFound, SellerReviews} from './pages'
 import { Navbar, Footer} from './components'
 
 const MainLayout = () => (

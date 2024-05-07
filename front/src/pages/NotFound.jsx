@@ -21,7 +21,7 @@ const TextContainer = styled.div`
   h1 {
     font-weight: 400;
     font-size: 2.5rem;
-    line-height: 2.3rem;
+    line-height: 3rem;
   }
 
   h2 {
