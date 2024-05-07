@@ -103,9 +103,9 @@ const Form = () => {
 
       listingData['image_url'] = url
       const response = await createListing(listingData)
-      console.log(response)
+      return response
     } catch (error) {
-      console.error("Something failed here", error)
+      return error
     }
   }
 
@@ -122,29 +122,40 @@ const Form = () => {
     setPhoto(event.target.files[0])
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     console.log('Form Data:', formData);
 
     try {
-      postListingData();
-      console.log(formData.startPrice)
-       // resetting form data
-      alert('Form submitted successfully!');
-      setFormData({
-        itemName: '',
-        itemDescription: '',
-        itemPrice: '',
-        isService: false,
-        isAuction: false,
-        endTime: '',
-        startPrice: ''
-      });
+      const response = await postListingData();
+      console.log(response)
+      console.log(response.response)
+      let message;
+      if (response.response != null) {
+        if (response.response.status != 201)
+          message = response.response.data.error
+      } else {
+        message = "Listing created successfully!"
+        setFormData({
+          itemName: '',
+          itemDescription: '',
+          itemPrice: '',
+          isService: false,
+          isAuction: false,
+          endTime: '',
+          startPrice: ''
+        });
 
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+
+        setPhoto(null)
       }
-      setPhoto(null)
+      
+       // resetting form data
+      alert(message);
+
     } catch (error) {
       console.error("Submission error:", error);
       alert('An error occurred during form submission. Please try again.');
