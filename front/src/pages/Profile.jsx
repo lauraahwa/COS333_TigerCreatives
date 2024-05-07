@@ -171,6 +171,7 @@ const StarRating = ({ rating }) => {
                     localStorage.setItem('token', token)
                     console.log("token: " + token)
                     try {
+                        fetchUserInfo();
                         const data = await viewListings('user_items');
                         console.log("Data fetched", data)
                         setListingsData(data)
@@ -194,7 +195,7 @@ const StarRating = ({ rating }) => {
             }
 
             fetchListings();
-            fetchUserInfo();
+            
             
         }, [])
 
