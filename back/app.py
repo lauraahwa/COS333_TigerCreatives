@@ -317,7 +317,7 @@ def create_listing():
         start_price = data['start_price']
     except:
         start_price = None
-        
+
     try:
         is_processed = data['is_processed']
     except:
@@ -655,7 +655,10 @@ def get_bid_info(listing_id):
         return jsonify({'error': 'Bid item not found'}), 404
 
     # get the highest bid
-    highest_bid = Bid.query.filter_by(bid_item_id=bid_item.id).order_by(Bid.bid_amount.desc()).first().bid_amount
+    try:
+        highest_bid = Bid.query.filter_by(bid_item_id=bid_item.id).order_by(Bid.bid_amount.desc()).first().bid_amount
+    except:
+        highest_bid = 0
 
     bid_item_dict = bid_item.to_dict()
 

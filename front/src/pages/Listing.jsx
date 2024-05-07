@@ -208,6 +208,7 @@ const Listing = () => {
         const fetchBidInfo = async () => {
             try {
                 const data = await viewBidInfo(id);
+                console.log(data)
                 setBidData(data);
             } catch (error) {
                 console.error('Error fetching bid info', error);
@@ -351,7 +352,12 @@ const Listing = () => {
                     </Link>
                 </ReviewsContainer>
 
+                { bidData.highest_bid==0 ? 
+                <p style={{ marginBottom: '20px' }}>Auction end date: {bidData.auction_end_time} | Starting bid: ${bidData.start_price}</p>
+                :
                 <p style={{ marginBottom: '20px' }}>Auction end date: {bidData.auction_end_time} | Top bid: ${bidData.highest_bid}</p>
+                }
+                
 
                 <BidContainer>
                     {isBidActive ? 
