@@ -7,6 +7,7 @@ from flask_cors import CORS, cross_origin
 from flask_migrate import Migrate
 from flask_mail import Mail, Message
 from datetime import datetime, timedelta
+from dateutil import parser
 import pytz
 # from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -719,8 +720,8 @@ def place_bid():
     est_now = datetime.now(est_tz)
 
     # convert string to datetime object
-    auction_end_time = datetime.strptime(auction_end_time_str.strip(), '%a, %d %b %Y %H:%M:%S %Z')
-    auction_end_time = est_tz.localize(auction_end_time)
+    auction_end_time = parser.parse(auction_end_time_str.strip())
+    # auction_end_time = est_tz.localize(auction_end_time)
 
     if est_now > auction_end_time:
         return jsonify({"error": "You cannot place a bid at this time.\nThe auction has already ended."}), 400
