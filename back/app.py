@@ -26,6 +26,8 @@ from dotenv import load_dotenv
 from models import User, Listing, Bid, BidItem, Review
 from extensions import db
 
+import numpy as np
+
 #----------------------------------------------------------------------------
 
 load_dotenv()
@@ -600,7 +602,7 @@ def place_bid():
         return jsonify({"error": "not an auction"}), 404
 
 
-    bid_amount = float(data.get('bid_amount'))
+    bid_amount = np.round(float(data.get('bid_amount')), 2)
     if not bid_item_id:
         return jsonify({"error": "Bid item ID must be provided"}), 400
     if not bid_amount:
@@ -631,7 +633,7 @@ def place_bid():
     new_bid = Bid(
         bid_item_id=bid_item.id,  # Link this bid to the retrieved bid item
         bidder_id=user_id,
-        bid_amount=data['bid_amount'],
+        bid_amount=bid_amount,
         bid_time=est_now
     )
     db.session.add(new_bid)
