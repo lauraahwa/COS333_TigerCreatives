@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Rating from 'react-rating';
 import { getReviews } from '@/api/userService';
+import { Splash} from '@/components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as fasStar, faStar as farStar } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
@@ -9,17 +10,17 @@ import styled from 'styled-components';
 const Container = styled.div`
     display: flex;
     flex-direction: column;
-    margin-top: 50px;
+    align-items: center;
 `;
 
 const ContentArea = styled.div`
     display: flex;
     flex-direction: column;
     padding: 0 50px;
-    align-items: flex-start;
+    align-items: center;
     margin-top: 40px;
     margin-bottom: 40px;
-    width: 100%;
+    width: 50%;
 `;
 
 const Heading = styled.h3`
@@ -87,7 +88,7 @@ const SellerReviews = () => {
 
     return (
       <Container>
-          <Heading>Seller Reviews</Heading>
+        <Splash header="Seller Reviews" subtext="See what people have been saying about this seller!"  />
           <ContentArea>
               {reviews.map(review => (
                   <ReviewContainer key={review.id}>

@@ -198,7 +198,6 @@ def create_review():
     return jsonify(new_review.to_dict()), 201
 
 @app.route('/api/reviews/get/<int:seller_id>', methods=['GET'])
-@cross_origin()
 def get_reviews(seller_id):
     
     reviews = Review.query.filter_by(seller_id=seller_id).all()

@@ -77,6 +77,7 @@ const Container = styled.div`
   align-items: center;
   flex-direction: column;
   gap: 20px;
+  width: 50%
 `;
 
 const ButtonContainer = styled.div`
@@ -133,8 +134,7 @@ const ReviewForm = () => {
           />
         </div>
         <p>*The TigerCreatives team highly suggests you to mention
-          what item/service you purchased with this seller to be of
-          most help to other users!
+          what item/service you purchased with this seller!
         </p>
         <ButtonContainer>
           <StyledButton disabled={rating === 0} type="submit">
