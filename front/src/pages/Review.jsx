@@ -10,7 +10,10 @@ import { useAuth0 } from "@auth0/auth0-react"
 
 
 const Container = styled.div`
-  padding: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 `;
 
 const Heading = styled.h2`
@@ -23,7 +26,7 @@ const Heading = styled.h2`
 const Review = () => {
   return (
     <Container>
-      <Heading>Write a Review</Heading> 
+      <Splash header="Write a Review" subtext="Offer your feedback for this seller on the listing you purchased!"  />
       <ReviewForm />
     </Container>
   );
