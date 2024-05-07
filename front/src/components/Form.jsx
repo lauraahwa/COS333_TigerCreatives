@@ -143,7 +143,7 @@ const Form = () => {
           isService: false,
           isAuction: false,
           endTime: '',
-          startPrice: ''
+          startPrice: 0
         });
 
         if (fileInputRef.current) {
