@@ -429,6 +429,16 @@ def buy():
     listing.is_processed = True
     db.session.commit()
 
+    buyer = User.query.get(user_id)
+    seller = User.query.get(listing.seller_id)
+
+    try:
+        send_buyer_mail(seller.email_address, buyer.email_address, listing.title, listing.price)
+        send_seller_mail(seller.email_address, buyer.email_address, listing.title, listing.price)
+    except Exception as e:
+        return jsonify({"error": f"Email sending failed: {str(e)}"}), 500
+    
+
     return jsonify({'success': True, 'message': 'Marked as bought in database'}), 200
 
     
@@ -605,11 +615,9 @@ def process_auction_end(listing_id):
         b_email = bidder.email_address
         s_email = seller.email_address
 
-        text = f"Congratulations {bidder.first_name} {bidder.last_name}, you won the auction for item {listing.title} with a bid of {highest_bid.bid_amount}."
-
         try:
-            send_bidder_mail(s_email, b_email, listing.title, highest_bid.bid_amount)
-            send_seller_mail(s_email, b_email, listing.title, highest_bid.bid_amount)
+            send_bidder_auction_mail(s_email, b_email, listing.title, highest_bid.bid_amount)
+            send_seller_auction_mail(s_email, b_email, listing.title, highest_bid.bid_amount)
         except Exception as e:
             return jsonify({"error": f"Email sending failed: {str(e)}"}), 500
 
@@ -633,15 +641,30 @@ def process_auction_end(listing_id):
         return jsonify({"message": "No bids found for this item.\n"}), 200
     
 #----------------------------------------------------------------------------
+# FUNCTIONS FOR SENDING EMAILS
+def send_buyer_mail(seller_email, buyer_email, item_name, price):
+    msg = Message("Item bought on TigerCreatives!",
+                  recipients=[buyer_email])
+    msg.body = f"You have successfully purchased item: {item_name} for ${price} on TigerCreatives. Please contact {seller_email} to arrange payment and pickup. Congratulations!"
+    mail.send(msg)
+    return "Email sent!"
 
-def send_bidder_mail(seller_email, bidder_email, item_name, bid_amount):
+def send_seller_mail(seller_email, buyer_email, item_name, price):
+    msg = Message("Item sold on TigerCreatives",
+                  recipients=[seller_email])
+    msg.body = f"Your item: {item_name} has sold for ${price} on TigerCreatives. Please contact {buyer_email} to arrange payment and pickup. Congratulations!"
+    mail.send(msg)
+    return "Email sent!"
+
+
+def send_bidder_auction_mail(seller_email, bidder_email, item_name, bid_amount):
     msg = Message("Auction won on TigerCreatives",
                   recipients=[bidder_email])
     msg.body = f"Your bid on item: {item_name} of ${bid_amount} on TigerCreatives was the highest bid at the end of the auction. Please contact {seller_email} to arrange payment and pickup. Congratulations!"
     mail.send(msg)
     return "Email sent!"
 
-def send_seller_mail(seller_email, bidder_email, item_name, bid_amount):
+def send_seller_auction_mail(seller_email, bidder_email, item_name, bid_amount):
     msg = Message("Auction ended on TigerCreatives",
                   recipients=[seller_email])
     msg.body = f"Your item: {item_name} has sold for ${bid_amount} on TigerCreatives as the auction has concluded. Please contact {bidder_email} to arrange payment and pickup. Congratulations!"
