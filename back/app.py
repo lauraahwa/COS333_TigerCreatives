@@ -642,38 +642,38 @@ def process_auction_end(listing_id):
 #----------------------------------------------------------------------------
 # FUNCTIONS FOR SENDING EMAILS
 def send_buyer_mail(seller_email, buyer_email, item_name, price):
-    msg = Message("Item bought on TigerCreatives!",
+    msg = Message("Item Bought on TigerCreatives!",
                   recipients=[buyer_email])
-    msg.body = f"You have successfully purchased item: {item_name} for ${price} on TigerCreatives. Please contact {seller_email} to arrange payment and pickup. Congratulations!"
+    msg.body = f"Dear User,\n\nYou have successfully purchased item: {item_name} for ${price} on TigerCreatives.\n\nPlease contact {seller_email} to arrange payment and pickup. Congratulations!\n\nWarm regards,\nThe TigerCreatives Team"
     mail.send(msg)
     return "Email sent!"
 
 def send_seller_mail(seller_email, buyer_email, item_name, price):
-    msg = Message("Item sold on TigerCreatives",
+    msg = Message("Item Sold on TigerCreatives",
                   recipients=[seller_email])
-    msg.body = f"Your item: {item_name} has sold for ${price} on TigerCreatives. Please contact {buyer_email} to arrange payment and pickup. Congratulations!"
+    msg.body = f"Dear User,\n\nYour item: {item_name} has sold for ${price} on TigerCreatives. \n\nPlease contact {buyer_email} to arrange payment and pickup. Congratulations!\n\nWarm regards,\nThe TigerCreatives Team"
     mail.send(msg)
     return "Email sent!"
 
 
 def send_bidder_auction_mail(seller_email, bidder_email, item_name, bid_amount):
-    msg = Message("Auction won on TigerCreatives",
+    msg = Message("Auction Won on TigerCreatives",
                   recipients=[bidder_email])
-    msg.body = f"Your bid on item: {item_name} of ${bid_amount} on TigerCreatives was the highest bid at the end of the auction. Please contact {seller_email} to arrange payment and pickup. Congratulations!"
+    msg.body = f"Dear User,\n\nYour bid on item: {item_name} of ${bid_amount} on TigerCreatives was the highest bid at the end of the auction.\n\nPlease contact {seller_email} to arrange payment and pickup.Congratulations!\n\nWarm regards,\nThe TigerCreatives Team"
     mail.send(msg)
     return "Email sent!"
 
 def send_seller_auction_mail(seller_email, bidder_email, item_name, bid_amount):
-    msg = Message("Auction ended on TigerCreatives",
+    msg = Message("Auction Ended on TigerCreatives",
                   recipients=[seller_email])
-    msg.body = f"Your item: {item_name} has sold for ${bid_amount} on TigerCreatives as the auction has concluded. Please contact {bidder_email} to arrange payment and pickup. Congratulations!"
+    msg.body = f"Dear User,\n\nYour item: {item_name} has sold for ${bid_amount} on TigerCreatives as the auction has concluded.\n\nPlease contact {bidder_email} to arrange payment and pickup. Congratulations!\n\nWarm regards,\nThe TigerCreatives Team"
     mail.send(msg)
     return "Email sent!"
 
 def send_no_bids_mail(seller_email, item_name):
     msg = Message("Auction ended on TigerCreatives",
                     recipients=[seller_email])
-    msg.body = f"Your item: {item_name} has received no bids on TigerCreatives at the time of auction conclusion. Please consider relisting your item or listing other items!"
+    msg.body = f"Dear User,\n\nYour item: {item_name} has received no bids on TigerCreatives at the time of auction conclusion. Please consider relisting your item or listing other items!\n\nWarm regards,\nThe TigerCreatives Team"
     mail.send(msg)
     return "Email sent!"
 #----------------------------------------------------------------------------
