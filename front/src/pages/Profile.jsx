@@ -185,7 +185,7 @@ const StarRating = ({ rating }) => {
 
             const fetchUserInfo = async () => {
                 try {
-                    const data = await getProfile('0');
+                    const data = await getProfile();
                     console.log("User data fetched", data)
                     setUserData(data)
                 } catch (error) {

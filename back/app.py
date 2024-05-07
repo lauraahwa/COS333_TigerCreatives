@@ -38,12 +38,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = _DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'meowmeow44556'
 
-# TO SEND EMAILS
-app.config['MAIL_SERVER'] = 'smtp.example.com'
+# Configuration for Flask-Mail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'your-email@example.com'
-app.config['MAIL_PASSWORD'] = 'your-password'
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'tigercreatives@gmail.com'
+app.config['MAIL_PASSWORD'] = 'agwr mytf gqde bczy'
+app.config['MAIL_DEFAULT_SENDER'] = 'tigercreatives@gmail.com'
+
 mail = Mail(app)
 
 jwt = JWTManager(app)
@@ -106,12 +109,18 @@ def create_user():
 # get info for a specific user
 @app.route('/api/users/get_user/<int:user_id>', methods=['GET', 'OPTIONS'])
 @cross_origin()
-@jwt_required()
 def get_user(user_id):
 
-    if user_id == 0:
-        print('this runs')
-        user_id = get_jwt_identity()
+    user = User.query.get_or_404(user_id)
+
+    return jsonify(user.to_dict()), 200
+
+@app.route('/api/users/get_self', methods=['GET'])
+@jwt_required()
+@cross_origin()
+def get_current_user():
+
+    user_id = get_jwt_identity()
 
     user = User.query.get_or_404(user_id)
 
@@ -425,7 +434,6 @@ def get_items():
 @app.route('/api/listing/services', methods=['GET', 'OPTIONS'])
 @cross_origin()
 def get_services():
-    print(request.headers)
     listings = Listing.query.filter(Listing.is_service == True).all()
     return jsonify([listing.to_dict() for listing in listings])
 
@@ -436,7 +444,6 @@ def get_services():
 @cross_origin()
 @jwt_required()
 def get_user_items():
-    print(request.headers)
     user_id = get_jwt_identity()
     print(user_id)
 
@@ -541,8 +548,8 @@ def process_auction_end(listing_id):
         text = f"Congratulations {bidder.first_name} {bidder.last_name}, you won the auction for item {listing.title} with a bid of {highest_bid.bid_amount}."
 
         try:
-            send_email(b_email, text)
-            send_email(s_email, "Your item has been sold!")
+            send_bidder_mail(s_email, b_email, listing.title, highest_bid.bid_amount)
+            send_seller_mail(s_email, b_email, listing.title, highest_bid.bid_amount)
         except Exception as e:
             return jsonify({"error": f"Email sending failed: {str(e)}"}), 500
 
@@ -558,21 +565,19 @@ def process_auction_end(listing_id):
     
 #----------------------------------------------------------------------------
 
-def send_email(to, text):
-    MAILGUN_API_KEY = "ed54d65c-6964eaff"
-    MAILGUN_DOMAIN_NAME = "sandbox4303d2cc641e4a17b3997aa9265f3240.mailgun.org"
-    MAILGUN_API_URL = f"https://api.mailgun.net/v3/{MAILGUN_DOMAIN_NAME}/messages"
-    
-    return requests.post(
-        MAILGUN_API_URL,
-        auth=("api", MAILGUN_API_KEY),
-        data={
-            "from": f"TigerCreatives Team <mailgun@{MAILGUN_DOMAIN_NAME}>",
-            "to": [to],
-            "subject": "Finalizing Your TigerCreatives Transaction!",
-            "text": text,
-        },
-    )
+def send_bidder_mail(seller_email, bidder_email, item_name, bid_amount):
+    msg = Message("Auction won on TigerCreatives",
+                  recipients=[bidder_email])
+    msg.body = f"Your bid on item: {item_name} of ${bid_amount} on TigerCreatives was the highest bid at the end of the auction. Please contact {seller_email} to arrange payment and pickup. Congratulations!"
+    mail.send(msg)
+    return "Email sent!"
+
+def send_seller_mail(seller_email, bidder_email, item_name, bid_amount):
+    msg = Message("Auction ended on TigerCreatives",
+                  recipients=[seller_email])
+    msg.body = f"Your item: {item_name} has sold for ${bid_amount} on TigerCreatives as the auction has concluded. Please contact {bidder_email} to arrange payment and pickup. Congratulations!"
+    mail.send(msg)
+    return "Email sent!"
 
 #----------------------------------------------------------------------------
 

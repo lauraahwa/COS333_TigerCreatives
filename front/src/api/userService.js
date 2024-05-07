@@ -18,8 +18,14 @@ export const login = async (data) => {
 
 export const getProfile = async (id) => {
     try {
-        const endpoint = `/api/users/get_user/${id}`
+        let endpoint;
+        if (id) {
+            endpoint = `/api/users/get_user/${id}`;
+        } else {
+            endpoint = '/api/users/get_self/';
+        }
 
+        
         const response = await apiClient.get(endpoint)
 
         console.log(response.status)

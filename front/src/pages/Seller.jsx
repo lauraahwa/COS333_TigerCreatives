@@ -234,7 +234,6 @@ const ReviewsText = styled.p`
             fetchReviews()
         }, [profileData])
         return (
-            isAuthenticated && (
             <Container>
                 <Splash header="Profile" subtext="Find a seller with a style that you enjoy most!" />
                 <Content>
@@ -275,7 +274,6 @@ const ReviewsText = styled.p`
                 {/* <Grid isLanding={true}/> */}
             </Content>
         </Container>
-        )
     )
 }
 
