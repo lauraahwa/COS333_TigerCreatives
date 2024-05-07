@@ -310,12 +310,21 @@ def create_listing():
     # Check if is_auction is True and validate auction_end_time
     if data.get('is_auction', True):
         try:
-            # Parse the auction_end_time from the request data
+            # parse auction end time
+            naive_datetime = datetime.strptime(data['auction_end_time'], '%Y-%m-%d %H:%M:%S')
+            # convert utc (the default) time to EST
             est_tz = pytz.timezone('US/Eastern')
-            auction_end_time = datetime.strptime(data['auction_end_time'], '%Y-%m-%d %H:%M:%S')
-            auction_end_time = est_tz.localize(auction_end_time)
+            auction_end_time_est = est_tz.localize(naive_datetime)
+
+            # format the EST time
+            auction_end_time_formatted = auction_end_time_est.strftime('%a, %d %b %Y %H:%M:%S %Z')
+            print(auction_end_time_est)
+            print(auction_end_time_formatted)
+
+            # get the current EST time
+            # Parse the auction_end_time from the request data
             cur_est = datetime.now(est_tz)
-            if auction_end_time < (cur_est + timedelta(minutes=0)):
+            if auction_end_time_est < (cur_est + timedelta(minutes=2)):
                 return jsonify({"error": "Auction end time must be at least 2 mins from now."}), 400
         except ValueError:
             return jsonify({"error": "Invalid format for auction end time. Use YYYY-MM-DD HH:MM:SS."}), 402
@@ -342,7 +351,7 @@ def create_listing():
         image_url=data['image_url'],
         is_auction=data['is_auction'],
         is_service=data['is_service'],
-        auction_end_time=auction_end_time,
+        auction_end_time=auction_end_time_formatted,
         is_processed=is_processed,
         start_price=start_price
     )
@@ -351,6 +360,7 @@ def create_listing():
     db.session.flush()
 
     if new_listing.is_auction:
+        print(new_listing.auction_end_time)
         new_bid_item = BidItem(
             listing_id=new_listing.id,
             auction_start_time=None,  # Start time could be set when the first bid is made
