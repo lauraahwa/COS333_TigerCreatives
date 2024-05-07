@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components'
 import { Button, ButtonContainer } from '@/components'
 import { uploadImage, createListing } from '@/api/listingService';
@@ -76,6 +76,8 @@ const Form = () => {
     console.log("photo" + photo)
   }, [photo])
 
+  const fileInputRef = useRef(null)
+
   const postListingData = async () => {
     const listingData = {
       'title': formData['itemName'],
@@ -138,6 +140,11 @@ const Form = () => {
         endTime: '',
         startPrice: ''
       });
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      setPhoto(null)
     } catch (error) {
       console.error("Submission error:", error);
       alert('An error occurred during form submission. Please try again.');
@@ -188,6 +195,7 @@ const Form = () => {
           id="imageUpload"
           placeholder=" "
           name="image"
+          ref={fileInputRef}
           onChange={handleFileChange}
           accept="image/*"
           required
