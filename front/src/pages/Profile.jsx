@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Button, ButtonContainer, Splash, Grid } from '@/components'
+import { Button, Loading, Splash, Grid } from '@/components'
 import weirdswan from '@/assets/weirdswan.webp'
 import { useProfile } from '@/components/ProfileInfo';
 
-import { useAuth0 } from "@auth0/auth0-react"
-
-import { Dialog } from '@headlessui/react'
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react"
 
 import { viewListings } from '@/api/listingService'
 import { login, getReviews, getProfile } from '@/api/userService'
@@ -152,26 +150,12 @@ const StarRating = ({ rating }) => {
 }
 
     const Profile = () => {
-        const { user, isAuthenticated, handleRedirectCallback, getAccessTokenSilently } = useAuth0();
+        const { user, isAuthenticated } = useAuth0();
 
         const [listingsData, setListingsData] = useState([])
         const [userData, setUserData] = useState([])
         const [reviewsData, setReviewsData] = useState([])
 
-        const rating = 4.2
-
-        // useEffect(() => {
-        //     const handleAuthCallback = async () => {
-        //         await handleRedirectCallback()
-            
-        //         if (isAuthenticated) {
-        //             const accessToken = await getAccessTokenSilently()
-        //             console.log(accessToken)
-        //         }
-        //     }
-
-        //     handleAuthCallback()
-        // }, [handleRedirectCallback, isAuthenticated, getAccessTokenSilently])
 
         useEffect(() => {
 
@@ -182,11 +166,10 @@ const StarRating = ({ rating }) => {
                 }
                 console.log(user)
                 try {
-                    const response = await login(user);
+                    const response = await login(user)
                     const token = response;
                     localStorage.setItem('token', token)
-                    console.log("token:" + token)
-
+                    console.log("token: " + token)
                     try {
                         const data = await viewListings('user_items');
                         console.log("Data fetched", data)
@@ -301,4 +284,6 @@ const StarRating = ({ rating }) => {
     )
 }
 
-export default Profile
+export default withAuthenticationRequired(Profile, {
+    onRedirecting: () => <Loading />
+});

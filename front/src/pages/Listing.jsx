@@ -197,7 +197,7 @@ const Listing = () => {
                 setListingData(data);
                 setIsAuction(data.is_auction);
 
-                if (isAuction) {
+                if (data.is_auction) {
                     fetchBidInfo()
                 }
             } catch (error) {
