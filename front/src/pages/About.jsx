@@ -64,8 +64,7 @@ function About() {
           <p>Once an auction is live, buyers can bid on items they're interested in purchasing. The first bidder must place a bid at least $0.50 greater than the starting price. Subsequent bids must be at least $0.50 higher than the previous bid. Bids are rounded to the nearest cent, and bids can't be placed on expired auctions.</p>
           <br/>
           <p><strong>For Sellers:</strong></p>
-          <p>When starting an auction, sellers provide a 'Price' and 'Auction Start Price'. Only the 'Auction Start Price' is used for the auction.</p>
-          <p>If no bids have been placed when the auction ends, the listing will be removed once the 'Process Auction' button is clicked, but no successful transaction email will be sent. Sellers can re-upload their listing as a new auction or set a fixed price. Editing the auction end date is a feature our team is working on.</p>`
+          <p>When starting an auction, sellers provide a 'Price' and 'Auction Start Price'. Only the 'Auction Start Price' is used for the auction. If no bids have been placed when the auction ends, the listing will be removed once the 'Process Auction' button is clicked. You will receive an automated email alerting you of this. Sellers can re-upload their listing as a new auction or set a fixed price. Editing the auction end date is a feature our team is working on.</p>`
         }
       />
       <StyledAccordion
