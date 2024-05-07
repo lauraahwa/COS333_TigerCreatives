@@ -177,7 +177,6 @@ const SoldNotification = styled.div`
 
 const Listing = () => {
     let { id } = useParams();
-    const rating = 3.5;
 
     const [listingData, setListingData] = useState({});
     const [isAuction, setIsAuction] = useState(false);
@@ -249,8 +248,10 @@ const Listing = () => {
             })
 
             const avgRating = numberOfReviews > 0 ? totalRating / numberOfReviews : 0;
+            console.log(avgRating)
+            setReviewsData({ reviews, numberOfReviews, avgRating })
 
-            return { numberOfReviews, avgRating }
+
         }
 
         const fetchReviews = async () => {
@@ -262,8 +263,8 @@ const Listing = () => {
             try {
                 const data = await getReviews(listingData.seller_id)
                 console.log(data)
-                const { numberOfReviews, avgRating } = processReviews(data)
-                setReviewsData({ reviews: data, numberOfReviews, avgRating })
+                processReviews(data)
+                
             } catch (error) {
                 console.error("fetching reviews error", error)
             }
@@ -405,7 +406,7 @@ const Listing = () => {
                     Sold by Seller: {userData.first_name} {userData.last_name}
                 </Link>
                 <ReviewsContainer>
-                    <StarRating rating={rating} />
+                    <StarRating rating={reviewsData.avgRating} />
                     <Line />
                     <Link to={`/itemized-reviews/${listingData.seller_id}`}>
                         <ReviewsText>{reviewsData.numberOfReviews} Seller Reviews</ReviewsText>
