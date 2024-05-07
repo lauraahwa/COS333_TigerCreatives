@@ -336,7 +336,7 @@ def create_listing():
         data['start_price'] = 0
 
     try:
-        start_price = data['start_price']
+        start_price = np.round(float(data['start_price']), 2)
     except:
         start_price = None
 
