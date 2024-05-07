@@ -350,7 +350,7 @@ def create_listing():
         title=data['title'],
         seller_id=user_id,
         description=data['description'],
-        price=data['price'],
+        price=np.round(float(data['price']), 2),
         image_url=data['image_url'],
         is_auction=data['is_auction'],
         is_service=data['is_service'],
