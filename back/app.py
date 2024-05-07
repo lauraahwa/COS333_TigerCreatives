@@ -331,7 +331,7 @@ def create_listing():
     else:
         auction_end_time_formatted = None
     
-    # put in a default start price
+    # put in a default start
     if data['start_price'] is None:
         data['start_price'] = 0
 
@@ -546,14 +546,11 @@ def process_auction_end(listing_id):
         return jsonify({'error': 'Bid item not found'}), 404
     
     est_tz = pytz.timezone('US/Eastern')
-    print("HELLOO")
-    print(bid_item.auction_end_time)
-    # parse auction_end_time
-    auction_end_time = datetime.strptime(bid_item.auction_end_time, '%a, %d %b %Y %H:%M:%S %Z')
-
-    # strip of whitespace in case anything is trailing
-    auction_end_time_str = auction_end_time_str.strip()
-    auction_end_time = auction_end_time.astimezone(est_tz)
+    
+    # convert string to datetime object
+    auction_end_time_str = bid_item.auction_end_time
+    auction_end_time = datetime.strptime(auction_end_time_str.strip(), '%a, %d %b %Y %H:%M:%S %Z')
+    auction_end_time = est_tz.localize(auction_end_time)
 
     # get current time
     current_time = datetime.now(est_tz)
@@ -564,6 +561,11 @@ def process_auction_end(listing_id):
 
     # find the highest bid
     highest_bid = Bid.query.filter_by(bid_item_id=bid_item.id).order_by(Bid.bid_amount.desc()).first()
+
+    # process even if no bids are placed
+    if highest_bid is None:
+        listing.is_processed = True
+
     if highest_bid:
         listing.is_processed = True
         db.session.commit()
@@ -591,7 +593,7 @@ def process_auction_end(listing_id):
             "seller_email": seller.email_address,
         }), 200
     else:
-        return jsonify({"message": "no bids found for this item"}), 200
+        return jsonify({"message": "No bids found for this item.\n"}), 200
     
 #----------------------------------------------------------------------------
 
@@ -643,30 +645,33 @@ def place_bid():
     bid_item = BidItem.query.get(bid_item_id)
     if not bid_item:
         return jsonify({"error": "Bid item not found"}), 405
+    
+    # prevent bids from being placed after auction ends
+    auction_end_time_str = bid_item.auction_end_time
 
-    # Check if new bid is at least $0.50 higher than the last
+    # get the current time in Eastern Time
+    est_tz = pytz.timezone('US/Eastern')
+    est_now = datetime.now(est_tz)
+
+    # convert string to datetime object
+    auction_end_time = datetime.strptime(auction_end_time_str.strip(), '%a, %d %b %Y %H:%M:%S %Z')
+    auction_end_time = est_tz.localize(auction_end_time)
+
+    if est_now > auction_end_time:
+        return jsonify({"error": "You cannot place a bid at this time.\nThe auction has already ended."}), 400
+
+    # check if new bid is at least $0.50 higher than the last
     highest_bid = bid_item.get_highest_bid()
     if bid_amount <= highest_bid + 0.50:
         return jsonify({"error": "Your bid must be at least $0.50 higher than the current highest bid of ${:.2f}$".format(highest_bid)}), 400
     
-    # Check if new bid is at least $0.50 higher than the start price
+    # check if new bid is at least $0.50 higher than the start price
     start_price = bid_item.start_price
     if bid_amount <= start_price + 0.50:
         return jsonify({"error": "Your bid must be at least $0.50 higher than the start price bid of ${:.2f}$".format(start_price)}), 400
     
-    # Get the current local time
-    local_now = datetime.now()
-
-    # Convert local time to UTC
-    utc_now = local_now.astimezone(pytz.utc)
-
-    # Convert UTC time to Eastern Time
-    est_tz = pytz.timezone('US/Eastern')
-    est_now = utc_now.astimezone(est_tz)
-
-    # Format the time
+    # format the time
     est_now_str = est_now.strftime('%a, %d %b %Y %H:%M:%S %Z')
-
     print(est_now_str)
 
     if not bid_item.auction_start_time:
