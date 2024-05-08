@@ -642,8 +642,9 @@ def process_auction_end(listing_id):
     
     # convert string to datetime object
     auction_end_time_str = bid_item.auction_end_time
-    auction_end_time = datetime.strptime(auction_end_time_str.strip(), '%a, %d %b %Y %H:%M:%S %Z')
-    auction_end_time = est_tz.localize(auction_end_time)
+    auction_end_time = parser.parse(auction_end_time_str.strip())
+    if auction_end_time.tzinfo is None or auction_end_time.tzinfo.utcoffset(auction_end_time) is None:
+        auction_end_time = est_tz.localize(auction_end_time)
 
     # get current time
     current_time = datetime.now(est_tz)
